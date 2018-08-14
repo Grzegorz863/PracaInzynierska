@@ -71,7 +71,7 @@ public class RatingsEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, insertable = false, updatable = false)
     public UsersEntity getUsersByUserId() {
         return usersByUserId;
     }
@@ -81,7 +81,7 @@ public class RatingsEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "station_id", referencedColumnName = "station_id", nullable = false)
+    @JoinColumn(name = "station_id", referencedColumnName = "station_id", nullable = false, insertable = false, updatable = false)
     public PetrolStationsEntity getPetrolStationsByStationId() {
         return petrolStationsByStationId;
     }

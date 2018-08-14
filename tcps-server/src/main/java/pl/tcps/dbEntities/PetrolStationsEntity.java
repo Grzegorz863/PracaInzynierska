@@ -176,7 +176,7 @@ public class PetrolStationsEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "consortium_id", referencedColumnName = "consortium_id", nullable = false)
+    @JoinColumn(name = "consortium_id", referencedColumnName = "consortium_id", nullable = false, insertable = false, updatable = false)
     public ConsortiumsEntity getConsortiumsByConsortiumId() {
         return consortiumsByConsortiumId;
     }

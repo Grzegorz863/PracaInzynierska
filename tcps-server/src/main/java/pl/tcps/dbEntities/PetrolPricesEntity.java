@@ -8,10 +8,10 @@ import java.util.Objects;
 public class PetrolPricesEntity {
     private long priceId;
     private long stationId;
-    private double pb95Price;
-    private double pb98Price;
-    private double onPrice;
-    private double lpgPrice;
+    private float pb95Price;
+    private float pb98Price;
+    private float onPrice;
+    private float lpgPrice;
     private PetrolStationsEntity petrolStationsByStationId;
 
     @Id
@@ -36,41 +36,41 @@ public class PetrolPricesEntity {
 
     @Basic
     @Column(name = "pb95_price", nullable = true, precision = 0)
-    public double getPb95Price() {
+    public float getPb95Price() {
         return pb95Price;
     }
 
-    public void setPb95Price(double pb95Price) {
+    public void setPb95Price(float pb95Price) {
         this.pb95Price = pb95Price;
     }
 
     @Basic
     @Column(name = "pb98_price", nullable = true, precision = 0)
-    public double getPb98Price() {
+    public float getPb98Price() {
         return pb98Price;
     }
 
-    public void setPb98Price(double pb98Price) {
+    public void setPb98Price(float pb98Price) {
         this.pb98Price = pb98Price;
     }
 
     @Basic
     @Column(name = "on_price", nullable = true, precision = 0)
-    public double getOnPrice() {
+    public float getOnPrice() {
         return onPrice;
     }
 
-    public void setOnPrice(double onPrice) {
+    public void setOnPrice(float onPrice) {
         this.onPrice = onPrice;
     }
 
     @Basic
     @Column(name = "lpg_price", nullable = true, precision = 0)
-    public double getLpgPrice() {
+    public float getLpgPrice() {
         return lpgPrice;
     }
 
-    public void setLpgPrice(double lpgPrice) {
+    public void setLpgPrice(float lpgPrice) {
         this.lpgPrice = lpgPrice;
     }
 
@@ -81,10 +81,10 @@ public class PetrolPricesEntity {
         PetrolPricesEntity that = (PetrolPricesEntity) o;
         return priceId == that.priceId &&
                 stationId == that.stationId &&
-                Double.compare(that.pb95Price, pb95Price) == 0 &&
-                Double.compare(that.pb98Price, pb98Price) == 0 &&
-                Double.compare(that.onPrice, onPrice) == 0 &&
-                Double.compare(that.lpgPrice, lpgPrice) == 0;
+                Float.compare(that.pb95Price, pb95Price) == 0 &&
+                Float.compare(that.pb98Price, pb98Price) == 0 &&
+                Float.compare(that.onPrice, onPrice) == 0 &&
+                Float.compare(that.lpgPrice, lpgPrice) == 0;
     }
 
     @Override
@@ -94,7 +94,7 @@ public class PetrolPricesEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "station_id", referencedColumnName = "station_id", nullable = false)
+    @JoinColumn(name = "station_id", referencedColumnName = "station_id", nullable = false, insertable = false, updatable = false)
     public PetrolStationsEntity getPetrolStationsByStationId() {
         return petrolStationsByStationId;
     }

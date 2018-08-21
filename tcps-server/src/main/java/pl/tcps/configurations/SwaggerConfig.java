@@ -2,6 +2,8 @@ package pl.tcps.configurations;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
@@ -11,7 +13,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @EnableSwagger2
 @Configuration
+@Controller
 public class SwaggerConfig {
+
+    private static final String SWAGGER_URL = "redirect:/swagger-ui.html";
 
     @Bean
     public Docket apiDocumentation() {
@@ -25,5 +30,10 @@ public class SwaggerConfig {
                 .version("1.0.0")
                 .contact(new Contact("Grzegorz Nowak", "https://github.com/Grzegorz863/PracaInzynierska.git", "grzenow582@student.polsl.pl"))
                 .build();
+    }
+
+    @GetMapping("/doc")
+    public String redirectDoc(){
+        return SWAGGER_URL;
     }
 }

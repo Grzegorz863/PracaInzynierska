@@ -21,7 +21,11 @@ public class SwaggerConfig {
 
     @Bean
     public Docket apiDocumentation() {
-        return new Docket (DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage( "pl.tcps.controllers" )).build().apiInfo(apiInformation());
+        return new Docket (DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage( "pl.tcps.controllers" ))
+                .build()
+                .apiInfo(apiInformation());
     }
 
     private ApiInfo apiInformation(){

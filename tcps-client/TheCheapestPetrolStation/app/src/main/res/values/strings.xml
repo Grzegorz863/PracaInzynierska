@@ -2,8 +2,8 @@
     <string name="app_name">The Cheapest Petrol Station</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Name Surname</string>
-    <string name="nav_header_subtitle">name.surname@email.com</string>
+    <string name="nav_header_title">name last_name</string>
+    <string name="nav_header_subtitle">email@email.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="menu_first_option">Petrol Stations</string>
@@ -11,6 +11,9 @@
     <string name="menu_third_option">Settings</string>
     <string name="logout">Logout</string>
     <string name="account">Account</string>
+    <string name="avatar_url">https://graph.facebook.com/%1$s/picture?width=200&amp;height=200</string>
+    <string name="facebook_app_id">2111859849134895</string>
+    <string name="facebook_login_protocol_scheme">fb2111859849134895</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

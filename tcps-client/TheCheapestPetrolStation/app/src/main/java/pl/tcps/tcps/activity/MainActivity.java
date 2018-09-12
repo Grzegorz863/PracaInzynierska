@@ -14,10 +14,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import pl.tcps.tcps.fragment.AddStationFragment;
 import pl.tcps.tcps.fragment.PetrolStationFragment;
 import pl.tcps.tcps.R;
+import pl.tcps.tcps.model.UserDetails;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -50,8 +55,21 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.flMain, new PetrolStationFragment());
         fragmentTransaction.commit();
-
         navigationView.setCheckedItem(R.id.nav_first_option);
+
+        View headerView = navigationView.getHeaderView(0);
+        UserDetails userDetails = getIntent().getParcelableExtra("user_details");
+        if(userDetails!=null) {
+            String firstNameAndLastName = userDetails.getFirstName() + " " + userDetails.getLastName();
+            TextView logged = headerView.findViewById(R.id.logged_name);
+            logged.setText(firstNameAndLastName);
+            logged = headerView.findViewById(R.id.logged_email);
+            logged.setText(userDetails.getEmail());
+
+            String avatarURL = getString(R.string.avatar_url, userDetails.getId());
+            ImageView avatar = headerView.findViewById(R.id.logged_avatar);
+            Picasso.with(this).load(avatarURL).into(avatar);
+        }
     }
 
     @Override

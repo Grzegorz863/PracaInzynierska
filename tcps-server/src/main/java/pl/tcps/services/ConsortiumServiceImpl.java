@@ -8,8 +8,12 @@ import pl.tcps.repositories.ConsortiumRepository;
 @Service
 public class ConsortiumServiceImpl implements ConsortiumService {
 
+    private ConsortiumRepository consortiumRepository;
+
     @Autowired
-    ConsortiumRepository consortiumRepository;
+    public ConsortiumServiceImpl(ConsortiumRepository consortiumRepository) {
+        this.consortiumRepository = consortiumRepository;
+    }
 
     @Override
     public ConsortiumsEntity getConsortium(String consortiumName) {
@@ -18,7 +22,6 @@ public class ConsortiumServiceImpl implements ConsortiumService {
 
     @Override
     public String getConsortium(Long consortiumId) {
-        //return "fdsac";
         return consortiumRepository.findByConsortiumId(consortiumId).getConsortiumName();
     }
 }

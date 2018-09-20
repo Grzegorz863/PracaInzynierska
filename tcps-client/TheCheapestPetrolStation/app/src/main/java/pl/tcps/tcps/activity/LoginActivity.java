@@ -99,6 +99,7 @@ public class LoginActivity extends AppCompatActivity {
             UserDetails userDetails = new UserDetails(accessToken.getUserId());
             intent.putExtra("user_details", userDetails);
             startActivity(intent);
+            //finish();
         }
     }
 
@@ -112,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
 
             intent.putExtra("user_details", userDetails);
             startActivity(intent);
+            //finish();
 
         } catch (JSONException e) {
             e.printStackTrace();

@@ -5,4 +5,6 @@ import pl.tcps.dbEntities.UsersEntity;
 
 public interface UserRepository extends JpaRepository<UsersEntity, Long> {
     UsersEntity findByUserName(String userName);
+    Boolean existsByUserName(String userName);
+    //Boolean existsByEmail(String email);
 }

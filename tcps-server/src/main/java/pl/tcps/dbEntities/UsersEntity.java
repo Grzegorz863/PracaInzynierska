@@ -9,7 +9,10 @@ import java.util.Objects;
 @Entity
 @Table(name = "users", schema = "tcpsdb", catalog = "")
 public class UsersEntity {
+
     private long userId;
+
+    @JsonIgnore
     private String userPassword;
     private String userName;
     private String userRole;
@@ -113,13 +116,16 @@ public class UsersEntity {
                 Objects.equals(userPassword, that.userPassword) &&
                 Objects.equals(userName, that.userName) &&
                 Objects.equals(userRole, that.userRole)&&
-                Objects.equals(isEnabled, that.isEnabled);
+                Objects.equals(isEnabled, that.isEnabled) &&
+                Objects.equals(firstName, that.firstName) &&
+                Objects.equals(lastName, that.lastName) &&
+                Objects.equals(email, that.email);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(userId, userPassword, userName, userRole, isEnabled);
+        return Objects.hash(userId, userPassword, userName, userRole, isEnabled, firstName, lastName, email);
     }
 
     @OneToMany(mappedBy = "usersByUserId")

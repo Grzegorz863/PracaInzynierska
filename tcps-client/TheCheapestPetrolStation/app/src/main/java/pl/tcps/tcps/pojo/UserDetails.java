@@ -1,4 +1,4 @@
-package pl.tcps.tcps.model;
+package pl.tcps.tcps.pojo;
 
 import android.os.Parcel;
 import android.os.Parcelable;

@@ -1,13 +1,13 @@
 package pl.tcps.tcps.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,24 +21,37 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.RequestCreator;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+import okhttp3.ResponseBody;
 import pl.tcps.tcps.R;
-import pl.tcps.tcps.model.UserDetails;
+import pl.tcps.tcps.api_client.LoginClient;
+import pl.tcps.tcps.pojo.login.AccessTokenDetails;
+import pl.tcps.tcps.pojo.UserDetails;
+import pl.tcps.tcps.pojo.login.LoginUser;
+import pl.tcps.tcps.ssl.SelfSigningClientBuilder;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LoginActivity extends AppCompatActivity {
 
     CallbackManager callbackManager;
     ProgressBar progressBar;
     RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100,100);
+
+    Button loginButton;
+    Button registrationButton;
+    TextView loginTextView;
+    TextView passwordTextView;
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -50,6 +63,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        loginButton = findViewById(R.id.buttonLogin);
+        registrationButton = findViewById(R.id.buttonRegistration);
+        loginTextView = findViewById(R.id.etLogin);
+        passwordTextView = findViewById(R.id.etPassword);
+
+        setListenersForButtons();
 
         callbackManager = CallbackManager.Factory.create();
 
@@ -101,6 +121,54 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
             //finish();
         }
+    }
+
+    private void setListenersForButtons(){
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String userName = loginTextView.getText().toString();
+                String password = passwordTextView.getText().toString();
+                if(userName.matches(""))
+                    Toast.makeText(LoginActivity.this, "Enter username!", Toast.LENGTH_SHORT);
+                if(password.matches(""))
+                    Toast.makeText(LoginActivity.this, "Enter password!", Toast.LENGTH_SHORT);
+
+                Map<String, Object> headerMap = new HashMap<>();
+                headerMap.put("grant_type", "password");
+                headerMap.put("username", userName);
+                headerMap.put("password", password);
+                headerMap.put("scope", "read write trust");
+
+                Retrofit.Builder builder = new Retrofit.Builder()
+                        .baseUrl(getString(R.string.base_url))
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(SelfSigningClientBuilder.createClient(LoginActivity.this));
+
+                Retrofit retrofit = builder.build();
+
+                LoginClient loginClient = retrofit.create(LoginClient.class);
+                Call<AccessTokenDetails> call = loginClient.accessToken(headerMap);
+
+                call.enqueue(new Callback<AccessTokenDetails>() {
+                    @Override
+                    public void onResponse(Call<AccessTokenDetails> call, Response<AccessTokenDetails> response) {
+                        if(response.isSuccessful()){
+                            Toast.makeText(LoginActivity.this, response.body().getAccessToken(), Toast.LENGTH_LONG).show();
+                        }else{
+                            Toast.makeText(LoginActivity.this, "Wrong credentials", Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<AccessTokenDetails> call, Throwable t) {
+                        Log.d("myError", t.toString());
+                        Toast.makeText(LoginActivity.this, "Login error", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
     }
 
     private void sendAndGoToMainActivity(JSONObject object) {

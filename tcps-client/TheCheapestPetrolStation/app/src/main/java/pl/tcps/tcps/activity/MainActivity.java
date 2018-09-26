@@ -22,7 +22,7 @@ import com.squareup.picasso.Picasso;
 import pl.tcps.tcps.fragment.AddStationFragment;
 import pl.tcps.tcps.fragment.PetrolStationFragment;
 import pl.tcps.tcps.R;
-import pl.tcps.tcps.model.UserDetails;
+import pl.tcps.tcps.pojo.UserDetails;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {

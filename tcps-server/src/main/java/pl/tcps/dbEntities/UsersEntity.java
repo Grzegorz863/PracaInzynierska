@@ -1,6 +1,7 @@
 package pl.tcps.dbEntities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -10,15 +11,30 @@ import java.util.Objects;
 @Table(name = "users", schema = "tcpsdb", catalog = "")
 public class UsersEntity {
 
+    @Id
+    @JsonIgnore
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private long userId;
 
     @JsonIgnore
     private String userPassword;
+
+    @JsonProperty("user_name")
     private String userName;
+
+    @JsonProperty("user_role")
     private String userRole;
+
+    @JsonProperty("is_enabled")
     private Boolean isEnabled;
+
+    @JsonProperty("first_name")
     private String firstName;
+
+    @JsonProperty("last_name")
     private String lastName;
+
+    @JsonProperty("email")
     private String email;
 
     @JsonIgnore
@@ -79,31 +95,31 @@ public class UsersEntity {
 
     @Basic
     @Column(name = "first_name", nullable = true, length = 45)
-    public String getUserFirstName() {
+    public String getFirstName() {
         return firstName;
     }
 
-    public void setUserFirstName(String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
     @Basic
     @Column(name = "last_name", nullable = true, length = 45)
-    public String getUserLastName() {
+    public String getLastName() {
         return lastName;
     }
 
-    public void setUserLastName(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
     @Basic
     @Column(name = "email", nullable = false, length = 45)
-    public String getUserEmail() {
+    public String getEmail() {
         return email;
     }
 
-    public void setUserEmail(String email) {
+    public void setEmail(String email) {
         this.email = email;
     }
 

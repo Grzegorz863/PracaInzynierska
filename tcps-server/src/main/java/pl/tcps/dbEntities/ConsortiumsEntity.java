@@ -1,5 +1,8 @@
 package pl.tcps.dbEntities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
@@ -7,10 +10,18 @@ import java.util.Objects;
 @Entity
 @Table(name = "consortiums", schema = "tcpsdb", catalog = "")
 public class ConsortiumsEntity {
+
+    @JsonProperty("consortium_id")
     private long consortiumId;
+
+    @JsonProperty("consortium_name")
     private String consortiumName;
+
+    @JsonProperty("logo")
     private String logo;
-    private Collection<PetrolStationsEntity> petrolStationsByConsortiumId;
+
+    @JsonIgnore
+    private Collection<PetrolStationEntity> petrolStationsByConsortiumId;
 
     @Id
     @Column(name = "consortium_id", nullable = false)
@@ -59,11 +70,11 @@ public class ConsortiumsEntity {
     }
 
     @OneToMany(mappedBy = "consortiumsByConsortiumId")
-    public Collection<PetrolStationsEntity> getPetrolStationsByConsortiumId() {
+    public Collection<PetrolStationEntity> getPetrolStationsByConsortiumId() {
         return petrolStationsByConsortiumId;
     }
 
-    public void setPetrolStationsByConsortiumId(Collection<PetrolStationsEntity> petrolStationsByConsortiumId) {
+    public void setPetrolStationsByConsortiumId(Collection<PetrolStationEntity> petrolStationsByConsortiumId) {
         this.petrolStationsByConsortiumId = petrolStationsByConsortiumId;
     }
 }

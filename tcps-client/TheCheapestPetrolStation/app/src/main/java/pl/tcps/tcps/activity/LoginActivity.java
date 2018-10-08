@@ -137,19 +137,19 @@ public class LoginActivity extends AppCompatActivity {
 
                 String userName = loginTextView.getText().toString();
                 String password = passwordTextView.getText().toString();
-                if(TextUtils.isEmpty(userName)) {
-                    Toast.makeText(LoginActivity.this, "Enter username!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(TextUtils.isEmpty(password)) {
-                    Toast.makeText(LoginActivity.this, "Enter password!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
+//                if(TextUtils.isEmpty(userName)) {
+//                    Toast.makeText(LoginActivity.this, "Enter username!", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                if(TextUtils.isEmpty(password)) {
+//                    Toast.makeText(LoginActivity.this, "Enter password!", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
 
                 Map<String, Object> fieldMap = new HashMap<>();
                 fieldMap.put("grant_type", "password");
-                fieldMap.put("username", userName); // <== DO ZMIANY NA USERNAME
-                fieldMap.put("password", password); // <== DO ZMIANY NA PASSWORD
+                fieldMap.put("username", "user1"); // <== DO ZMIANY NA USERNAME
+                fieldMap.put("password", "user1"); // <== DO ZMIANY NA PASSWORD
                 fieldMap.put("scope", "read write trust");
 
                 Retrofit retrofit = RetrofitBuilder.createRetrofit(LoginActivity.this);

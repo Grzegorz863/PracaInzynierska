@@ -1,26 +1,60 @@
 package pl.tcps.dbEntities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Objects;
 
 @Entity
 @Table(name = "petrol_stations", schema = "tcpsdb", catalog = "")
-public class PetrolStationsEntity {
+public class PetrolStationEntity {
+
+    @Id
+    @JsonIgnore
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private long stationId;
+
+    @JsonProperty("consortium_id")
     private long consortiumId;
+
+    @JsonProperty("longitude")
     private double longitude;
+
+    @JsonProperty("latitude")
     private double latitude;
+
     private byte hasFood;
+
+    @JsonProperty("apartment_number")
     private int apartmentNumber;
+
+    @JsonProperty("postal_code")
     private String postalCode;
+
+    @JsonProperty("station_name")
     private String stationName;
+
+    @JsonProperty("city")
     private String city;
+
+    @JsonProperty("street")
     private String street;
+
+    @JsonProperty("description")
     private String description;
+
+    @JsonIgnore
     private Collection<HistoricPricesEntity> historicPricesByStationId;
+
+    @JsonIgnore
     private Collection<PetrolPricesEntity> petrolPricesByStationId;
+
+    @JsonIgnore
     private ConsortiumsEntity consortiumsByConsortiumId;
+
+    @JsonIgnore
     private Collection<RatingsEntity> ratingsByStationId;
 
     @Id
@@ -64,13 +98,15 @@ public class PetrolStationsEntity {
     }
 
     @Basic
+    @JsonProperty("has_food")
     @Column(name = "has_food", nullable = false)
-    public byte getHasFood() {
-        return hasFood;
+    public Boolean getHasFood() {
+        return hasFood!=0;
     }
 
-    public void setHasFood(byte hasFood) {
-        this.hasFood = hasFood;
+    @JsonProperty("has_food")
+    public void setHasFood(Boolean hasFood) {
+        this.hasFood = (byte)(hasFood?1:0);
     }
 
     @Basic
@@ -137,7 +173,7 @@ public class PetrolStationsEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PetrolStationsEntity that = (PetrolStationsEntity) o;
+        PetrolStationEntity that = (PetrolStationEntity) o;
         return stationId == that.stationId &&
                 consortiumId == that.consortiumId &&
                 Double.compare(that.longitude, longitude) == 0 &&

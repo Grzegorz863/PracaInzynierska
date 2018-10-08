@@ -5,12 +5,127 @@
     android:layout_height="match_parent"
     tools:context=".fragment.AddStationFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Add Station fragment"
-        android:textAlignment="center"
-        android:textSize="30sp" />
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp">
+
+        <ImageView
+            android:id="@+id/reg_logo"
+            android:layout_width="162dp"
+            android:layout_height="168dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/ic_local_gas_station_black_reg_layout" />
+
+        <EditText
+            android:id="@+id/add_station_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/add_station_name_hint"
+            android:inputType="textPersonName"
+            android:layout_below="@+id/reg_logo"
+            android:layout_marginBottom="40dp"/>
+
+        <LinearLayout
+            android:id="@+id/add_station_address_layout1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/add_station_name"
+            android:orientation="horizontal"
+            android:layout_marginBottom="40dp">
+
+            <EditText
+                android:id="@+id/add_station_street"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:hint="@string/add_station_street_hint"
+                android:inputType="textPostalAddress" />
+
+            <EditText
+                android:id="@+id/add_station_apartment_number"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="@string/add_station_apartment_number_hint"
+                android:inputType="number" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/add_station_address_layout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/add_station_address_layout1"
+            android:orientation="horizontal"
+            android:layout_marginBottom="40dp">
+
+            <EditText
+                android:id="@+id/add_station_city"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="@string/add_station_city_hint"
+                android:inputType="textPersonName" />
+
+            <EditText
+                android:id="@+id/add_station_postal_code"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="@string/add_station_postal_code_hint"
+                android:inputType="text" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/add_station_consortium_and_food"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/add_station_address_layout2"
+            android:layout_marginBottom="40dp"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/add_station_consortium_name_spinner"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"/>
+                <!--android:spinnerMode="dialog"-->
+                <!--android:prompt="@string/add_station_consortium_name_spinner_prompt"/>-->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:text="@string/add_station_has_food"
+                android:textAlignment="textEnd"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Switch
+                android:id="@+id/add_station_has_food_switch"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/add_station_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/add_station_consortium_and_food"
+            android:hint="@string/add_station_description_hint"
+            android:inputType="textImeMultiLine" />
+
+        <Button
+            android:id="@+id/add_station_add_station_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_station_button"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
 
 </FrameLayout>

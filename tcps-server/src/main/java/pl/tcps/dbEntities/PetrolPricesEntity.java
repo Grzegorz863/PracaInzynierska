@@ -12,7 +12,7 @@ public class PetrolPricesEntity {
     private float pb98Price;
     private float onPrice;
     private float lpgPrice;
-    private PetrolStationsEntity petrolStationsByStationId;
+    private PetrolStationEntity petrolStationsByStationId;
 
     @Id
     @Column(name = "price_id", nullable = false)
@@ -95,11 +95,11 @@ public class PetrolPricesEntity {
 
     @ManyToOne
     @JoinColumn(name = "station_id", referencedColumnName = "station_id", nullable = false, insertable = false, updatable = false)
-    public PetrolStationsEntity getPetrolStationsByStationId() {
+    public PetrolStationEntity getPetrolStationsByStationId() {
         return petrolStationsByStationId;
     }
 
-    public void setPetrolStationsByStationId(PetrolStationsEntity petrolStationsByStationId) {
+    public void setPetrolStationsByStationId(PetrolStationEntity petrolStationsByStationId) {
         this.petrolStationsByStationId = petrolStationsByStationId;
     }
 }

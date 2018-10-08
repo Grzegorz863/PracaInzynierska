@@ -5,13 +5,11 @@
     android:layout_height="match_parent"
     tools:context=".fragment.PetrolStationFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/consortium_text_view"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/petrol_stations"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-        <!--android:text="petrol station fragment"-->
-        <!--android:textAlignment="center"-->
-        <!--android:textSize="30sp" />-->
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        tools:listitem="@layout/station_layout" />
 
 </FrameLayout>

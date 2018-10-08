@@ -16,17 +16,6 @@
         android:layout_centerHorizontal="true"
         android:src="@drawable/ic_local_gas_station_black_reg_layout" />
 
-    <!--<EditText-->
-        <!--android:id="@+id/et_Registration_label"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_margin="15dp"-->
-        <!--android:layout_marginTop="0dp"-->
-        <!--android:ems="10"-->
-        <!--android:hint="@string/edit_text_login_label"-->
-        <!--android:inputType="text" />-->
-
     <LinearLayout
         android:id="@+id/first_and_last_name_layout"
         android:layout_width="match_parent"

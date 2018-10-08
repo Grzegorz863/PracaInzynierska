@@ -21,6 +21,18 @@
     <string name="edit_text_last_name_label">last name</string>
     <string name="edit_text_email_label">e-mail</string>
 
+    <string name="add_station_name_hint">station name</string>
+    <string name="add_station_city_hint">city</string>
+    <string name="add_station_street_hint">street</string>
+    <string name="add_station_apartment_number_hint">AN</string>
+    <string name="add_station_postal_code_hint">postal code</string>
+    <string name="add_station_description_hint">description</string>
+    <string name="add_station_has_food">Has Food?</string>
+    <string name="add_station_consortium_name_hint">consortium</string>
+    <string name="add_station_button">add petrol station</string>
+    <string name="add_station_consortium_name_spinner_prompt">Select Consortium</string>
+
+
     <string name="button_login_label">Login</string>
     <string name="button_registration_label">Registration</string>
 

@@ -24,7 +24,7 @@ public class RegistrationController {
     }
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/user")
+    @PostMapping(value = "/user", produces = "application/json")
     public ResponseEntity<UsersEntity> registerUser(@RequestHeader("user_name") String userName,
                                   @RequestHeader("password") String password,
                                   @RequestHeader("role") String role,

@@ -11,7 +11,7 @@ public class RatingsEntity {
     private long stationId;
     private double rate;
     private UsersEntity usersByUserId;
-    private PetrolStationsEntity petrolStationsByStationId;
+    private PetrolStationEntity petrolStationsByStationId;
 
     @Id
     @Column(name = "rating_id", nullable = false)
@@ -82,11 +82,11 @@ public class RatingsEntity {
 
     @ManyToOne
     @JoinColumn(name = "station_id", referencedColumnName = "station_id", nullable = false, insertable = false, updatable = false)
-    public PetrolStationsEntity getPetrolStationsByStationId() {
+    public PetrolStationEntity getPetrolStationsByStationId() {
         return petrolStationsByStationId;
     }
 
-    public void setPetrolStationsByStationId(PetrolStationsEntity petrolStationsByStationId) {
+    public void setPetrolStationsByStationId(PetrolStationEntity petrolStationsByStationId) {
         this.petrolStationsByStationId = petrolStationsByStationId;
     }
 }

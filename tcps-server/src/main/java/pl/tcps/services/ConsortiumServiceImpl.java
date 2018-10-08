@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import pl.tcps.dbEntities.ConsortiumsEntity;
 import pl.tcps.repositories.ConsortiumRepository;
 
+import java.util.Collection;
+
 @Service
 public class ConsortiumServiceImpl implements ConsortiumService {
 
@@ -23,6 +25,11 @@ public class ConsortiumServiceImpl implements ConsortiumService {
     @Override
     public String getConsortium(Long consortiumId) {
         return consortiumRepository.findByConsortiumId(consortiumId).getConsortiumName();
+    }
+
+    @Override
+    public Collection<ConsortiumsEntity> getAllConsortiums() {
+        return consortiumRepository.findAll();
     }
 }
 

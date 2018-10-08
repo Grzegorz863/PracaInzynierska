@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity
 
         View headerView = navigationView.getHeaderView(0);
         UserDetails userDetails = getIntent().getParcelableExtra("user_details");
-        if(userDetails!=null) {
+        if (userDetails != null) {
             String firstNameAndLastName = userDetails.getFirstName() + " " + userDetails.getLastName();
             TextView logged = headerView.findViewById(R.id.logged_name);
             logged.setText(firstNameAndLastName);
@@ -70,8 +70,8 @@ public class MainActivity extends AppCompatActivity
             ImageView avatar = headerView.findViewById(R.id.logged_avatar);
             Picasso.with(this).load(avatarURL).into(avatar);
         }
-    }
 
+    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -83,7 +83,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     return;
                 } else {
                     if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                        Toast.makeText(RegistrationActivity.this, "Wrong e-mail!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegistrationActivity.this, "Wrong e-mail syntax!", Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }

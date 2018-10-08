@@ -24,9 +24,13 @@ foreign key(consortium_id) references consortiums(consortium_id);
 
 create table tcpsdb.users(
 	user_id int8 unsigned auto_increment primary key,
-    user_password char(60) not null,
-    user_name varchar(255) not null,
-	user_role varchar(25) not null
+    username varchar(255) not null,
+	password char(60) not null,
+	user_role varchar(25) not null,
+	enabled tinyint(3) unsigned NOT NULL,
+	first_name varchar(45) DEFAULT NULL,
+	last_name varchar(45) DEFAULT NULL,
+	email varchar(45) NOT NULL,
 ) ENGINE INNODB;
 
 create table tcpsdb.ratings(

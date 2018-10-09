@@ -46,8 +46,11 @@ public class PetrolStationFragment extends Fragment {
         mainActivity = (MainActivity)getActivity();
         mainActivity.setActionBarTitle("Petrol Stations");
 
-        AccessTokenDetails accessTokenDetails = mainActivity.getIntent().getParcelableExtra("access_token_details");
+        Bundle args = getArguments();
+        AccessTokenDetails accessTokenDetails = args.getParcelable("access_token_details");
 
+//        if(savedInstanceState !=null)
+//            accessTokenDetails = savedInstanceState.getParcelable("access_token_details");
         Retrofit retrofit = RetrofitBuilder.createRetrofit(petrolStationFragment.getContext());
         ConsortiumClient consortiumClient = retrofit.create(ConsortiumClient.class);
         String authHeader = accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken();
@@ -78,5 +81,11 @@ public class PetrolStationFragment extends Fragment {
         recyclerView.setAdapter(new MyAdapter(petrolStations, recyclerView));
 
         return petrolStationFragment;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mainActivity.setCheckedFirstItem();
     }
 }

@@ -58,7 +58,8 @@ public class AddStationFragment extends Fragment{
 
         Button addStationButton = addStationFragment.findViewById(R.id.add_station_add_station_button);
 
-        AccessTokenDetails accessTokenDetails = mainActivity.getIntent().getParcelableExtra("access_token_details");
+        Bundle args = getArguments();
+        AccessTokenDetails accessTokenDetails = args.getParcelable("access_token_details");
 
         Retrofit retrofit = RetrofitBuilder.createRetrofit(addStationFragment.getContext());
         ConsortiumClient consortiumClient = retrofit.create(ConsortiumClient.class);
@@ -89,6 +90,12 @@ public class AddStationFragment extends Fragment{
         addStationButton.setOnClickListener(v -> createNewStation(v, addStationFragment, accessTokenDetails));
 
         return addStationFragment;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mainActivity.setCheckedSecondItem();
     }
 
     private void createNewStation(View addStationButton, View addStationFragment,

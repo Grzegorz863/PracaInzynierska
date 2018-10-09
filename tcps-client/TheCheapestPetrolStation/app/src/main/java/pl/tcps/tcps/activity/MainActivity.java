@@ -23,9 +23,13 @@ import pl.tcps.tcps.fragment.AddStationFragment;
 import pl.tcps.tcps.fragment.PetrolStationFragment;
 import pl.tcps.tcps.R;
 import pl.tcps.tcps.pojo.UserDetails;
+import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private AccessTokenDetails accessTokenDetails;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +53,19 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.flMain, new PetrolStationFragment());
-        fragmentTransaction.commit();
-        navigationView.setCheckedItem(R.id.nav_first_option);
+//        if(savedInstanceState!=null)
+//            accessTokenDetails = savedInstanceState.getParcelable("access_token_details");
+//        else
+        accessTokenDetails = getIntent().getParcelableExtra("access_token_details");
 
+        createPetrolStationFragment();
+
+        navigationView.setCheckedItem(R.id.nav_first_option);
         View headerView = navigationView.getHeaderView(0);
+
         UserDetails userDetails = getIntent().getParcelableExtra("user_details");
         if (userDetails != null) {
             String firstNameAndLastName = userDetails.getFirstName() + " " + userDetails.getLastName();
@@ -72,6 +80,21 @@ public class MainActivity extends AppCompatActivity
         }
 
     }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("access_token_details", accessTokenDetails);
+
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        //if(savedInstanceState !=null)
+            accessTokenDetails = savedInstanceState.getParcelable("access_token_details");
+    }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -111,13 +134,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_first_option) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.flMain, new PetrolStationFragment());
-            fragmentTransaction.commit();
+            createPetrolStationFragment();
         } else if (id == R.id.nav_second_option) {
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.flMain, new AddStationFragment());
-            fragmentTransaction.commit();
+            createAddStationFragment();
         } else if (id == R.id.nav_third_option) {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
@@ -130,7 +149,65 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    private void createAddStationFragment() {
+        AddStationFragment addStationFragment = new AddStationFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("access_token_details", accessTokenDetails);
+        addStationFragment.setArguments(args);
+        final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.flMain, addStationFragment);
+        fragmentTransaction.commit();
+    }
+
+    private void createPetrolStationFragment() {
+        PetrolStationFragment petrolStationFragment = new PetrolStationFragment();
+        Bundle args = new Bundle();
+        args.putParcelable("access_token_details", accessTokenDetails);
+        petrolStationFragment.setArguments(args);
+        final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.flMain, petrolStationFragment);
+        fragmentTransaction.commit();
+    }
+
+    public void setCheckedFirstItem(){
+        navigationView.setCheckedItem(R.id.nav_first_option);
+    }
+
+    public void setCheckedSecondItem(){
+        navigationView.setCheckedItem(R.id.nav_second_option);
+    }
+
     public void setActionBarTitle(String title){
         getSupportActionBar().setTitle(title);
     }
+
+    //    @Override
+//    protected void onPause() {
+//        super.onPause();
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//    }
+//
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//    }
+//
+//    @Override
+//    protected void onRestart() {
+//        super.onRestart();
+//    }
+//
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//    }
+//
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//    }
 }

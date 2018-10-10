@@ -32,6 +32,9 @@
     <string name="add_station_button">add petrol station</string>
     <string name="add_station_consortium_name_spinner_prompt">Select Consortium</string>
 
+    <string name="settings_station_distance">Petrol st. distance:</string>
+    <string name="settings_saved_station_distance">saved_station_distance</string>
+
 
     <string name="button_login_label">Login</string>
     <string name="button_registration_label">Registration</string>

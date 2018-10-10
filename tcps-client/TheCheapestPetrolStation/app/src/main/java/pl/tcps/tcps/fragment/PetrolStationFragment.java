@@ -59,8 +59,8 @@ public class PetrolStationFragment extends Fragment {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                if (response.isSuccessful())
-                    Toast.makeText(petrolStationFragment.getContext(), response.body(), Toast.LENGTH_SHORT).show();
+//                if (response.isSuccessful())
+//                    //Toast.makeText(petrolStationFragment.getContext(), response.body(), Toast.LENGTH_SHORT).show();
             }
 
             @Override

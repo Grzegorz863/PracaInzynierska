@@ -59,7 +59,7 @@ public class AddStationFragment extends Fragment{
         Button addStationButton = addStationFragment.findViewById(R.id.add_station_add_station_button);
 
         Bundle args = getArguments();
-        AccessTokenDetails accessTokenDetails = args.getParcelable("access_token_details");
+        AccessTokenDetails accessTokenDetails = args.getParcelable(getString(R.string.key_access_token_details));
 
         Retrofit retrofit = RetrofitBuilder.createRetrofit(addStationFragment.getContext());
         ConsortiumClient consortiumClient = retrofit.create(ConsortiumClient.class);

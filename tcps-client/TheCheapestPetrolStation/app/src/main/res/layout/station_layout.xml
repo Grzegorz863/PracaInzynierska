@@ -9,27 +9,166 @@
     card_view:cardCornerRadius="0dp"
     card_view:cardElevation="2dp">
 
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="5dp">
+        android:padding="5dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp">
 
         <TextView
-            android:id="@+id/station_name"
+            android:id="@+id/recycleview_station_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#333"
-            android:textSize="20sp" />
+            android:layout_marginBottom="5dp"
+            android:text="NAZWA TESTOWA"
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:textColor="#000000"
+            android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/station_description"
-            android:layout_width="match_parent"
+            android:id="@+id/recycleview_station_consortium"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/recycleview_station_name"
             android:layout_marginTop="8dp"
             android:textColor="#888"
             android:textSize="14sp" />
-        </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/recycleview_relative_layout_prices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/recycleview_station_name">
+
+            <!--NAZWY PALIW-->
+
+            <TextView
+                android:id="@+id/recycleview_pb95_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:text="@string/recycleview_pb95_text_value"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/recycleview_pb98_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/recycleview_pb95_text"
+                android:text="@string/recycleview_pb98_text_value"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/recycleview_on_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/recycleview_pb98_text"
+                android:text="@string/recycleview_on_text_value"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/recycleview_lpg_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/recycleview_on_text"
+                android:text="@string/recycleview_lpg_text_value"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!--CENY PALIW-->
+
+            <TextView
+                android:id="@+id/recycleview_pb95_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/recycleview_pb95_text"
+                android:text="@string/recycleview_pb95_text_value_price_par"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/recycleview_pb98_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/recycleview_pb95_price"
+                android:layout_toEndOf="@+id/recycleview_pb98_text"
+                android:text="@string/recycleview_pb98_text_value_price_par"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/recycleview_on_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/recycleview_pb98_price"
+                android:layout_below="@+id/recycleview_pb98_price"
+                android:text="@string/recycleview_on_text_value_price_par"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/recycleview_lpg_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignEnd="@+id/recycleview_pb98_price"
+                android:layout_below="@+id/recycleview_on_price"
+                android:text="@string/recycleview_lpg_text_value_price_par"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                android:textColor="#000000"
+                android:textSize="18sp" />
+
+        </RelativeLayout>
+
+        <RatingBar
+            android:id="@+id/recycleview_rating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="?android:attr/ratingBarStyleIndicator"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@+id/recycleview_relative_layout_prices"
+            android:numStars="5"
+            android:stepSize="0.1"
+            android:isIndicator="true"/>
+
+        <TextView
+            android:id="@+id/recycleview_consortium_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/recycleview_station_name"
+            android:text="CONSORTIUM"
+            android:textSize="18sp" />
+
+        <CheckBox
+            android:id="@+id/recycleview_has_food"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/recycleview_consortium_name"
+            android:layout_above="@+id/recycleview_rating_bar"
+            android:text="Has Food?"
+            />
+
+    </RelativeLayout>
+
 
 </android.support.v7.widget.CardView>

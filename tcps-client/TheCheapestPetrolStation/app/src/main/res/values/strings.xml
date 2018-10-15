@@ -35,6 +35,18 @@
     <string name="settings_station_distance">Petrol st. distance:</string>
     <string name="settings_saved_station_distance">saved_station_distance</string>
 
+    <string name="key_access_token_details">access_token_details</string>
+    <string name="key_distance">distance</string>
+
+    <string name="recycleview_pb95_text_value">Pb95:&#032;</string>
+    <string name="recycleview_pb98_text_value">Pb98:&#032;</string>
+    <string name="recycleview_on_text_value">ON:&#032;</string>
+    <string name="recycleview_lpg_text_value">LPG:&#032;</string>
+
+    <string name="recycleview_pb95_text_value_price_par">%1$s&#032;PLN</string>
+    <string name="recycleview_pb98_text_value_price_par">%1$s&#032;PLN</string>
+    <string name="recycleview_on_text_value_price_par">%1$s&#032;PLN</string>
+    <string name="recycleview_lpg_text_value_price_par">%1$s&#032;PLN</string>
 
     <string name="button_login_label">Login</string>
     <string name="button_registration_label">Registration</string>

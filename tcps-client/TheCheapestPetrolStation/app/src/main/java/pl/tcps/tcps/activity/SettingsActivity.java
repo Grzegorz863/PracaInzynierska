@@ -28,14 +28,15 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Settings");
 
         preferences = getSharedPreferences("settings" ,Context.MODE_PRIVATE);
-        Integer savedStationDistance = preferences.getInt(getString(R.string.settings_saved_station_distance),0);
+        Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance),0);
+        Double savedStationDistance = Double.longBitsToDouble(savedStationDistanceRawBits);
 
         Spinner spinnerStationDistance = findViewById(R.id.settings_station_distance_spinner);
-        List<Integer> allDistances = new ArrayList<>();
-        allDistances.add(1);allDistances.add(2);allDistances.add(5);allDistances.add(10);
-        allDistances.add(20);allDistances.add(50);allDistances.add(100);allDistances.add(200);
+        List<Double> allDistances = new ArrayList<>();
+        allDistances.add(1d);allDistances.add(2d);allDistances.add(5d);allDistances.add(10d);
+        allDistances.add(20d);allDistances.add(50d);allDistances.add(100d);allDistances.add(200d);
 
-        ArrayAdapter<Integer> dataAdapter = new ArrayAdapter<>(this, R.layout.distance_spinner_item, allDistances);
+        ArrayAdapter<Double> dataAdapter = new ArrayAdapter<>(this, R.layout.distance_spinner_item, allDistances);
         dataAdapter.setDropDownViewResource(R.layout.distance_spinner_item);
         spinnerStationDistance.setAdapter(dataAdapter);
 
@@ -46,7 +47,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putInt(getString(R.string.settings_saved_station_distance), (int)parent.getItemAtPosition(position));
+                editor.putLong(getString(R.string.settings_saved_station_distance), Double.doubleToRawLongBits((Double) parent.getItemAtPosition(position)));
                 editor.apply();
         }
 

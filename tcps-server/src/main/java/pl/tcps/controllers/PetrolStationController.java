@@ -16,6 +16,7 @@ import pl.tcps.services.PetrolStationService;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/station")
@@ -37,8 +38,21 @@ public class PetrolStationController {
         return new ResponseEntity<>(petrolStationEntity, HttpStatus.OK);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/distance/{latitude}/{longitude}/{distance}", produces = "application/json")
+    public ResponseEntity<Collection<PetrolStationEntity>> findPetrolStationByDistance(@PathVariable("latitude") Double latitude,
+                                                                                       @PathVariable("longitude") Double longitude,
+                                                                                       @PathVariable("distance") Double distance)
+            throws EntityNotFoundException{
+
+        Collection<PetrolStationEntity> petrolStationEntitiesByDistance =
+                petrolStationService.findPetrolStationByDistance(latitude, longitude, distance);
+
+        return new ResponseEntity<>(petrolStationEntitiesByDistance, HttpStatus.OK);
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping(value = "")
+    @PostMapping(value = "", produces = "application/json")
     public ResponseEntity<PetrolStationEntity> createPetrolStation(@RequestParam("station_name") String stationName,
                                                                    @RequestParam("city") String city,
                                                                    @RequestParam("street") String street,

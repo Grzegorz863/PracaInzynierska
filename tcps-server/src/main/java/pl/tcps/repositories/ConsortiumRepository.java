@@ -7,7 +7,11 @@ import java.util.Collection;
 import java.util.List;
 
 public interface ConsortiumRepository extends JpaRepository<ConsortiumsEntity, Long> {
+
     ConsortiumsEntity findByConsortiumId(Long consortiumId);
+
     ConsortiumsEntity findByConsortiumName(String consortiumName);
+
     List<ConsortiumsEntity> findAll();
+
 }

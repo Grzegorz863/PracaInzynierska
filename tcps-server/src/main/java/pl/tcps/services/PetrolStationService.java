@@ -9,6 +9,7 @@ import pl.tcps.exceptions.WrongPetrolStationAddressException;
 import pl.tcps.pojo.CreatePetrolStationParameter;
 
 import java.io.IOException;
+import java.util.Collection;
 
 @Service
 public interface PetrolStationService {
@@ -19,5 +20,9 @@ public interface PetrolStationService {
     @PreAuthorize("hasAuthority('android_user')")
     PetrolStationEntity createPetrolStation(CreatePetrolStationParameter createPetrolStationParameter)
             throws PetrolStationAlreadyExistsException, WrongPetrolStationAddressException, IOException;
+
+    @PreAuthorize("hasAuthority('android_user')")
+    Collection<PetrolStationEntity> findPetrolStationByDistance(Double latitude, Double longitude, Double distance)
+            throws EntityNotFoundException;
 
 }

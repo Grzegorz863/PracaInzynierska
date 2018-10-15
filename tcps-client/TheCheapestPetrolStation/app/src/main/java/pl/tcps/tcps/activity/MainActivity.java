@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity
 
     private AccessTokenDetails accessTokenDetails;
     private NavigationView navigationView;
+    private Double savedStationDistance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,9 +61,15 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        accessTokenDetails = getIntent().getParcelableExtra("access_token_details");
+        accessTokenDetails = getIntent().getParcelableExtra(getString(R.string.key_access_token_details));
 
-        createPetrolStationFragment();
+        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor =preferences.edit();
+//        editor.remove(getString(R.string.settings_saved_station_distance));
+//        editor.commit();
+        Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToLongBits(0));
+        savedStationDistance = Double.longBitsToDouble(savedStationDistanceRawBits);
+        createPetrolStationFragment(savedStationDistance);
 
         navigationView.setCheckedItem(R.id.nav_first_option);
         View headerView = navigationView.getHeaderView(0);
@@ -132,7 +140,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_first_option) {
-            createPetrolStationFragment();
+            createPetrolStationFragment(savedStationDistance);
         } else if (id == R.id.nav_second_option) {
             createAddStationFragment();
         } else if (id == R.id.nav_third_option) {
@@ -157,10 +165,11 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
-    private void createPetrolStationFragment() {
+    private void createPetrolStationFragment(Double distance) {
         PetrolStationFragment petrolStationFragment = new PetrolStationFragment();
         Bundle args = new Bundle();
         args.putParcelable("access_token_details", accessTokenDetails);
+        args.putDouble(getString(R.string.key_distance), distance);
         petrolStationFragment.setArguments(args);
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.flMain, petrolStationFragment);

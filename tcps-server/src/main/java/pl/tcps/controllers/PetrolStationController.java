@@ -12,6 +12,7 @@ import pl.tcps.exceptions.EntityNotFoundException;
 import pl.tcps.exceptions.PetrolStationAlreadyExistsException;
 import pl.tcps.exceptions.WrongPetrolStationAddressException;
 import pl.tcps.pojo.CreatePetrolStationParameter;
+import pl.tcps.pojo.PetrolStationResponseRecycleViewItem;
 import pl.tcps.services.PetrolStationService;
 
 import java.io.IOException;
@@ -33,19 +34,19 @@ public class PetrolStationController {
     @GetMapping(value = "/id/{station_id}", produces = "application/json")
     public ResponseEntity<PetrolStationEntity> findPetrolStation(@PathVariable("station_id") Long stationId) throws EntityNotFoundException {
 
-        PetrolStationEntity petrolStationEntity = petrolStationService.findPetrolStation(stationId);
+        PetrolStationEntity petrolStationEntity = petrolStationService.getPetrolStation(stationId);
 
         return new ResponseEntity<>(petrolStationEntity, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/distance/{latitude}/{longitude}/{distance}", produces = "application/json")
-    public ResponseEntity<Collection<PetrolStationEntity>> findPetrolStationByDistance(@PathVariable("latitude") Double latitude,
+    public ResponseEntity<Collection<PetrolStationResponseRecycleViewItem>> findPetrolStationByDistance(@PathVariable("latitude") Double latitude,
                                                                                        @PathVariable("longitude") Double longitude,
                                                                                        @PathVariable("distance") Double distance)
             throws EntityNotFoundException{
 
-        Collection<PetrolStationEntity> petrolStationEntitiesByDistance =
+        Collection<PetrolStationResponseRecycleViewItem> petrolStationEntitiesByDistance =
                 petrolStationService.findPetrolStationByDistance(latitude, longitude, distance);
 
         return new ResponseEntity<>(petrolStationEntitiesByDistance, HttpStatus.OK);
@@ -56,7 +57,7 @@ public class PetrolStationController {
     public ResponseEntity<PetrolStationEntity> createPetrolStation(@RequestParam("station_name") String stationName,
                                                                    @RequestParam("city") String city,
                                                                    @RequestParam("street") String street,
-                                                                   @RequestParam("apartment_number") Integer apartmentNumber,
+                                                                   @RequestParam("apartment_number") String apartmentNumber,
                                                                    @RequestParam("postal_code") String postalCode,
                                                                    @RequestParam("description") String description,
                                                                    @RequestParam("has_food") Boolean hasFood,

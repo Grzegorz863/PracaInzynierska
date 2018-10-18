@@ -11,6 +11,6 @@ public interface PetrolStationRepository extends JpaRepository<PetrolStationEnti
 
     Boolean existsByStationName(String stationName);
 
-    Boolean existsByCityAndStreetAndApartmentNumber(String city, String street, Integer apartmentNumber);
+    Boolean existsByCityAndStreetAndApartmentNumber(String city, String street, String apartmentNumber);
 
 }

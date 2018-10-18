@@ -7,13 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pl.tcps.dbEntities.ConsortiumsEntity;
+import pl.tcps.dbEntities.PetrolPricesEntity;
 import pl.tcps.dbEntities.PetrolStationEntity;
 import pl.tcps.exceptions.EntityNotFoundException;
 import pl.tcps.exceptions.PetrolStationAlreadyExistsException;
 import pl.tcps.exceptions.WrongPetrolStationAddressException;
 import pl.tcps.pojo.CreatePetrolStationParameter;
+import pl.tcps.pojo.PetrolPricesResponseRecycleViewItem;
 import pl.tcps.pojo.PetrolStationLocationCoordinates;
-import pl.tcps.repositories.ConsortiumRepository;
+import pl.tcps.pojo.PetrolStationResponseRecycleViewItem;
 import pl.tcps.repositories.PetrolStationRepository;
 
 import java.io.IOException;
@@ -28,16 +30,21 @@ import java.util.Locale;
 public class PetrolStationServiceImpl implements PetrolStationService {
 
     private PetrolStationRepository petrolStationRepository;
-    private ConsortiumRepository consortiumRepository;
+    private ConsortiumService consortiumService;
+    private PetrolPricesService petrolPricesService;
+    private RatingService ratingService;
 
     @Autowired
-    public PetrolStationServiceImpl(PetrolStationRepository petrolStationRepository, ConsortiumRepository consortiumRepository) {
+    public PetrolStationServiceImpl(PetrolStationRepository petrolStationRepository, ConsortiumService consortiumService,
+                                    PetrolPricesService petrolPricesService, RatingService ratingService) {
         this.petrolStationRepository = petrolStationRepository;
-        this.consortiumRepository = consortiumRepository;
+        this.consortiumService = consortiumService;
+        this.petrolPricesService = petrolPricesService;
+        this.ratingService = ratingService;
     }
 
     @Override
-    public PetrolStationEntity findPetrolStation(Long stationId) throws EntityNotFoundException {
+    public PetrolStationEntity getPetrolStation(Long stationId) throws EntityNotFoundException {
 
         PetrolStationEntity petrolStationEntity = petrolStationRepository.findByStationId(stationId);
         if(petrolStationEntity == null)
@@ -46,19 +53,19 @@ public class PetrolStationServiceImpl implements PetrolStationService {
     }
 
     @Override
-    public Collection<PetrolStationEntity> findPetrolStationByDistance(Double currentLatitude, Double currentLongitude, Double distanceInKM)
+    public Collection<PetrolStationResponseRecycleViewItem> findPetrolStationByDistance(Double currentLatitude, Double currentLongitude, Double distanceInKM)
             throws EntityNotFoundException {
 
         Double actualDistance;
         Double distanceInMeters = distanceInKM * 1000;
-        List<PetrolStationEntity> petrolStationsLocatedInDistance = new ArrayList<>();
+        List<PetrolStationResponseRecycleViewItem> petrolStationsLocatedInDistance = new ArrayList<>();
         Collection<PetrolStationEntity> petrolStationEntities = petrolStationRepository.findAll();
 
         for (PetrolStationEntity petrolStationEntity : petrolStationEntities){
             actualDistance = countDistanceBetweenTwoPoints(currentLatitude, currentLongitude,
                     petrolStationEntity.getLatitude(), petrolStationEntity.getLongitude());
             if(actualDistance<=distanceInMeters)
-                petrolStationsLocatedInDistance.add(petrolStationEntity);
+                petrolStationsLocatedInDistance.add(preparePetrolStationToDeserialize(petrolStationEntity, actualDistance));
         }
 
         if(petrolStationsLocatedInDistance.isEmpty())
@@ -67,13 +74,23 @@ public class PetrolStationServiceImpl implements PetrolStationService {
         return petrolStationsLocatedInDistance;
     }
 
+    private PetrolStationResponseRecycleViewItem preparePetrolStationToDeserialize(PetrolStationEntity petrolStationEntity,
+                                                                                   Double distanceInMeters) {
+
+        String consortiuName = consortiumService.getConsortiumName(petrolStationEntity.getConsortiumId());
+        PetrolPricesEntity petrolPricesEntity = petrolPricesService.getPetrolPricesByStationId(petrolStationEntity);
+        Double rating = ratingService.countAverageRatingForPetrolStation(petrolStationEntity);
+
+        return new PetrolStationResponseRecycleViewItem(petrolStationEntity, consortiuName,
+                new PetrolPricesResponseRecycleViewItem(petrolPricesEntity), rating, distanceInMeters);
+    }
+
     @Override
     public PetrolStationEntity createPetrolStation(CreatePetrolStationParameter stationData)
             throws PetrolStationAlreadyExistsException, WrongPetrolStationAddressException, IOException {
 
-        PetrolStationEntity petrolStationEntity = new PetrolStationEntity();
-
-        ConsortiumsEntity consortiumsEntity = consortiumRepository.findByConsortiumName(stationData.getConsortiumName());
+        PetrolStationEntity petrolStationEntity;
+        ConsortiumsEntity consortiumsEntity = consortiumService.getConsortium(stationData.getConsortiumName());
 
         RestTemplate rest = new RestTemplate();
         ResponseEntity<String> responseFromGoogle = rest.getForEntity(
@@ -90,16 +107,9 @@ public class PetrolStationServiceImpl implements PetrolStationService {
                 && !petrolStationRepository.existsByCityAndStreetAndApartmentNumber(
                         stationData.getCity(), stationData.getStreet(), stationData.getApartmentNumber())){
 
-            petrolStationEntity.setStationName(stationData.getStationName());
-            petrolStationEntity.setCity(stationData.getCity());
-            petrolStationEntity.setStreet(stationData.getStreet());
-            petrolStationEntity.setApartmentNumber(stationData.getApartmentNumber());
-            petrolStationEntity.setPostalCode(stationData.getPostalCode());
-            petrolStationEntity.setDescription(stationData.getDescription());
-            petrolStationEntity.setHasFood(stationData.getHasFood());
-            petrolStationEntity.setLatitude(coordinates.getLatitude());
-            petrolStationEntity.setLongitude(coordinates.getLongitude());
-            petrolStationEntity.setConsortiumId(consortiumsEntity.getConsortiumId());
+            petrolStationEntity = new PetrolStationEntity(stationData, coordinates,
+                   consortiumsEntity.getConsortiumId());
+
             petrolStationEntity = petrolStationRepository.save(petrolStationEntity);
         }
         else

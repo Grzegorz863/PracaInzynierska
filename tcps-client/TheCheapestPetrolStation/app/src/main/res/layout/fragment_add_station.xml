@@ -50,7 +50,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:hint="@string/add_station_apartment_number_hint"
-                android:inputType="number" />
+                android:inputType="text" />
 
         </LinearLayout>
 

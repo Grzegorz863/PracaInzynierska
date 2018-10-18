@@ -64,9 +64,6 @@ public class MainActivity extends AppCompatActivity
         accessTokenDetails = getIntent().getParcelableExtra(getString(R.string.key_access_token_details));
 
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor =preferences.edit();
-//        editor.remove(getString(R.string.settings_saved_station_distance));
-//        editor.commit();
         Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToLongBits(0));
         savedStationDistance = Double.longBitsToDouble(savedStationDistanceRawBits);
         createPetrolStationFragment(savedStationDistance);

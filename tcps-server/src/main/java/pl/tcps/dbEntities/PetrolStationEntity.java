@@ -2,6 +2,8 @@ package pl.tcps.dbEntities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import pl.tcps.pojo.CreatePetrolStationParameter;
+import pl.tcps.pojo.PetrolStationLocationCoordinates;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -28,7 +30,7 @@ public class PetrolStationEntity {
     private byte hasFood;
 
     @JsonProperty("apartment_number")
-    private int apartmentNumber;
+    private String apartmentNumber;
 
     @JsonProperty("postal_code")
     private String postalCode;
@@ -56,6 +58,23 @@ public class PetrolStationEntity {
 
     @JsonIgnore
     private Collection<RatingsEntity> ratingsByStationId;
+
+    public PetrolStationEntity() {
+    }
+
+    public PetrolStationEntity(CreatePetrolStationParameter petrolStationParameter,
+                               PetrolStationLocationCoordinates coordinates, Long consortiumId) {
+        this.consortiumId = consortiumId;
+        this.longitude = coordinates.getLongitude();
+        this.latitude = coordinates.getLatitude();
+        this.hasFood = (byte)(petrolStationParameter.getHasFood()?1:0);
+        this.apartmentNumber = petrolStationParameter.getApartmentNumber();
+        this.postalCode = petrolStationParameter.getPostalCode();
+        this.stationName = petrolStationParameter.getStationName();
+        this.city = petrolStationParameter.getCity();
+        this.street = petrolStationParameter.getStreet();
+        this.description = petrolStationParameter.getDescription();
+    }
 
     @Id
     @Column(name = "station_id", nullable = false)
@@ -110,12 +129,12 @@ public class PetrolStationEntity {
     }
 
     @Basic
-    @Column(name = "apartment_number", nullable = false)
-    public int getApartmentNumber() {
+    @Column(name = "apartment_number", nullable = false, length = 20)
+    public String getApartmentNumber() {
         return apartmentNumber;
     }
 
-    public void setApartmentNumber(int apartmentNumber) {
+    public void setApartmentNumber(String apartmentNumber) {
         this.apartmentNumber = apartmentNumber;
     }
 
@@ -179,7 +198,7 @@ public class PetrolStationEntity {
                 Double.compare(that.longitude, longitude) == 0 &&
                 Double.compare(that.latitude, latitude) == 0 &&
                 hasFood == that.hasFood &&
-                apartmentNumber == that.apartmentNumber &&
+                Objects.equals(apartmentNumber, that.apartmentNumber) &&
                 Objects.equals(postalCode, that.postalCode) &&
                 Objects.equals(stationName, that.stationName) &&
                 Objects.equals(city, that.city) &&

@@ -25,7 +25,8 @@
             android:textAlignment="center"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
             android:textColor="#000000"
-            android:textSize="18sp" />
+            android:textSize="21sp"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/recycleview_station_consortium"
@@ -146,7 +147,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignBottom="@+id/recycleview_relative_layout_prices"
             android:numStars="5"
-            android:stepSize="0.1"
+            android:stepSize="0.02"
             android:isIndicator="true"/>
 
         <TextView
@@ -158,15 +159,16 @@
             android:text="CONSORTIUM"
             android:textSize="18sp" />
 
-        <CheckBox
-            android:id="@+id/recycleview_has_food"
+        <TextView
+            android:id="@+id/recycleview_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@+id/recycleview_consortium_name"
             android:layout_above="@+id/recycleview_rating_bar"
-            android:text="Has Food?"
-            />
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:layout_below="@+id/recycleview_consortium_name"
+            android:text="@string/recycleview_distance"
+            android:textSize="18sp" />
 
     </RelativeLayout>
 

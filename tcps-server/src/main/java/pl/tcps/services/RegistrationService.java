@@ -9,5 +9,6 @@ import pl.tcps.exceptions.UserAlreadyExistsException;
 public interface RegistrationService {
 
     @PreAuthorize("hasAuthority('registration_user')")
-    UsersEntity registerNewUser(String username, String password, String userRole, Boolean isEnabled, String firstName, String lastName, String email) throws UserAlreadyExistsException;
+    UsersEntity registerNewUser(String username, String password, String userRole, Boolean isEnabled, String firstName,
+                                String lastName, String email) throws UserAlreadyExistsException;
 }

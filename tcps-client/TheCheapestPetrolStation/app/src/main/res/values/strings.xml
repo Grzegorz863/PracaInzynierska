@@ -28,7 +28,7 @@
     <string name="add_station_postal_code_hint">postal code</string>
     <string name="add_station_description_hint">description</string>
     <string name="add_station_has_food">Has Food?</string>
-    <string name="add_station_consortium_name_hint">consortium</string>
+    <string name="add_station_consortium_name_hint">consortiumResponse</string>
     <string name="add_station_button">add petrol station</string>
     <string name="add_station_consortium_name_spinner_prompt">Select Consortium</string>
 
@@ -42,11 +42,11 @@
     <string name="recycleview_pb98_text_value">Pb98:&#032;</string>
     <string name="recycleview_on_text_value">ON:&#032;</string>
     <string name="recycleview_lpg_text_value">LPG:&#032;</string>
-
     <string name="recycleview_pb95_text_value_price_par">%1$s&#032;PLN</string>
     <string name="recycleview_pb98_text_value_price_par">%1$s&#032;PLN</string>
     <string name="recycleview_on_text_value_price_par">%1$s&#032;PLN</string>
     <string name="recycleview_lpg_text_value_price_par">%1$s&#032;PLN</string>
+    <string name="recycleview_distance">Distance:&#032;%1$s&#032;%2$s</string>
 
     <string name="button_login_label">Login</string>
     <string name="button_registration_label">Registration</string>

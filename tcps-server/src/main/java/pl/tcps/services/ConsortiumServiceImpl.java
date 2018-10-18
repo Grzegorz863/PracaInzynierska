@@ -23,7 +23,7 @@ public class ConsortiumServiceImpl implements ConsortiumService {
     }
 
     @Override
-    public String getConsortium(Long consortiumId) {
+    public String getConsortiumName(Long consortiumId) {
         return consortiumRepository.findByConsortiumId(consortiumId).getConsortiumName();
     }
 

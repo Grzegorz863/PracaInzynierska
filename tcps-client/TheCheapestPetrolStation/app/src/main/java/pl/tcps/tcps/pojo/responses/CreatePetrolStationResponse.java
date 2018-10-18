@@ -1,8 +1,8 @@
-package pl.tcps.tcps.pojo;
+package pl.tcps.tcps.pojo.responses;
 
 import com.google.gson.annotations.SerializedName;
 
-public class PetrolStationResponse {
+public class CreatePetrolStationResponse {
 
     @SerializedName("station_name")
     private String stationName;
@@ -34,13 +34,13 @@ public class PetrolStationResponse {
     @SerializedName("description")
     private String description;
 
-    public PetrolStationResponse() {
+    public CreatePetrolStationResponse() {
     }
 
-    public PetrolStationResponse(String stationName, Long consortiumId, String street,
-                                 String apartmentNumber, String city, String postalCode,
-                                 Double longitude, Double latitude, Boolean hasFood,
-                                 String description) {
+    public CreatePetrolStationResponse(String stationName, Long consortiumId, String street,
+                                       String apartmentNumber, String city, String postalCode,
+                                       Double longitude, Double latitude, Boolean hasFood,
+                                       String description) {
         this.stationName = stationName;
         this.consortiumId = consortiumId;
         this.street = street;

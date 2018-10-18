@@ -2,7 +2,7 @@ package pl.tcps.tcps.api_client;
 
 import java.util.Collection;
 
-import pl.tcps.tcps.pojo.Consortium;
+import pl.tcps.tcps.pojo.responses.ConsortiumResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
@@ -14,5 +14,5 @@ public interface ConsortiumClient {
     Call<String> getConsortium(@Header("Authorization") String accessToken, @Path("consortiumId") Integer consortiumId);
 
     @GET("consortiums")
-    Call<Collection<Consortium>> getAllConsortiums(@Header("Authorization") String accessToken);
+    Call<Collection<ConsortiumResponse>> getAllConsortiums(@Header("Authorization") String accessToken);
 }

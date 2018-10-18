@@ -7,6 +7,7 @@ import pl.tcps.exceptions.EntityNotFoundException;
 import pl.tcps.exceptions.PetrolStationAlreadyExistsException;
 import pl.tcps.exceptions.WrongPetrolStationAddressException;
 import pl.tcps.pojo.CreatePetrolStationParameter;
+import pl.tcps.pojo.PetrolStationResponseRecycleViewItem;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -15,14 +16,14 @@ import java.util.Collection;
 public interface PetrolStationService {
 
     @PreAuthorize("hasAuthority('android_user')")
-    PetrolStationEntity findPetrolStation(Long stationId) throws EntityNotFoundException;
+    PetrolStationEntity getPetrolStation(Long stationId) throws EntityNotFoundException;
 
     @PreAuthorize("hasAuthority('android_user')")
     PetrolStationEntity createPetrolStation(CreatePetrolStationParameter createPetrolStationParameter)
             throws PetrolStationAlreadyExistsException, WrongPetrolStationAddressException, IOException;
 
     @PreAuthorize("hasAuthority('android_user')")
-    Collection<PetrolStationEntity> findPetrolStationByDistance(Double latitude, Double longitude, Double distance)
+    Collection<PetrolStationResponseRecycleViewItem> findPetrolStationByDistance(Double latitude, Double longitude, Double distance)
             throws EntityNotFoundException;
 
 }

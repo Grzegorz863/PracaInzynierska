@@ -1,4 +1,4 @@
-package pl.tcps.tcps.pojo;
+package pl.tcps.tcps.pojo.requests;
 
 
 import com.google.gson.annotations.SerializedName;

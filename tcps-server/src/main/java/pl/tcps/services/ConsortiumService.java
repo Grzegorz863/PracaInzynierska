@@ -10,7 +10,7 @@ import java.util.Collection;
 public interface ConsortiumService {
 
     @PreAuthorize("hasAuthority('android_user')")
-    String getConsortium(Long consortiumId);
+    String getConsortiumName(Long consortiumId);
 
     @PreAuthorize("hasAuthority('android_user')")
     ConsortiumsEntity getConsortium(String consortiumId);

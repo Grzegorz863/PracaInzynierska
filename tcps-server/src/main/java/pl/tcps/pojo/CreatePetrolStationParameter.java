@@ -15,7 +15,7 @@ public class CreatePetrolStationParameter {
     private String street;
 
     @JsonProperty("apartment_number")
-    private Integer apartmentNumber;
+    private String apartmentNumber;
 
     @JsonProperty("postal_code")
     private String postalCode;
@@ -36,7 +36,7 @@ public class CreatePetrolStationParameter {
     public CreatePetrolStationParameter(@JsonProperty("station_name") String stationName,
                                         @JsonProperty("city") String city,
                                         @JsonProperty("street") String street,
-                                        @JsonProperty("apartment_number") Integer apartmentNumber,
+                                        @JsonProperty("apartment_number") String apartmentNumber,
                                         @JsonProperty("postal_code") String postalCode,
                                         @JsonProperty("description") String description,
                                         @JsonProperty("has_food") Boolean hasFood,
@@ -75,11 +75,11 @@ public class CreatePetrolStationParameter {
         this.street = street;
     }
 
-    public Integer getApartmentNumber() {
+    public String getApartmentNumber() {
         return apartmentNumber;
     }
 
-    public void setApartmentNumber(Integer apartmentNumber) {
+    public void setApartmentNumber(String apartmentNumber) {
         this.apartmentNumber = apartmentNumber;
     }
 

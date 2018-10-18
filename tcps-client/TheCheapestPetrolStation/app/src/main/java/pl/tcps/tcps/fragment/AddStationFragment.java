@@ -26,8 +26,8 @@ import pl.tcps.tcps.activity.MainActivity;
 import pl.tcps.tcps.api_client.ConsortiumClient;
 import pl.tcps.tcps.api_client.PetrolStationClient;
 import pl.tcps.tcps.api_client.retrofit.RetrofitBuilder;
-import pl.tcps.tcps.pojo.Consortium;
-import pl.tcps.tcps.pojo.PetrolStationResponse;
+import pl.tcps.tcps.pojo.responses.ConsortiumResponse;
+import pl.tcps.tcps.pojo.responses.CreatePetrolStationResponse;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -64,14 +64,14 @@ public class AddStationFragment extends Fragment{
         Retrofit retrofit = RetrofitBuilder.createRetrofit(addStationFragment.getContext());
         ConsortiumClient consortiumClient = retrofit.create(ConsortiumClient.class);
         String authHeader = accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken();
-        Call<Collection<Consortium>> call = consortiumClient.getAllConsortiums(authHeader);
+        Call<Collection<ConsortiumResponse>> call = consortiumClient.getAllConsortiums(authHeader);
 
-        call.enqueue(new Callback<Collection<Consortium>>() {
+        call.enqueue(new Callback<Collection<ConsortiumResponse>>() {
             @Override
-            public void onResponse(Call<Collection<Consortium>> call, final Response<Collection<Consortium>> response) {
+            public void onResponse(Call<Collection<ConsortiumResponse>> call, final Response<Collection<ConsortiumResponse>> response) {
                 if(response.isSuccessful()){
-                    final Collection<Consortium> consortiums = response.body();
-                    consortiums.forEach(consortium->consortiumsNames.add(consortium.getConsortiumName()));
+                    final Collection<ConsortiumResponse> consortiumResponses = response.body();
+                    consortiumResponses.forEach(consortiumResponse ->consortiumsNames.add(consortiumResponse.getConsortiumName()));
 
                     Spinner consortiumsSpinner = addStationFragment.findViewById(R.id.add_station_consortium_name_spinner);
                     ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(addStationFragment.getContext(), R.layout.support_simple_spinner_dropdown_item, consortiumsNames);
@@ -82,7 +82,7 @@ public class AddStationFragment extends Fragment{
             }
 
             @Override
-            public void onFailure(Call<Collection<Consortium>> call, Throwable t) {
+            public void onFailure(Call<Collection<ConsortiumResponse>> call, Throwable t) {
                 Toast.makeText(addStationFragment.getContext(),"Connection error with server", Toast.LENGTH_SHORT).show();
             }
         });
@@ -168,15 +168,15 @@ public class AddStationFragment extends Fragment{
         fieldMap.put("has_food", hasFood);
         fieldMap.put("description", description);
 
-        Call<PetrolStationResponse> call = petrolStationClient.createPetrolStation(authorizationHeader, fieldMap);
+        Call<CreatePetrolStationResponse> call = petrolStationClient.createPetrolStation(authorizationHeader, fieldMap);
 
-        call.enqueue(new Callback<PetrolStationResponse>() {
+        call.enqueue(new Callback<CreatePetrolStationResponse>() {
             @Override
-            public void onResponse(Call<PetrolStationResponse> call, Response<PetrolStationResponse> response) {
+            public void onResponse(Call<CreatePetrolStationResponse> call, Response<CreatePetrolStationResponse> response) {
                 if(response.isSuccessful()){
-                    PetrolStationResponse petrolStationResponse = response.body();
+                    CreatePetrolStationResponse createPetrolStationResponse = response.body();
                     Toast.makeText(addStationFragment.getContext(), "Created station: "
-                            + petrolStationResponse.getStationName(), Toast.LENGTH_SHORT).show();
+                            + createPetrolStationResponse.getStationName(), Toast.LENGTH_SHORT).show();
                 }else{
                     if(response.code() == HttpURLConnection.HTTP_NOT_FOUND)
                         Toast.makeText(addStationFragment.getContext(), "You entered wrong address!",
@@ -193,7 +193,7 @@ public class AddStationFragment extends Fragment{
             }
 
             @Override
-            public void onFailure(Call<PetrolStationResponse> call, Throwable t) {
+            public void onFailure(Call<CreatePetrolStationResponse> call, Throwable t) {
                 Toast.makeText(addStationFragment.getContext(), "Add station error!", Toast.LENGTH_SHORT).show();
             }
         });

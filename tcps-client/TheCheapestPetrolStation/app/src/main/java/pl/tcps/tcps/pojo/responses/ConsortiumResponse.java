@@ -1,8 +1,8 @@
-package pl.tcps.tcps.pojo;
+package pl.tcps.tcps.pojo.responses;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Consortium {
+public class ConsortiumResponse {
 
     @SerializedName("consortium_id")
     private long consortiumId;
@@ -13,13 +13,13 @@ public class Consortium {
     @SerializedName("logo")
     private String logo;
 
-    public Consortium(long consortiumId, String consortiumName, String logo) {
+    public ConsortiumResponse(long consortiumId, String consortiumName, String logo) {
         this.consortiumId = consortiumId;
         this.consortiumName = consortiumName;
         this.logo = logo;
     }
 
-    public Consortium() {
+    public ConsortiumResponse() {
     }
 
     public long getConsortiumId() {

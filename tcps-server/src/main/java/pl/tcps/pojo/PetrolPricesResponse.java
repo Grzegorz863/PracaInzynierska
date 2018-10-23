@@ -1,10 +1,17 @@
 package pl.tcps.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import pl.tcps.dbEntities.PetrolPricesEntity;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
-public class PetrolPricesResponseRecycleViewItem {
+
+public class PetrolPricesResponse {
 
     @JsonProperty("pb95_price")
     private Float pb95Price;
@@ -18,21 +25,27 @@ public class PetrolPricesResponseRecycleViewItem {
     @JsonProperty("lpg_price")
     private Float lpgPrice;
 
-    public PetrolPricesResponseRecycleViewItem() {
+    @JsonProperty("insert_date")
+    private ZonedDateTime insertDate;
+
+    public PetrolPricesResponse() {
+        this.insertDate = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("Europe/Warsaw"));
     }
 
-    public PetrolPricesResponseRecycleViewItem(Float pb95Price, Float pb98Price, Float onPrice, Float lpgPrice) {
+    public PetrolPricesResponse(Float pb95Price, Float pb98Price, Float onPrice, Float lpgPrice) {
         this.pb95Price = pb95Price;
         this.pb98Price = pb98Price;
         this.onPrice = onPrice;
         this.lpgPrice = lpgPrice;
+        this.insertDate = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("Europe/Warsaw"));
     }
 
-    public PetrolPricesResponseRecycleViewItem(PetrolPricesEntity petrolPricesEntity){
+    public PetrolPricesResponse(PetrolPricesEntity petrolPricesEntity, ZonedDateTime insertDate){
         this.pb95Price = petrolPricesEntity.getPb95Price();
         this.pb98Price = petrolPricesEntity.getPb98Price();
         this.onPrice = petrolPricesEntity.getOnPrice();
         this.lpgPrice = petrolPricesEntity.getLpgPrice();
+        this.insertDate = insertDate;
     }
 
     public Float getPb95Price() {
@@ -65,5 +78,13 @@ public class PetrolPricesResponseRecycleViewItem {
 
     public void setLpgPrice(Float lpgPrice) {
         this.lpgPrice = lpgPrice;
+    }
+
+    public ZonedDateTime getInsertDate() {
+        return insertDate;
+    }
+
+    public void setInsertDate(ZonedDateTime insertDate) {
+        this.insertDate = insertDate;
     }
 }

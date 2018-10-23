@@ -27,11 +27,6 @@ public class ConsortiumController {
         return consortiumService.getConsortiumName(consortiumId);
     }
 
-    @GetMapping("/name/{consortiumName}") //do usuniecia
-    public ConsortiumsEntity consortiumsByName (@PathVariable String consortiumName){
-        return consortiumService.getConsortium(consortiumName);
-    }
-
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "", produces = "application/json")
     public ResponseEntity<Collection<ConsortiumsEntity>> allConrsortiums(){

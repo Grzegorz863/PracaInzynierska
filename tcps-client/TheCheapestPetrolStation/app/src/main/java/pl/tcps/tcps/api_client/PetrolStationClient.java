@@ -1,11 +1,11 @@
 package pl.tcps.tcps.api_client;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import pl.tcps.tcps.pojo.responses.CreatePetrolStationResponse;
-import pl.tcps.tcps.pojo.responses.PetrolStationRecycleViewItem;
+import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
+import pl.tcps.tcps.pojo.responses.PetrolStationSpecificInfoResponse;
 import retrofit2.Call;
 import retrofit2.http.FieldMap;
 import retrofit2.http.FormUrlEncoded;
@@ -26,4 +26,8 @@ public interface PetrolStationClient {
                                                                          @Path("latitude") Double latitude,
                                                                          @Path("longitude") Double longitude,
                                                                          @Path("distance") Double distance);
+
+    @GET("station/id/{station_id}")
+    Call<PetrolStationSpecificInfoResponse> getPetrolStationSpecyficInfo(@Header("Authorization") String accessToken,
+                                                                         @Path("station_id") Long stationId);
 }

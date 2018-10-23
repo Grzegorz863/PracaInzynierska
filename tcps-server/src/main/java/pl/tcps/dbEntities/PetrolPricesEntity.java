@@ -21,7 +21,8 @@ public class PetrolPricesEntity {
 
     public PetrolPricesEntity() { }
 
-    public PetrolPricesEntity(long priceId, long stationId, long userId, float pb95Price, float pb98Price, float onPrice, float lpgPrice) {
+    public PetrolPricesEntity(long priceId, long stationId, long userId, float pb95Price, float pb98Price,
+                              float onPrice, float lpgPrice, Timestamp insertDate) {
         this.priceId = priceId;
         this.stationId = stationId;
         this.userId = userId;
@@ -29,6 +30,7 @@ public class PetrolPricesEntity {
         this.pb98Price = pb98Price;
         this.onPrice = onPrice;
         this.lpgPrice = lpgPrice;
+        this.insertDate = insertDate;
     }
 
     @Id

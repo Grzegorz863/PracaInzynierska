@@ -28,14 +28,6 @@
             android:textSize="21sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/recycleview_station_consortium"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/recycleview_station_name"
-            android:layout_marginTop="8dp"
-            android:textColor="#888"
-            android:textSize="14sp" />
 
         <RelativeLayout
             android:id="@+id/recycleview_relative_layout_prices"
@@ -147,7 +139,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignBottom="@+id/recycleview_relative_layout_prices"
             android:numStars="5"
-            android:stepSize="0.02"
+            android:stepSize="0.1"
             android:isIndicator="true"/>
 
         <TextView

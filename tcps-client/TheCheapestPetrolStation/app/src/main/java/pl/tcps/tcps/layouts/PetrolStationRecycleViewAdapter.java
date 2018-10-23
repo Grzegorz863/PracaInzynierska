@@ -1,6 +1,7 @@
 package pl.tcps.tcps.layouts;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,30 +10,32 @@ import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 import pl.tcps.tcps.R;
-import pl.tcps.tcps.pojo.responses.PetrolStationRecycleViewItem;
+import pl.tcps.tcps.activity.StationDetailsActivity;
+import pl.tcps.tcps.pojo.login.AccessTokenDetails;
+import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
 
 public class PetrolStationRecycleViewAdapter extends RecyclerView.Adapter<PetrolStationRecycleViewAdapter.PetrolStationItemViewHolder> {
 
     private List<PetrolStationRecycleViewItem> petrolStationList;
-    private RecyclerView recyclerView;
+    private AccessTokenDetails accessTokenDetails;
     private Context context;
+    private RecyclerView recyclerView;
 
-    public static class PetrolStationItemViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvStationName;
-        public TextView tvPb95Price;
-        public TextView tvPb98Price;
-        public TextView tvOnPrice;
-        public TextView tvLpgPrice;
-        public TextView tvConsortiumName;
-        public TextView tvDistance;
-        public RatingBar rbRating;
+    static class PetrolStationItemViewHolder extends RecyclerView.ViewHolder {
+        TextView tvStationName;
+        TextView tvPb95Price;
+        TextView tvPb98Price;
+        TextView tvOnPrice;
+        TextView tvLpgPrice;
+        TextView tvConsortiumName;
+        TextView tvDistance;
+        RatingBar rbRating;
 
-        public PetrolStationItemViewHolder(View view) {
+        PetrolStationItemViewHolder(View view) {
             super(view);
             tvStationName = view.findViewById(R.id.recycleview_station_name);
             tvPb95Price = view.findViewById(R.id.recycleview_pb95_price);
@@ -45,8 +48,10 @@ public class PetrolStationRecycleViewAdapter extends RecyclerView.Adapter<Petrol
         }
     }
 
-    public PetrolStationRecycleViewAdapter(List<PetrolStationRecycleViewItem> petrolStationList, RecyclerView recyclerView) {
+    public PetrolStationRecycleViewAdapter(List<PetrolStationRecycleViewItem> petrolStationList,
+                                           AccessTokenDetails accessTokenDetails, RecyclerView recyclerView) {
         this.petrolStationList = petrolStationList;
+        this.accessTokenDetails = accessTokenDetails;
         this.recyclerView = recyclerView;
     }
 
@@ -55,14 +60,21 @@ public class PetrolStationRecycleViewAdapter extends RecyclerView.Adapter<Petrol
     public PetrolStationItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.station_layout, parent, false);
         this.context = parent.getContext();
-//        view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Integer positionToDelete = recyclerView.getChildAdapterPosition(v);
-//                petrolStationList.remove(positionToDelete);
-//                notifyItemRemoved(positionToDelete);
-//            }
-//        });
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Integer chosenStation = recyclerView.getChildAdapterPosition(v);
+                Long stationId = petrolStationList.get(chosenStation).getStationId();
+                Double distance = petrolStationList.get(chosenStation).getDistance();
+
+                Intent intent = new Intent(context, StationDetailsActivity.class);
+                intent.putExtra(context.getString(R.string.key_access_token_details), accessTokenDetails);
+                intent.putExtra(context.getString(R.string.key_station_id), stationId);
+                intent.putExtra(context.getString(R.string.key_distance), distance);
+
+                context.startActivity(intent);
+            }
+        });
 
         return new PetrolStationItemViewHolder(view);
     }

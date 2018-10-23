@@ -10,9 +10,6 @@ import retrofit2.http.Path;
 
 public interface ConsortiumClient {
 
-    @GET("consortiums/id/{consortiumId}")
-    Call<String> getConsortium(@Header("Authorization") String accessToken, @Path("consortiumId") Integer consortiumId);
-
     @GET("consortiums")
     Call<Collection<ConsortiumResponse>> getAllConsortiums(@Header("Authorization") String accessToken);
 }

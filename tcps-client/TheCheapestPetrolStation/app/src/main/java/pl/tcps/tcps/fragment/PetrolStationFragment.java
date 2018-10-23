@@ -34,7 +34,6 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 
 import java.net.HttpURLConnection;
-import java.util.Collection;
 import java.util.List;
 
 import pl.tcps.tcps.R;
@@ -42,9 +41,8 @@ import pl.tcps.tcps.activity.MainActivity;
 import pl.tcps.tcps.api_client.PetrolStationClient;
 import pl.tcps.tcps.api_client.retrofit.RetrofitBuilder;
 import pl.tcps.tcps.layouts.PetrolStationRecycleViewAdapter;
-import pl.tcps.tcps.pojo.responses.CreatePetrolStationResponse;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
-import pl.tcps.tcps.pojo.responses.PetrolStationRecycleViewItem;
+import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -87,12 +85,6 @@ public class PetrolStationFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(petrolStationFragment.getContext()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        //List<PetrolStationToDelete> petrolStations = new ArrayList<>();
-//        for (int i = 0; i < 20; ++i)
-//            petrolStations.add(new PetrolStationToDelete());
-//
-//        recyclerView.setAdapter(new PetrolStationRecycleViewAdapter(petrolStations, recyclerView));
 
         if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
@@ -137,7 +129,7 @@ public class PetrolStationFragment extends Fragment {
                 if (response.isSuccessful()) {
                     List<PetrolStationRecycleViewItem> petrolStations = response.body();
 
-                    recyclerView.setAdapter(new PetrolStationRecycleViewAdapter(petrolStations, recyclerView));
+                    recyclerView.setAdapter(new PetrolStationRecycleViewAdapter(petrolStations, accessTokenDetails, recyclerView));
                 } else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
                     Toast.makeText(petrolStationFragment.getContext(), "No station was found!", Toast.LENGTH_SHORT).show();
             }

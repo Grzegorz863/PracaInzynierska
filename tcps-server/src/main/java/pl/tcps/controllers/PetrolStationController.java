@@ -13,6 +13,7 @@ import pl.tcps.exceptions.PetrolStationAlreadyExistsException;
 import pl.tcps.exceptions.WrongPetrolStationAddressException;
 import pl.tcps.pojo.CreatePetrolStationParameter;
 import pl.tcps.pojo.PetrolStationResponseRecycleViewItem;
+import pl.tcps.pojo.PetrolStationSpecificInfoResponse;
 import pl.tcps.services.PetrolStationService;
 
 import java.io.IOException;
@@ -32,11 +33,11 @@ public class PetrolStationController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/id/{station_id}", produces = "application/json")
-    public ResponseEntity<PetrolStationEntity> findPetrolStation(@PathVariable("station_id") Long stationId) throws EntityNotFoundException {
+    public ResponseEntity<PetrolStationSpecificInfoResponse> getPetrolStationSpecyficInfo(@PathVariable("station_id") Long stationId) throws EntityNotFoundException {
 
-        PetrolStationEntity petrolStationEntity = petrolStationService.getPetrolStation(stationId);
+        PetrolStationSpecificInfoResponse petrolStationSpecificInfo = petrolStationService.getPetrolStationSpecificInfo(stationId);
 
-        return new ResponseEntity<>(petrolStationEntity, HttpStatus.OK);
+        return new ResponseEntity<>(petrolStationSpecificInfo, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -63,7 +64,7 @@ public class PetrolStationController {
                                                                    @RequestParam("has_food") Boolean hasFood,
                                                                    @RequestParam("consortium_name") String consortiumName,
                                                                    UriComponentsBuilder uriComponentsBuilder)
-            throws PetrolStationAlreadyExistsException, WrongPetrolStationAddressException, IOException {
+            throws PetrolStationAlreadyExistsException, WrongPetrolStationAddressException, EntityNotFoundException, IOException {
 
         CreatePetrolStationParameter createPetrolStationParameter = new CreatePetrolStationParameter(stationName,
                 city, street, apartmentNumber, postalCode, description, hasFood, consortiumName);

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import pl.tcps.dbEntities.ConsortiumsEntity;
 import pl.tcps.repositories.ConsortiumRepository;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Collection;
 
 @Service
@@ -18,8 +19,12 @@ public class ConsortiumServiceImpl implements ConsortiumService {
     }
 
     @Override
-    public ConsortiumsEntity getConsortium(String consortiumName) {
-        return consortiumRepository.findByConsortiumName(consortiumName);
+    public ConsortiumsEntity getConsortium(String consortiumName) throws EntityNotFoundException{
+        ConsortiumsEntity consortiumsEntity = consortiumRepository.findByConsortiumName(consortiumName);
+
+        if (consortiumsEntity == null)
+            throw new EntityNotFoundException("Searched consortium not found!");
+        return consortiumsEntity;
     }
 
     @Override

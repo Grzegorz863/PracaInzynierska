@@ -3,4 +3,5 @@
     <color name="colorPrimary">#336600</color>
     <color name="colorPrimaryDark">#193300</color>
     <color name="colorAccent">#8B4513</color>
+    <color name="station_details_gray">#383838</color>
 </resources>

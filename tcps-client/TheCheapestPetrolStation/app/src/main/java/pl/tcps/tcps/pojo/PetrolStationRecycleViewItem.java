@@ -1,6 +1,8 @@
-package pl.tcps.tcps.pojo.responses;
+package pl.tcps.tcps.pojo;
 
 import com.google.gson.annotations.SerializedName;
+
+import pl.tcps.tcps.pojo.responses.PetrolPriceRecycleViewItem;
 
 public class PetrolStationRecycleViewItem {
 

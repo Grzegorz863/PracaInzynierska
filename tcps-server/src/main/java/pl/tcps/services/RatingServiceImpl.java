@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.tcps.dbEntities.PetrolStationEntity;
 import pl.tcps.dbEntities.RatingsEntity;
+import pl.tcps.exceptions.EntityNotFoundException;
+import pl.tcps.exceptions.NoRatingToUpdateException;
+import pl.tcps.exceptions.StationRatedAlreadyByThisUserException;
 import pl.tcps.repositories.RatingRepository;
 
 import java.util.Collection;
@@ -29,5 +32,41 @@ public class RatingServiceImpl implements RatingService {
         OptionalDouble optionalAverage = ratingsEntities.stream().mapToDouble(RatingsEntity::getRate).average();
 
         return optionalAverage.isPresent() ? optionalAverage.getAsDouble() : 0d;
+    }
+
+    @Override
+    public Double getStationRatingForOneUser(Long userId, Long stationId) throws EntityNotFoundException {
+
+        if(ratingRepository.existsByUserIdAndStationId(userId, stationId)){
+            RatingsEntity ratingsEntity = ratingRepository.findByUserIdAndStationId(userId, stationId);
+            return ratingsEntity.getRate();
+        } else
+            throw new EntityNotFoundException("This user did not rate that petrol station");
+
+    }
+
+    @Override
+    public RatingsEntity createStationRating(Long userId, Long stationId, Double rate) throws StationRatedAlreadyByThisUserException {
+
+        if(ratingRepository.existsByUserIdAndStationId(userId, stationId))
+            throw new StationRatedAlreadyByThisUserException("This user already added rating to that station");
+
+        RatingsEntity ratingsEntity = new RatingsEntity(userId, stationId, rate);
+        ratingRepository.save(ratingsEntity);
+
+        return ratingsEntity;
+    }
+
+    @Override
+    public RatingsEntity updateStationRating(Long userId, Long stationId, Double newRate) throws NoRatingToUpdateException {
+
+        if(!ratingRepository.existsByUserIdAndStationId(userId, stationId))
+            throw new NoRatingToUpdateException("User did not rate this station");
+
+        RatingsEntity ratingsEntity = ratingRepository.findByUserIdAndStationId(userId, stationId);
+        ratingRepository.updateStationRating(ratingsEntity.getRatingId(), newRate);
+        ratingsEntity.setRate(newRate);
+
+        return ratingsEntity;
     }
 }

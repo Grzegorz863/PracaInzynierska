@@ -9,9 +9,8 @@ import org.springframework.web.client.RestTemplate;
 import pl.tcps.dbEntities.ConsortiumsEntity;
 import pl.tcps.dbEntities.PetrolPricesEntity;
 import pl.tcps.dbEntities.PetrolStationEntity;
-import pl.tcps.exceptions.EntityNotFoundException;
-import pl.tcps.exceptions.PetrolStationAlreadyExistsException;
-import pl.tcps.exceptions.WrongPetrolStationAddressException;
+import pl.tcps.dbEntities.RatingsEntity;
+import pl.tcps.exceptions.*;
 import pl.tcps.pojo.*;
 import pl.tcps.repositories.PetrolStationRepository;
 
@@ -56,6 +55,21 @@ public class PetrolStationServiceImpl implements PetrolStationService {
                 ZonedDateTime.now(ZoneId.of("Europe/Warsaw")));
         return new PetrolStationSpecificInfoResponse(petrolStationEntity, consortiumName, rating,
                 currentPetrolPrices, historicPetrolPrices);
+    }
+
+    @Override
+    public Double getStationRatingForOneUser(Long userId, Long stationId) throws EntityNotFoundException {
+        return ratingService.getStationRatingForOneUser(userId, stationId);
+    }
+
+    @Override
+    public RatingsEntity createStationRating(Long userId, Long stationId, Double rate) throws StationRatedAlreadyByThisUserException {
+        return ratingService.createStationRating(userId, stationId, rate);
+    }
+
+    @Override
+    public RatingsEntity updateStationRating(Long userId, Long stationId, Double newRate) throws NoRatingToUpdateException{
+        return ratingService.updateStationRating(userId, stationId, newRate);
     }
 
     @Override

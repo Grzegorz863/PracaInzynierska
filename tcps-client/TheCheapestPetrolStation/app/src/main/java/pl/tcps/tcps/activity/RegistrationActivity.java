@@ -112,19 +112,19 @@ public class RegistrationActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     AccessTokenDetails accessTokenDetails = response.body();
 
-                    Map<String, Object> hearedMap = new HashMap<>();
-                    hearedMap.put("Authorization", accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken());
-                    hearedMap.put("user_name", userName);
-                    hearedMap.put("password", password);
-                    hearedMap.put("role", "android_user");
-                    hearedMap.put("enable", true);
-                    hearedMap.put("first_name", firstName);
-                    hearedMap.put("last_name", lastName);
-                    hearedMap.put("email", email);
+                    Map<String, Object> headerMap = new HashMap<>();
+                    headerMap.put("Authorization", accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken());
+                    headerMap.put("user_name", userName);
+                    headerMap.put("password", password);
+                    headerMap.put("role", "android_user");
+                    headerMap.put("enable", true);
+                    headerMap.put("first_name", firstName);
+                    headerMap.put("last_name", lastName);
+                    headerMap.put("email", email);
 
                     Retrofit retrofit = RetrofitBuilder.createRetrofit(RegistrationActivity.this);
                     RegistrationClient registrationClient = retrofit.create(RegistrationClient.class);
-                    Call<RegisteredUser> call2 = registrationClient.registerUser(hearedMap);
+                    Call<RegisteredUser> call2 = registrationClient.registerUser(headerMap);
 
                     call2.enqueue(new Callback<RegisteredUser>() {
                         @Override

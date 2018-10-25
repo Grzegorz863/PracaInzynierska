@@ -5,6 +5,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -102,7 +103,7 @@ public class PetrolStationFragment extends Fragment {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationRequest.setInterval(600000); //10min
         locationRequest.setFastestInterval(300000); //5min
-        locationRequest.setSmallestDisplacement(500); //500m
+        //locationRequest.setSmallestDisplacement(500); //500m
     }
 
     private void createLocationCallback(Double distance, AccessTokenDetails accessTokenDetails) {
@@ -193,8 +194,24 @@ public class PetrolStationFragment extends Fragment {
     }
 
     @Override
+    @SuppressLint("MissingPermission")
     public void onResume() {
         super.onResume();
+
+        SharedPreferences preferences = mainActivity.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToLongBits(0));
+        Double changedDistanceFromSettings = Double.longBitsToDouble(savedStationDistanceRawBits);
+
+        if(!changedDistanceFromSettings.equals(distance))
+            createLocationCallback(changedDistanceFromSettings, accessTokenDetails);
+
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
         mainActivity.setCheckedFirstItem();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 }

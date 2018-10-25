@@ -7,4 +7,5 @@ public interface UserService {
 
     Boolean isEnable(String userName);
 
+    Long getUserIdByName(String userName);
 }

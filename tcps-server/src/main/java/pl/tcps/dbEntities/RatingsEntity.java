@@ -1,17 +1,41 @@
 package pl.tcps.dbEntities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "ratings", schema = "tcpsdb", catalog = "")
 public class RatingsEntity {
+
+    @JsonIgnore
     private long ratingId;
+
+    @JsonProperty("user_id")
     private long userId;
+
+    @JsonProperty("station_id")
     private long stationId;
+
+    @JsonProperty("rate")
     private double rate;
+
+    @JsonIgnore
     private UsersEntity usersByUserId;
+
+    @JsonIgnore
     private PetrolStationEntity petrolStationsByStationId;
+
+    public RatingsEntity() {
+    }
+
+    public RatingsEntity(long userId, long stationId, double rate) {
+        this.userId = userId;
+        this.stationId = stationId;
+        this.rate = rate;
+    }
 
     @Id
     @Column(name = "rating_id", nullable = false)

@@ -59,6 +59,18 @@ public class PetrolStationEntity {
     @JsonIgnore
     private Collection<RatingsEntity> ratingsByStationId;
 
+    @JsonIgnore
+    private Collection<HistoricPb95PricesEntity> historicPb95PricesByStationId;
+
+    @JsonIgnore
+    private Collection<HistoricPb98PricesEntity> historicPb98PricesByStationId;
+
+    @JsonIgnore
+    private Collection<HistoricOnPricesEntity> historicOnPricesByStationId;
+
+    @JsonIgnore
+    private Collection<HistoricLpgPricesEntity> historicLpgPricesByStationId;
+
     public PetrolStationEntity() {
     }
 
@@ -247,5 +259,41 @@ public class PetrolStationEntity {
 
     public void setRatingsByStationId(Collection<RatingsEntity> ratingsByStationId) {
         this.ratingsByStationId = ratingsByStationId;
+    }
+
+    @OneToMany(mappedBy = "petrolStationsByStationId")
+    public Collection<HistoricPb95PricesEntity> getHistoricPb95PricesByStationId() {
+        return historicPb95PricesByStationId;
+    }
+
+    public void setHistoricPb95PricesByStationId(Collection<HistoricPb95PricesEntity> historicPb95PricesByStationId) {
+        this.historicPb95PricesByStationId = historicPb95PricesByStationId;
+    }
+
+    @OneToMany(mappedBy = "petrolStationsByStationId")
+    public Collection<HistoricPb98PricesEntity> getHistoricPb98PricesByStationId() {
+        return historicPb98PricesByStationId;
+    }
+
+    public void setHistoricPb98PricesByStationId(Collection<HistoricPb98PricesEntity> historicPb98PricesByStationId) {
+        this.historicPb98PricesByStationId = historicPb98PricesByStationId;
+    }
+
+    @OneToMany(mappedBy = "petrolStationsByStationId")
+    public Collection<HistoricOnPricesEntity> getHistoricOnPricesByStationId() {
+        return historicOnPricesByStationId;
+    }
+
+    public void setHistoricOnPricesByStationId(Collection<HistoricOnPricesEntity> historicOnPricesByStationId) {
+        this.historicOnPricesByStationId = historicOnPricesByStationId;
+    }
+
+    @OneToMany(mappedBy = "petrolStationsByStationId")
+    public Collection<HistoricLpgPricesEntity> getHistoricLpgPricesByStationId() {
+        return historicLpgPricesByStationId;
+    }
+
+    public void setHistoricLpgPricesByStationId(Collection<HistoricLpgPricesEntity> historicLpgPricesByStationId) {
+        this.historicLpgPricesByStationId = historicLpgPricesByStationId;
     }
 }

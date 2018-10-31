@@ -2,6 +2,7 @@ package pl.tcps.tcps.fragment;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
@@ -35,7 +36,6 @@ public class RatingDialog extends AppCompatDialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         activity = (StationDetailsActivity) getActivity();
-
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = activity.getLayoutInflater();
@@ -105,6 +105,7 @@ public class RatingDialog extends AppCompatDialogFragment {
             public void onResponse(Call<StationRatingResponse> call, Response<StationRatingResponse> response) {
                 StationRatingResponse stationRatingResponse = response.body();
                 if(response.isSuccessful() && stationRatingResponse != null){
+                    activity.refreshActivityContent();
                     Toast.makeText(activity, "You rated station first time on: " + stationRatingResponse.getRate(), Toast.LENGTH_SHORT).show();
                 }else
                     if(response.code() == HttpURLConnection.HTTP_SEE_OTHER)
@@ -128,14 +129,16 @@ public class RatingDialog extends AppCompatDialogFragment {
         call.enqueue(new Callback<StationRatingResponse>() {
             @Override
             public void onResponse(Call<StationRatingResponse> call, Response<StationRatingResponse> response) {
-                StationRatingResponse stationRatingResponse = response.body();
-                if(response.code() != HttpURLConnection.HTTP_NO_CONTENT) {
-                    if (response.isSuccessful() && stationRatingResponse != null)
-                        Toast.makeText(activity, "You updated rate on: " + stationRatingResponse.getRate(), Toast.LENGTH_SHORT).show();
+                if(response.isSuccessful()) {
+                    if (response.code() == HttpURLConnection.HTTP_NO_CONTENT) {
+                        activity.refreshActivityContent();
+                        Toast.makeText(activity, "You updated rate on: " + rating, Toast.LENGTH_SHORT).show();
+                    }
+                }else
+                    if(response.code() == HttpURLConnection.HTTP_NOT_FOUND)
+                        Toast.makeText(activity, "You did not rate this station yet!", Toast.LENGTH_SHORT).show();
                     else
                         Toast.makeText(activity, "Error on server", Toast.LENGTH_SHORT).show();
-                }else
-                    Toast.makeText(activity, "You did not rate this station yet!", Toast.LENGTH_SHORT).show();
             }
 
             @Override

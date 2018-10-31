@@ -23,10 +23,10 @@ public class PetrolStationSpecificInfoResponse {
     private String description;
 
     @SerializedName("current_prices")
-    private PetrolPricesResponse currentPetrolPricesResponse;
+    private PetrolPricesAndDateResponse currentPetrolPricesResponse;
 
     @SerializedName("historic_prices")
-    private PetrolPricesResponse historicPetrolPricesResponse;
+    private PetrolPricesAndDateResponse historicPetrolPricesResponse;
 
     @SerializedName("address")
     private AddressResponse stationAddress;
@@ -36,8 +36,8 @@ public class PetrolStationSpecificInfoResponse {
 
     public PetrolStationSpecificInfoResponse(long stationId, String stationName, String consortiumName,
                                              Double rating, Boolean hasFood, String description,
-                                             PetrolPricesResponse currentPetrolPricesResponse,
-                                             PetrolPricesResponse historicPetrolPricesResponse,
+                                             PetrolPricesAndDateResponse currentPetrolPricesResponse,
+                                             PetrolPricesAndDateResponse historicPetrolPricesResponse,
                                              AddressResponse stationAddress) {
         this.stationId = stationId;
         this.stationName = stationName;
@@ -74,11 +74,11 @@ public class PetrolStationSpecificInfoResponse {
         this.consortiumName = consortiumName;
     }
 
-    public PetrolPricesResponse getCurrentPetrolPricesResponse() {
+    public PetrolPricesAndDateResponse getCurrentPetrolPricesResponse() {
         return currentPetrolPricesResponse;
     }
 
-    public void setCurrentPetrolPricesResponse(PetrolPricesResponse currentPetrolPricesResponse) {
+    public void setCurrentPetrolPricesResponse(PetrolPricesAndDateResponse currentPetrolPricesResponse) {
         this.currentPetrolPricesResponse = currentPetrolPricesResponse;
     }
 
@@ -106,11 +106,11 @@ public class PetrolStationSpecificInfoResponse {
         this.description = description;
     }
 
-    public PetrolPricesResponse getHistoricPetrolPricesResponse() {
+    public PetrolPricesAndDateResponse getHistoricPetrolPricesResponse() {
         return historicPetrolPricesResponse;
     }
 
-    public void setHistoricPetrolPricesResponse(PetrolPricesResponse historicPetrolPricesResponse) {
+    public void setHistoricPetrolPricesResponse(PetrolPricesAndDateResponse historicPetrolPricesResponse) {
         this.historicPetrolPricesResponse = historicPetrolPricesResponse;
     }
 

@@ -50,7 +50,7 @@ public class PetrolStationServiceImpl implements PetrolStationService {
 
         String consortiumName = consortiumService.getConsortiumName(petrolStationEntity.getConsortiumId());
         Double rating = ratingService.countAverageRatingForPetrolStation(petrolStationEntity);
-        PetrolPricesResponse currentPetrolPrices = petrolPricesService.getPetrolPricesByStationId(petrolStationEntity);
+        PetrolPricesAndDateResponse currentPetrolPrices = petrolPricesService.getPetrolPricesWithInsertDate(petrolStationEntity);
         PetrolPricesResponse historicPetrolPrices = historicPricesService.countTwoWeeksHistoricPricesAverage(stationId,
                 ZonedDateTime.now(ZoneId.of("Europe/Warsaw")));
         return new PetrolStationSpecificInfoResponse(petrolStationEntity, consortiumName, rating,
@@ -68,8 +68,30 @@ public class PetrolStationServiceImpl implements PetrolStationService {
     }
 
     @Override
-    public RatingsEntity updateStationRating(Long userId, Long stationId, Double newRate) throws NoRatingToUpdateException{
-        return ratingService.updateStationRating(userId, stationId, newRate);
+    public void updateStationRating(Long userId, Long stationId, Double newRate) throws NoRatingToUpdateException{
+        ratingService.updateStationRating(userId, stationId, newRate);
+    }
+
+    @Override
+    public PetrolPricesResponse getPetrolPricesForStation(Long stationId) throws EntityNotFoundException{
+        if(!petrolStationRepository.existsByStationId(stationId))
+            throw new EntityNotFoundException("Station with given ID does not exist!");
+
+        return petrolPricesService.getPetrolPricesByStationId(stationId);
+    }
+
+    @Override
+    public PetrolPricesEntity createPetrolPricesForStation(Long stationId, Long userId, Float pb95Price, Float pb98Price,
+                                                           Float onPrice, Float lpgPrice) throws PetrolPricesAlreadyExistsException{
+
+        return petrolPricesService.createPetrolPricesForStation(stationId, userId, pb95Price, pb98Price, onPrice, lpgPrice);
+    }
+
+    @Override
+    public void updatePetrolPricesForStation(Long stationId, Long userId, Float pb95Price, Float pb98Price,
+                                             Float onPrice, Float lpgPrice) throws PetrolPricesNotExistsException{
+
+        petrolPricesService.updatePetrolPricesForStation(stationId, userId, pb95Price, pb98Price, onPrice, lpgPrice);
     }
 
     @Override
@@ -98,7 +120,7 @@ public class PetrolStationServiceImpl implements PetrolStationService {
                                                                                    Double distanceInMeters) {
 
         String consortiuName = consortiumService.getConsortiumName(petrolStationEntity.getConsortiumId());
-        PetrolPricesResponse petrolPrices = petrolPricesService.getPetrolPricesByStationId(petrolStationEntity);
+        PetrolPricesAndDateResponse petrolPrices = petrolPricesService.getPetrolPricesWithInsertDate(petrolStationEntity);
         Double rating = ratingService.countAverageRatingForPetrolStation(petrolStationEntity);
         return new PetrolStationResponseRecycleViewItem(petrolStationEntity, consortiuName,petrolPrices,
                 rating, distanceInMeters);
@@ -129,7 +151,8 @@ public class PetrolStationServiceImpl implements PetrolStationService {
             petrolStationEntity = new PetrolStationEntity(stationData, coordinates,
                    consortiumsEntity.getConsortiumId());
 
-            petrolStationEntity = petrolStationRepository.save(petrolStationEntity);
+            petrolStationEntity = petrolStationRepository.saveAndFlush(petrolStationEntity);
+            //petrolStationRepository.sa
         }
         else
             throw new PetrolStationAlreadyExistsException("Can not create petrol station with the same name or address");

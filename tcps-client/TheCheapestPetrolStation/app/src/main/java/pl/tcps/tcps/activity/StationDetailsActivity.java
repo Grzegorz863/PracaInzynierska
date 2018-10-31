@@ -27,6 +27,7 @@ import pl.tcps.tcps.R;
 import pl.tcps.tcps.api_client.PetrolStationClient;
 import pl.tcps.tcps.api_client.retrofit.RetrofitBuilder;
 import pl.tcps.tcps.fragment.RatingDialog;
+import pl.tcps.tcps.fragment.UpdatePricesDialog;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 import pl.tcps.tcps.pojo.responses.AddressResponse;
 import pl.tcps.tcps.pojo.responses.PetrolStationSpecificInfoResponse;
@@ -39,6 +40,8 @@ public class StationDetailsActivity extends AppCompatActivity {
 
     private AccessTokenDetails accessTokenDetails;
     private Context context;
+    private Double distance;
+    private Long chosenStationId;
 
     private TextView tvStationName;
     private TextView tvStationAddress;
@@ -60,6 +63,7 @@ public class StationDetailsActivity extends AppCompatActivity {
     private Button bLeadMe;
     private Button bUpdatePrices;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,9 +72,17 @@ public class StationDetailsActivity extends AppCompatActivity {
         context = this;
         Intent intent = getIntent();
         accessTokenDetails = intent.getParcelableExtra(getString(R.string.key_access_token_details));
-        Long chosenStationId = intent.getLongExtra(getString(R.string.key_station_id), 0);
-        Double distance = intent.getDoubleExtra(getString(R.string.key_distance), 0);
+        chosenStationId = intent.getLongExtra(getString(R.string.key_station_id), 0);
+        distance = intent.getDoubleExtra(getString(R.string.key_distance), 0);
 
+        refreshActivityContent();
+        setOnClickListenerForMakeRateButton(chosenStationId);
+        setOnClickListenerForLeadMeButton();
+        setOnClickListenerForUpdatePricesButton(chosenStationId);
+
+    }
+
+    public void refreshActivityContent(){
         Retrofit retrofit = RetrofitBuilder.createRetrofit(this);
         PetrolStationClient petrolStationClient = retrofit.create(PetrolStationClient.class);
         String authHeader = accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken();
@@ -80,12 +92,12 @@ public class StationDetailsActivity extends AppCompatActivity {
             public void onResponse(Call<PetrolStationSpecificInfoResponse> call, Response<PetrolStationSpecificInfoResponse> response) {
                 PetrolStationSpecificInfoResponse specificInfo = response.body();
                 if (response.isSuccessful() && specificInfo != null) {
-                    fillViews(specificInfo, distance, chosenStationId);
+                    fillViews(specificInfo, distance);
                 } else
-                    if(response.code() == HttpURLConnection.HTTP_NOT_FOUND)
-                        Toast.makeText(context, "No station was found!", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(context, "Error on server", Toast.LENGTH_SHORT).show();
+                if(response.code() == HttpURLConnection.HTTP_NOT_FOUND)
+                    Toast.makeText(context, "No station was found!", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(context, "Error on server", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -93,9 +105,10 @@ public class StationDetailsActivity extends AppCompatActivity {
                 Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
-    private void fillViews(PetrolStationSpecificInfoResponse specificInfo, Double distance, Long chosenStationId) {
+    private void fillViews(PetrolStationSpecificInfoResponse specificInfo, Double distance) {
         tvStationName.setText(specificInfo.getStationName());
 
         AddressResponse address = specificInfo.getStationAddress();
@@ -136,10 +149,6 @@ public class StationDetailsActivity extends AppCompatActivity {
         rbRating.setRating(specificInfo.getRating().floatValue());
 
         tvDescription.setText(specificInfo.getDescription());
-
-        setOnClickListenerForMakeRateButton(chosenStationId);
-        setOnClickListenerForLeadMeButton();
-        setOnClickListenerForUpdatePricesButton();
     }
 
     private void setOnClickListenerForMakeRateButton(Long chosenStationId) {
@@ -147,7 +156,6 @@ public class StationDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 RatingDialog ratingDialog = new RatingDialog();
-
                 Bundle args = new Bundle();
                 args.putParcelable(getString(R.string.key_access_token_details), accessTokenDetails);
                 args.putLong(getString(R.string.key_station_id), chosenStationId);
@@ -166,11 +174,16 @@ public class StationDetailsActivity extends AppCompatActivity {
         });
     }
 
-    private void setOnClickListenerForUpdatePricesButton() {
+    private void setOnClickListenerForUpdatePricesButton(Long chosenStationId) {
         bUpdatePrices.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                UpdatePricesDialog updatePricesDialog = new UpdatePricesDialog();
+                Bundle args = new Bundle();
+                args.putParcelable(getString(R.string.key_access_token_details), accessTokenDetails);
+                args.putLong(getString(R.string.key_station_id), chosenStationId);
+                updatePricesDialog.setArguments(args);
+                updatePricesDialog.show(getSupportFragmentManager(), "update_prices_dialog");
             }
         });
     }
@@ -252,4 +265,5 @@ public class StationDetailsActivity extends AppCompatActivity {
         bLeadMe = findViewById(R.id.station_details_maps_button);
         bUpdatePrices = findViewById(R.id.station_details_update_prices_button);
     }
+
 }

@@ -10,7 +10,7 @@ create table tcpsdb.petrol_stations(
 	longitude double not null,
     latitude double not null,
     has_food bool not null,
-    apartment_number INT4 unsigned not null,
+    apartment_number varchar(20) not null,
     postal_code char(6),
     station_name varchar(100) not null,
     city varchar(50) not null,
@@ -51,15 +51,20 @@ foreign key(station_id) references tcpsdb.petrol_stations(station_id);
 create table tcpsdb.petrol_prices(
 	price_id int8 unsigned auto_increment primary key,
     station_id int8 unsigned not null,
-    pb95_price float4 unsigned,
-    pb98_price float4 unsigned,
-    on_price float4 unsigned,
+	user_id int8 unsigned not null,
+    pb95_price float4 unsigned not null,
+    pb98_price float4 unsigned not null,
+    on_price float4 unsigned not null,
     lpg_price float4 unsigned
 ) ENGINE INNODB;
 
 alter table tcpsdb.petrol_prices
 add constraint station_prices_fk
 foreign key(station_id) references tcpsdb.petrol_stations(station_id);
+
+alter table tcpsdb.petrol_prices
+add constraint user_petrolprices_fk
+foreign key(user_id) references tcpsdb.users(user_id);
 
 create table tcpsdb.historic_prices(
 	historic_price_id int8 unsigned auto_increment primary key,

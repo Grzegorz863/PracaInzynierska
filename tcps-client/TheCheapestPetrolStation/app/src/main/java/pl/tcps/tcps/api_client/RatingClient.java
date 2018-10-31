@@ -22,9 +22,9 @@ public interface RatingClient {
 
     @FormUrlEncoded
     @POST("station/rating")
-    Call<StationRatingResponse> createStationRating(@Header("Authorization") String accessToken, @FieldMap Map<String, Object> name);
+    Call<StationRatingResponse> createStationRating(@Header("Authorization") String accessToken, @FieldMap Map<String, Object> body);
 
     @FormUrlEncoded
     @PUT("station/rating")
-    Call<StationRatingResponse> updateStationRating(@Header("Authorization") String accessToken, @FieldMap Map<String, Object> name);
+    Call<StationRatingResponse> updateStationRating(@Header("Authorization") String accessToken, @FieldMap Map<String, Object> body);
 }

@@ -2,7 +2,9 @@ package pl.tcps.tcps.pojo.responses;
 
 import com.google.gson.annotations.SerializedName;
 
-public class PetrolPricesResponse {
+import java.time.ZonedDateTime;
+
+public class PetrolPricesAndDateResponse {
 
     @SerializedName("pb95_price")
     private Float pb95Price;
@@ -16,17 +18,23 @@ public class PetrolPricesResponse {
     @SerializedName("lpg_price")
     private Float lpgPrice;
 
-    public PetrolPricesResponse() {
+    @SerializedName("insert_date")
+    private ZonedDateTime insertDate;
+
+    public PetrolPricesAndDateResponse() {
     }
 
-    public PetrolPricesResponse(Float pb95Price, Float pb98Price, Float onPrice, Float lpgPrice) {
+    public PetrolPricesAndDateResponse(Float pb95Price, Float pb98Price, Float onPrice, Float lpgPrice, ZonedDateTime insertDate) {
         this.pb95Price = pb95Price;
         this.pb98Price = pb98Price;
         this.onPrice = onPrice;
         this.lpgPrice = lpgPrice;
+        this.insertDate = insertDate;
     }
 
-    public Float getPb95Price() { return pb95Price; }
+    public Float getPb95Price() {
+        return pb95Price;
+    }
 
     public void setPb95Price(Float pb95Price) {
         this.pb95Price = pb95Price;
@@ -56,4 +64,11 @@ public class PetrolPricesResponse {
         this.lpgPrice = lpgPrice;
     }
 
+    public ZonedDateTime getInsertDate() {
+        return insertDate;
+    }
+
+    public void setInsertDate(ZonedDateTime insertDate) {
+        this.insertDate = insertDate;
+    }
 }

@@ -39,6 +39,21 @@ public class PetrolStationExceptionController {
 
     @ExceptionHandler(value = NoRatingToUpdateException.class)
     public void handleNoRatingToUpdateException(HttpServletResponse response, NoRatingToUpdateException error) throws IOException{
-        response.sendError(HttpStatus.NO_CONTENT.value(), error.getMessage());
+        response.sendError(HttpStatus.NOT_FOUND.value(), error.getMessage());
+    }
+
+    @ExceptionHandler(value = PetrolPricesAlreadyExistsException.class)
+    public void handlePetrolPricesAlreadyExistsException(HttpServletResponse response, PetrolPricesAlreadyExistsException error) throws IOException{
+        response.sendError(HttpStatus.SEE_OTHER.value(), error.getMessage());
+    }
+
+    @ExceptionHandler(value = PetrolPricesNotExistsException.class)
+    public void handlePetrolPricesNotExistsException(HttpServletResponse response, PetrolPricesNotExistsException error) throws IOException{
+        response.sendError(HttpStatus.NOT_FOUND.value(), error.getMessage());
+    }
+
+    @ExceptionHandler(value = WrongRequestParametersException.class)
+    public void handleWrongRequestParametersExceprion(HttpServletResponse response, WrongRequestParametersException error) throws IOException{
+        response.sendError(HttpStatus.UNPROCESSABLE_ENTITY.value(), error.getMessage());
     }
 }

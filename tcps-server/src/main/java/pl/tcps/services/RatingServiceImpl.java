@@ -52,21 +52,18 @@ public class RatingServiceImpl implements RatingService {
             throw new StationRatedAlreadyByThisUserException("This user already added rating to that station");
 
         RatingsEntity ratingsEntity = new RatingsEntity(userId, stationId, rate);
-        ratingRepository.save(ratingsEntity);
+        ratingsEntity = ratingRepository.save(ratingsEntity);
 
         return ratingsEntity;
     }
 
     @Override
-    public RatingsEntity updateStationRating(Long userId, Long stationId, Double newRate) throws NoRatingToUpdateException {
+    public void updateStationRating(Long userId, Long stationId, Double newRate) throws NoRatingToUpdateException {
 
         if(!ratingRepository.existsByUserIdAndStationId(userId, stationId))
             throw new NoRatingToUpdateException("User did not rate this station");
 
         RatingsEntity ratingsEntity = ratingRepository.findByUserIdAndStationId(userId, stationId);
         ratingRepository.updateStationRating(ratingsEntity.getRatingId(), newRate);
-        ratingsEntity.setRate(newRate);
-
-        return ratingsEntity;
     }
 }

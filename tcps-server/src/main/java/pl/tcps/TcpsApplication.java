@@ -9,7 +9,6 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 
 @SpringBootApplication
 @EnableJpaRepositories("pl.tcps.repositories")
-//@EnableAutoConfiguration
 @EnableResourceServer
 public class TcpsApplication{
 	public static void main(String[] args) {

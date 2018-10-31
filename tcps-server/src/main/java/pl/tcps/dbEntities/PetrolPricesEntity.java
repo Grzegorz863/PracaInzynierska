@@ -1,5 +1,8 @@
 package pl.tcps.dbEntities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -8,29 +11,42 @@ import java.util.Objects;
 @Table(name = "petrol_prices", schema = "tcpsdb", catalog = "")
 public class PetrolPricesEntity {
 
+    @JsonIgnore
     private long priceId;
+
+    @JsonProperty("station_id")
     private long stationId;
+
+    @JsonProperty("user_id")
     private long userId;
+
+    @JsonProperty("pb95_price")
     private float pb95Price;
+
+    @JsonProperty("pb98_price")
     private float pb98Price;
+
+    @JsonProperty("on_price")
     private float onPrice;
+
+    @JsonProperty("lpg_price")
     private float lpgPrice;
+
+    @JsonIgnore
     private Timestamp insertDate;
+
+    @JsonIgnore
     private UsersEntity usersByUserId;
+
+    @JsonIgnore
     private PetrolStationEntity petrolStationsByStationId;
+
 
     public PetrolPricesEntity() { }
 
-    public PetrolPricesEntity(long priceId, long stationId, long userId, float pb95Price, float pb98Price,
-                              float onPrice, float lpgPrice, Timestamp insertDate) {
-        this.priceId = priceId;
+    public PetrolPricesEntity(long stationId, long userId) {
         this.stationId = stationId;
         this.userId = userId;
-        this.pb95Price = pb95Price;
-        this.pb98Price = pb98Price;
-        this.onPrice = onPrice;
-        this.lpgPrice = lpgPrice;
-        this.insertDate = insertDate;
     }
 
     @Id
@@ -104,7 +120,7 @@ public class PetrolPricesEntity {
     }
 
     @Basic
-    @Column(name = "insert_date", nullable = false)
+    @Column(name = "insert_date", nullable = false, insertable = false, updatable = false)
     public Timestamp getInsertDate() {
         return insertDate;
     }

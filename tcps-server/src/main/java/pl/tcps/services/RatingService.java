@@ -21,5 +21,5 @@ public interface RatingService {
     RatingsEntity createStationRating(Long userId, Long stationId, Double rate) throws StationRatedAlreadyByThisUserException;
 
     @PreAuthorize("hasAuthority('android_user')")
-    RatingsEntity updateStationRating(Long userId, Long stationId, Double newRate) throws NoRatingToUpdateException;
+    void updateStationRating(Long userId, Long stationId, Double newRate) throws NoRatingToUpdateException;
 }

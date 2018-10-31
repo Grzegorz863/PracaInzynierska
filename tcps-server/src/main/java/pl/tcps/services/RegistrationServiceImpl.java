@@ -31,7 +31,7 @@ public class RegistrationServiceImpl implements RegistrationService {
             usersEntity.setFirstName(firstName);
             usersEntity.setLastName(lastName);
             usersEntity.setEmail(email);
-            userRepository.save(usersEntity);
+            usersEntity = userRepository.save(usersEntity);
         }else {
             throw new UserAlreadyExistsException("Can not create user with the same username or email.");
         }

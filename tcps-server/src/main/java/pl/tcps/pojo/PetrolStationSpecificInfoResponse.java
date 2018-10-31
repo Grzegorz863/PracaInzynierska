@@ -24,7 +24,7 @@ public class PetrolStationSpecificInfoResponse {
     private String description;
 
     @JsonProperty("current_prices")
-    private PetrolPricesResponse currentPetrolPricesResponse;
+    private PetrolPricesAndDateResponse currentPetrolPricesResponse;
 
     @JsonProperty("historic_prices")
     private PetrolPricesResponse historicPetrolPricesResponse;
@@ -36,7 +36,7 @@ public class PetrolStationSpecificInfoResponse {
     }
 
     public PetrolStationSpecificInfoResponse(PetrolStationEntity petrolStationEntity, String consortiumName,
-                                             Double rating, PetrolPricesResponse currentPetrolPricesResponse,
+                                             Double rating, PetrolPricesAndDateResponse currentPetrolPricesResponse,
                                              PetrolPricesResponse historicPetrolPricesResponse) {
         this.stationId = petrolStationEntity.getStationId();
         this.stationName = petrolStationEntity.getStationName();
@@ -74,11 +74,11 @@ public class PetrolStationSpecificInfoResponse {
         this.consortiumName = consortiumName;
     }
 
-    public PetrolPricesResponse getCurrentPetrolPricesResponse() {
+    public PetrolPricesAndDateResponse getCurrentPetrolPricesResponse() {
         return currentPetrolPricesResponse;
     }
 
-    public void setCurrentPetrolPricesResponse(PetrolPricesResponse currentPetrolPricesResponse) {
+    public void setCurrentPetrolPricesResponse(PetrolPricesAndDateResponse currentPetrolPricesResponse) {
         this.currentPetrolPricesResponse = currentPetrolPricesResponse;
     }
 

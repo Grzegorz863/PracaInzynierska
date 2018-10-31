@@ -15,7 +15,7 @@ public class PetrolStationResponseRecycleViewItem {
     private String consortiumName;
 
     @JsonProperty("prices")
-    private PetrolPricesResponse petrolPricesResponseRecycleViewItem;
+    private PetrolPricesAndDateResponse petrolPricesResponseRecycleViewItem;
 
     @JsonProperty("rating")
     private Double rating;
@@ -27,7 +27,7 @@ public class PetrolStationResponseRecycleViewItem {
     }
 
     public PetrolStationResponseRecycleViewItem(PetrolStationEntity petrolStationEntity, String consortiumName,
-                                                PetrolPricesResponse petrolPricesResponse,
+                                                PetrolPricesAndDateResponse petrolPricesResponse,
                                                 Double rating, Double distance) {
         this.stationId = petrolStationEntity.getStationId();
         this.stationName = petrolStationEntity.getStationName();
@@ -61,11 +61,11 @@ public class PetrolStationResponseRecycleViewItem {
         this.consortiumName = consortiumName;
     }
 
-    public PetrolPricesResponse getPetrolPricesResponseRecycleViewItem() {
+    public PetrolPricesAndDateResponse getPetrolPricesResponseRecycleViewItem() {
         return petrolPricesResponseRecycleViewItem;
     }
 
-    public void setPetrolPricesResponseRecycleViewItem(PetrolPricesResponse petrolPricesResponseRecycleViewItem) {
+    public void setPetrolPricesResponseRecycleViewItem(PetrolPricesAndDateResponse petrolPricesResponseRecycleViewItem) {
         this.petrolPricesResponseRecycleViewItem = petrolPricesResponseRecycleViewItem;
     }
 

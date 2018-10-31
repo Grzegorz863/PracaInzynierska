@@ -41,6 +41,18 @@ public class UsersEntity {
     private Collection<HistoricPricesEntity> historicPricesByUserId;
 
     @JsonIgnore
+    private Collection<HistoricPb95PricesEntity> historicPb95PricesByStationId;
+
+    @JsonIgnore
+    private Collection<HistoricPb98PricesEntity> historicPb98PricesByStationId;
+
+    @JsonIgnore
+    private Collection<HistoricOnPricesEntity> historicOnPricesByStationId;
+
+    @JsonIgnore
+    private Collection<HistoricLpgPricesEntity> historicLpgPricesByStationId;
+
+    @JsonIgnore
     private Collection<RatingsEntity> ratingsByUserId;
 
     @Id
@@ -151,6 +163,42 @@ public class UsersEntity {
 
     public void setHistoricPricesByUserId(Collection<HistoricPricesEntity> historicPricesByUserId) {
         this.historicPricesByUserId = historicPricesByUserId;
+    }
+
+    @OneToMany(mappedBy = "usersByUserId")
+    public Collection<HistoricPb95PricesEntity> getHistoricPb95PricesByStationId() {
+        return historicPb95PricesByStationId;
+    }
+
+    public void setHistoricPb95PricesByStationId(Collection<HistoricPb95PricesEntity> historicPb95PricesByStationId) {
+        this.historicPb95PricesByStationId = historicPb95PricesByStationId;
+    }
+
+    @OneToMany(mappedBy = "usersByUserId")
+    public Collection<HistoricPb98PricesEntity> getHistoricPb98PricesByStationId() {
+        return historicPb98PricesByStationId;
+    }
+
+    public void setHistoricPb98PricesByStationId(Collection<HistoricPb98PricesEntity> historicPb98PricesByStationId) {
+        this.historicPb98PricesByStationId = historicPb98PricesByStationId;
+    }
+
+    @OneToMany(mappedBy = "usersByUserId")
+    public Collection<HistoricOnPricesEntity> getHistoricOnPricesByStationId() {
+        return historicOnPricesByStationId;
+    }
+
+    public void setHistoricOnPricesByStationId(Collection<HistoricOnPricesEntity> historicOnPricesByStationId) {
+        this.historicOnPricesByStationId = historicOnPricesByStationId;
+    }
+
+    @OneToMany(mappedBy = "usersByUserId")
+    public Collection<HistoricLpgPricesEntity> getHistoricLpgPricesByStationId() {
+        return historicLpgPricesByStationId;
+    }
+
+    public void setHistoricLpgPricesByStationId(Collection<HistoricLpgPricesEntity> historicLpgPricesByStationId) {
+        this.historicLpgPricesByStationId = historicLpgPricesByStationId;
     }
 
     @OneToMany(mappedBy = "usersByUserId")

@@ -11,11 +11,15 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -32,6 +36,7 @@ import com.google.android.gms.location.LocationSettingsResponse;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.net.HttpURLConnection;
@@ -77,6 +82,7 @@ public class PetrolStationFragment extends Fragment {
         petrolStationFragment = inflater.inflate(R.layout.fragment_petrol_station, container, false);
         mainActivity = (MainActivity) getActivity();
         mainActivity.setActionBarTitle("Petrol Stations");
+        setHasOptionsMenu(true);
 
         Bundle args = getArguments();
         accessTokenDetails = args.getParcelable(getString(R.string.key_access_token_details));
@@ -101,8 +107,8 @@ public class PetrolStationFragment extends Fragment {
     private void createLocationRequest() {
         locationRequest = new LocationRequest();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(600000); //10min
-        locationRequest.setFastestInterval(300000); //5min
+        locationRequest.setInterval(60000); //10min
+        locationRequest.setFastestInterval(1000); //5min
         //locationRequest.setSmallestDisplacement(500); //500m
     }
 
@@ -202,7 +208,7 @@ public class PetrolStationFragment extends Fragment {
         Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToLongBits(0));
         Double changedDistanceFromSettings = Double.longBitsToDouble(savedStationDistanceRawBits);
 
-        if(!changedDistanceFromSettings.equals(distance))
+        if (!changedDistanceFromSettings.equals(distance))
             createLocationCallback(changedDistanceFromSettings, accessTokenDetails);
 
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
@@ -214,4 +220,32 @@ public class PetrolStationFragment extends Fragment {
         super.onPause();
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.main_activity_refresh:
+                refreshRecycleView();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private void refreshRecycleView() {
+
+        displayLocationSettingsRequest(petrolStationFragment.getContext());
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(mainActivity, new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if(location != null){
+                    getPetrolStationFitInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
+                }
+            }
+        });
+    }
+
 }

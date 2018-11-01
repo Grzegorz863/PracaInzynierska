@@ -152,12 +152,19 @@ public class PetrolStationServiceImpl implements PetrolStationService {
                    consortiumsEntity.getConsortiumId());
 
             petrolStationEntity = petrolStationRepository.saveAndFlush(petrolStationEntity);
-            //petrolStationRepository.sa
         }
         else
             throw new PetrolStationAlreadyExistsException("Can not create petrol station with the same name or address");
 
         return petrolStationEntity;
+    }
+
+    @Override
+    public GeoLocationResponse getStationGeoLocation(Long stationId) throws EntityNotFoundException {
+        PetrolStationEntity petrolStationEntity = petrolStationRepository.findByStationId(stationId);
+        if (petrolStationEntity == null)
+            throw new EntityNotFoundException(String.format("Station with id %d does not exist!", stationId));
+        return new GeoLocationResponse(petrolStationEntity.getStationName(), petrolStationEntity.getLatitude(),petrolStationEntity.getLongitude());
     }
 
     private Double countDistanceBetweenTwoPoints(Double latitudePoint1, Double longitudePoint1,

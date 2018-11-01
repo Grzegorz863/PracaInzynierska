@@ -12,10 +12,7 @@ import pl.tcps.dbEntities.PetrolPricesEntity;
 import pl.tcps.dbEntities.PetrolStationEntity;
 import pl.tcps.dbEntities.RatingsEntity;
 import pl.tcps.exceptions.*;
-import pl.tcps.pojo.CreatePetrolStationParameter;
-import pl.tcps.pojo.PetrolPricesResponse;
-import pl.tcps.pojo.PetrolStationResponseRecycleViewItem;
-import pl.tcps.pojo.PetrolStationSpecificInfoResponse;
+import pl.tcps.pojo.*;
 import pl.tcps.services.PetrolStationService;
 import pl.tcps.services.UserService;
 
@@ -109,6 +106,7 @@ public class PetrolStationController {
 
         petrolStationService.updatePetrolPricesForStation(stationId, userId, pb95Price, pb98Price, onPrice, lpgPrice);
     }
+
     @ResponseStatus(HttpStatus.OK)
     @GetMapping(value = "/{stationId}/rating", produces = "application/json")
     public ResponseEntity<Double> getStationRatingForOneUser(@PathVariable("stationId") Long stationId,
@@ -152,6 +150,13 @@ public class PetrolStationController {
         httpHeaders.setLocation(locationUri);
 
         return new ResponseEntity<>(ratingsEntity, httpHeaders, HttpStatus.CREATED);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/{stationId}/location", produces = "application/json")
+    public ResponseEntity<GeoLocationResponse> getStationGeoLocation(@PathVariable("stationId") Long stationId) throws EntityNotFoundException{
+        GeoLocationResponse geoLocation = petrolStationService.getStationGeoLocation(stationId);
+        return new ResponseEntity<>(geoLocation, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.CREATED)

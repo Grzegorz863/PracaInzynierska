@@ -5,6 +5,7 @@ import java.util.Map;
 
 import pl.tcps.tcps.pojo.responses.CreatePetrolStationResponse;
 import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
+import pl.tcps.tcps.pojo.responses.GeoLocationResponse;
 import pl.tcps.tcps.pojo.responses.PetrolStationSpecificInfoResponse;
 import retrofit2.Call;
 import retrofit2.http.FieldMap;
@@ -28,6 +29,11 @@ public interface PetrolStationClient {
                                                                          @Path("distance") Double distance);
 
     @GET("station/id/{station_id}")
-    Call<PetrolStationSpecificInfoResponse> getPetrolStationSpecyficInfo(@Header("Authorization") String accessToken,
+    Call<PetrolStationSpecificInfoResponse> getPetrolStationSpecificInfo(@Header("Authorization") String accessToken,
                                                                          @Path("station_id") Long stationId);
+
+    @GET("station/{station_id}/location")
+    Call<GeoLocationResponse> getPetrolStationGeoLocation(@Header("Authorization") String accessToken,
+                                                          @Path("station_id") Long stationId);
+
 }

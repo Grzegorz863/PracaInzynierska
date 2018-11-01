@@ -6,10 +6,7 @@ import pl.tcps.dbEntities.PetrolPricesEntity;
 import pl.tcps.dbEntities.PetrolStationEntity;
 import pl.tcps.dbEntities.RatingsEntity;
 import pl.tcps.exceptions.*;
-import pl.tcps.pojo.CreatePetrolStationParameter;
-import pl.tcps.pojo.PetrolPricesResponse;
-import pl.tcps.pojo.PetrolStationResponseRecycleViewItem;
-import pl.tcps.pojo.PetrolStationSpecificInfoResponse;
+import pl.tcps.pojo.*;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -48,4 +45,7 @@ public interface PetrolStationService {
     @PreAuthorize("hasAuthority('android_user')")
     void updatePetrolPricesForStation(Long stationId, Long userId, Float pb95Price, Float pb98Price,
                                                     Float onPrice, Float lpgPrice) throws PetrolPricesNotExistsException;
+
+    @PreAuthorize("hasAuthority('android_user')")
+    GeoLocationResponse getStationGeoLocation(Long stationId) throws EntityNotFoundException;
 }

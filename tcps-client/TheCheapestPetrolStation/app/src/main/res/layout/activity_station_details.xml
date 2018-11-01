@@ -44,9 +44,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/station_details_straight_line"
         android:layout_toEndOf="@+id/station_details_location_symbol"
+        android:layout_alignParentEnd="true"
         android:layout_marginBottom="@dimen/station_details_margin"
         android:text="ADDRESS"
-        android:textSize="20sp" />
+        android:textSize="20sp"/>
 
     <View
         android:id="@+id/station_details_straight_line2"

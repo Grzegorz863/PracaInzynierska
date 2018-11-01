@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -42,6 +45,17 @@ public class AddStationFragment extends Fragment{
 
     private MainActivity mainActivity;
     private final List<String> consortiumsNames = new ArrayList<>();
+    private View addStationFragment;
+
+    private TextView tvStationName;
+    private TextView tvStreet;
+    private TextView tvApartmentNumber;
+    private TextView tvCity;
+    private TextView tvPostalCode;
+    private Spinner spinnerConsortiumName;
+    private Switch switchHasFood;
+    private TextView tvDescription;
+    private Button addStationButton;
 
     public AddStationFragment() {
         // Required empty public constructor
@@ -52,11 +66,11 @@ public class AddStationFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final View addStationFragment = inflater.inflate(R.layout.fragment_add_station, container, false);
+        addStationFragment = inflater.inflate(R.layout.fragment_add_station, container, false);
         mainActivity = (MainActivity)getActivity();
         mainActivity.setActionBarTitle("Add Petrol Stations");
-
-        Button addStationButton = addStationFragment.findViewById(R.id.add_station_add_station_button);
+        bindViews();
+        setHasOptionsMenu(true);
 
         Bundle args = getArguments();
         AccessTokenDetails accessTokenDetails = args.getParcelable(getString(R.string.key_access_token_details));
@@ -92,6 +106,18 @@ public class AddStationFragment extends Fragment{
         return addStationFragment;
     }
 
+    private void bindViews() {
+        tvStationName = addStationFragment.findViewById(R.id.add_station_name);
+        tvStreet = addStationFragment.findViewById(R.id.add_station_street);
+        tvApartmentNumber = addStationFragment.findViewById(R.id.add_station_apartment_number);
+        tvCity = addStationFragment.findViewById(R.id.add_station_city);
+        tvPostalCode = addStationFragment.findViewById(R.id.add_station_postal_code);
+        spinnerConsortiumName = addStationFragment.findViewById(R.id.add_station_consortium_name_spinner);
+        switchHasFood = addStationFragment.findViewById(R.id.add_station_has_food_switch);
+        tvDescription = addStationFragment.findViewById(R.id.add_station_description);
+        addStationButton = addStationFragment.findViewById(R.id.add_station_add_station_button);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -100,14 +126,6 @@ public class AddStationFragment extends Fragment{
 
     private void createNewStation(View addStationButton, View addStationFragment,
                                   AccessTokenDetails accessTokenDetails){
-        TextView tvStationName = addStationFragment.findViewById(R.id.add_station_name);
-        TextView tvStreet = addStationFragment.findViewById(R.id.add_station_street);
-        TextView tvApartmentNumber = addStationFragment.findViewById(R.id.add_station_apartment_number);
-        TextView tvCity = addStationFragment.findViewById(R.id.add_station_city);
-        TextView tvPostalCode = addStationFragment.findViewById(R.id.add_station_postal_code);
-        Spinner spinnerConsortiumName = addStationFragment.findViewById(R.id.add_station_consortium_name_spinner);
-        Switch switchHasFood = addStationFragment.findViewById(R.id.add_station_has_food_switch);
-        TextView tvDescription = addStationFragment.findViewById(R.id.add_station_description);
 
         String stationName = tvStationName.getText().toString();
         if (TextUtils.isEmpty(stationName)) {
@@ -197,5 +215,28 @@ public class AddStationFragment extends Fragment{
                 Toast.makeText(addStationFragment.getContext(), "Add station error!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void cleanTextViews(){
+        tvStationName.setText(null);
+        tvStreet.setText(null);
+        tvApartmentNumber.setText(null);
+        tvCity.setText(null);
+        tvPostalCode.setText(null);
+        switchHasFood.setChecked(false);
+        tvDescription.setText(null);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.main_activity_refresh:
+                cleanTextViews();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
     }
 }

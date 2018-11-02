@@ -32,6 +32,8 @@ import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public final double DEFAULT_DISTANCE = 20;
+
     private AccessTokenDetails accessTokenDetails;
     private NavigationView navigationView;
     private Double savedStationDistance;
@@ -64,7 +66,7 @@ public class MainActivity extends AppCompatActivity
         accessTokenDetails = getIntent().getParcelableExtra(getString(R.string.key_access_token_details));
 
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToLongBits(0));
+        Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToLongBits(DEFAULT_DISTANCE));
         savedStationDistance = Double.longBitsToDouble(savedStationDistanceRawBits);
         createPetrolStationFragment(savedStationDistance);
 

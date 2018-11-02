@@ -57,5 +57,8 @@
 
     <string name="base_url">https://192.168.0.10:8443</string>
     <string name="title_activity_settings2">Settings</string>
+    <string name="permission_denied_message">The app can not display any stations without access to device location!</string>
+    <string name="permission_denied_ok">OK</string>
+    <string name="permission_denied_close_app">CLOSE APP</string>
 
 </resources>

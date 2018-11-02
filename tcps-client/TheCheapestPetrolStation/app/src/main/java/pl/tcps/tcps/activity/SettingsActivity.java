@@ -28,7 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Settings");
 
         preferences = getSharedPreferences("settings" ,Context.MODE_PRIVATE);
-        Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance),0);
+        Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToRawLongBits(20));
         Double savedStationDistance = Double.longBitsToDouble(savedStationDistanceRawBits);
 
         Spinner spinnerStationDistance = findViewById(R.id.settings_station_distance_spinner);

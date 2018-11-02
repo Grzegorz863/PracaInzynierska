@@ -2,6 +2,7 @@ package pl.tcps.tcps.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -25,7 +26,7 @@ import retrofit2.Retrofit;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    Button registrationButton;
+    CardView registrationButton;
     TextView etUsername;
     TextView etPassword;
     TextView etFirstName;

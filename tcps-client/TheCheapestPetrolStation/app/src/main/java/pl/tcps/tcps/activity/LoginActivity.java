@@ -3,7 +3,7 @@ package pl.tcps.tcps.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
+import android.support.v7.widget.CardView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -40,84 +40,85 @@ import retrofit2.Retrofit;
 
 public class LoginActivity extends AppCompatActivity {
 
-    CallbackManager callbackManager;
-    ProgressBar progressBar;
-    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100,100);
+    //CallbackManager callbackManager;
+    //ProgressBar progressBar;
+    //RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100,100);
 
-    Button loginButton;
-    Button registrationButton;
-    TextView loginTextView;
-    TextView passwordTextView;
+    private CardView loginButton;
+    private CardView registrationButton;
+    private TextView loginTextView;
+    private TextView passwordTextView;
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
+//    @Override
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//        callbackManager.onActivityResult(requestCode, resultCode, data);
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginButton = findViewById(R.id.buttonLogin);
-        registrationButton = findViewById(R.id.login_activitybutton_registration);
+        loginButton = findViewById(R.id.login_activity_button_login);
+        registrationButton = findViewById(R.id.login_activity_button_registration);
         loginTextView = findViewById(R.id.login_activity_et_login);
         passwordTextView = findViewById(R.id.login_activity_et_password);
 
         setListenersForLoginButton();
         setListenersForRegistrationButton();
 
-        callbackManager = CallbackManager.Factory.create();
+        //KOMENTARZE SA OD FB LOGIN
+//        callbackManager = CallbackManager.Factory.create();
 
-        RelativeLayout relativeLayout = new RelativeLayout(this);
-        progressBar = new ProgressBar(LoginActivity.this,null,android.R.attr.progressBarStyleLarge);
-        params.addRule(RelativeLayout.CENTER_IN_PARENT);
-        relativeLayout.addView(progressBar,params);
+//        RelativeLayout relativeLayout = new RelativeLayout(this);
+//        progressBar = new ProgressBar(LoginActivity.this,null,android.R.attr.progressBarStyleLarge);
+//        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+//        relativeLayout.addView(progressBar,params);
 
-        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
-        loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
-
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                progressBar.setVisibility(View.VISIBLE);
-                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-
-                GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-                    @Override
-                    public void onCompleted(JSONObject object, GraphResponse response) {
-                        progressBar.setVisibility(View.GONE);
-                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-                        sendAndGoToMainActivityFromFBLogin(object);
-                    }
-                });
-
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,email,first_name,last_name");
-                graphRequest.setParameters(parameters);
-                graphRequest.executeAsync();
-            }
-
-            @Override
-            public void onCancel() {
-                Toast.makeText(getApplicationContext(), "Singing in was canceled", Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Toast.makeText(getApplicationContext(), "Singing in was terminated", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        AccessToken accessToken = AccessToken.getCurrentAccessToken();
-        if(accessToken != null){
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            UserDetails userDetails = new UserDetails(accessToken.getUserId());
-            intent.putExtra("user_details", userDetails);
-            startActivity(intent);
-            //finish();
-        }
+//        LoginButton loginButton = (LoginButton)findViewById(R.id.login_button);
+//        loginButton.setReadPermissions(Arrays.asList("public_profile", "email"));
+//
+//        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+//            @Override
+//            public void onSuccess(LoginResult loginResult) {
+//                progressBar.setVisibility(View.VISIBLE);
+//                getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//
+//                GraphRequest graphRequest = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+//                    @Override
+//                    public void onCompleted(JSONObject object, GraphResponse response) {
+//                        progressBar.setVisibility(View.GONE);
+//                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+//                        sendAndGoToMainActivityFromFBLogin(object);
+//                    }
+//                });
+//
+//                Bundle parameters = new Bundle();
+//                parameters.putString("fields", "id,email,first_name,last_name");
+//                graphRequest.setParameters(parameters);
+//                graphRequest.executeAsync();
+//            }
+//
+//            @Override
+//            public void onCancel() {
+//                Toast.makeText(getApplicationContext(), "Singing in was canceled", Toast.LENGTH_LONG).show();
+//            }
+//
+//            @Override
+//            public void onError(FacebookException error) {
+//                Toast.makeText(getApplicationContext(), "Singing in was terminated", Toast.LENGTH_LONG).show();
+//            }
+//        });
+//
+//        AccessToken accessToken = AccessToken.getCurrentAccessToken();
+//        if(accessToken != null){
+//            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//            UserDetails userDetails = new UserDetails(accessToken.getUserId());
+//            intent.putExtra("user_details", userDetails);
+//            startActivity(intent);
+//            //finish();
+//        }
     }
 
     private void setListenersForRegistrationButton() {
@@ -183,20 +184,20 @@ public class LoginActivity extends AppCompatActivity {
         //finish();
     }
 
-    private void sendAndGoToMainActivityFromFBLogin(JSONObject object) {
-        try{
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            UserDetails userDetails = new UserDetails(object.getString("id"),
-                    object.getString("first_name"),
-                    object.getString("last_name"),
-                    object.getString("email"));
-
-            intent.putExtra("user_details", userDetails);
-            startActivity(intent);
-            //finish();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void sendAndGoToMainActivityFromFBLogin(JSONObject object) {
+//        try{
+//            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+//            UserDetails userDetails = new UserDetails(object.getString("id"),
+//                    object.getString("first_name"),
+//                    object.getString("last_name"),
+//                    object.getString("email"));
+//
+//            intent.putExtra("user_details", userDetails);
+//            startActivity(intent);
+//            //finish();
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

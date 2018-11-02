@@ -5,7 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import pl.tcps.dbEntities.UsersEntity;
+import pl.tcps.pojo.UserDetailsResponse;
 import pl.tcps.repositories.UserRepository;
+
+import javax.persistence.EntityNotFoundException;
 
 @Service
 public class UserServiceImpl implements UserService{
@@ -23,8 +26,22 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Long getUserIdByName(String userName) {
+    public Long getUserIdByName(String userName) throws EntityNotFoundException {
+
         UsersEntity usersEntity = userRepository.findByUserName(userName);
+        if (usersEntity == null)
+            throw new EntityNotFoundException(String.format("User %s not found", userName));
+
         return usersEntity.getUserId();
+    }
+
+    @Override
+    public UserDetailsResponse getLoggedUserDetails(String userName) throws EntityNotFoundException {
+
+        UsersEntity usersEntity = userRepository.findByUserName(userName);
+        if (usersEntity == null)
+            throw new EntityNotFoundException(String.format("User %s not found", userName));
+
+        return new UserDetailsResponse(usersEntity.getFirstName(), usersEntity.getLastName(), usersEntity.getEmail());
     }
 }

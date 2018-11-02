@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -17,17 +14,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
+import pl.tcps.tcps.api_client.UserClient;
+import pl.tcps.tcps.api_client.retrofit.RetrofitBuilder;
 import pl.tcps.tcps.fragment.AddStationFragment;
 import pl.tcps.tcps.fragment.PetrolStationFragment;
 import pl.tcps.tcps.R;
-import pl.tcps.tcps.pojo.UserDetails;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
+import pl.tcps.tcps.pojo.responses.UserDetailsResponse;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity
     private AccessTokenDetails accessTokenDetails;
     private NavigationView navigationView;
     private Double savedStationDistance;
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,15 +45,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -73,18 +65,47 @@ public class MainActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.nav_first_option);
         View headerView = navigationView.getHeaderView(0);
 
-        UserDetails userDetails = getIntent().getParcelableExtra("user_details");
-        if (userDetails != null) {
-            String firstNameAndLastName = userDetails.getFirstName() + " " + userDetails.getLastName();
-            TextView logged = headerView.findViewById(R.id.logged_name);
-            logged.setText(firstNameAndLastName);
-            logged = headerView.findViewById(R.id.logged_email);
-            logged.setText(userDetails.getEmail());
+        setNameAndEmailOnNavigationView(headerView);
 
-            String avatarURL = getString(R.string.avatar_url, userDetails.getId());
-            ImageView avatar = headerView.findViewById(R.id.logged_avatar);
-            Picasso.with(this).load(avatarURL).into(avatar);
-        }
+//        UserDetails userDetails = getIntent().getParcelableExtra("user_details");
+//        if (userDetails != null) {
+//            String firstNameAndLastName = userDetails.getFirstName() + " " + userDetails.getLastName();
+//            TextView logged = headerView.findViewById(R.id.logged_name);
+//            logged.setText(firstNameAndLastName);
+//            logged = headerView.findViewById(R.id.logged_email);
+//            logged.setText(userDetails.getEmail());
+//
+//            String avatarURL = getString(R.string.avatar_url, userDetails.getId());
+//            ImageView avatar = headerView.findViewById(R.id.logged_avatar);
+//            Picasso.with(this).load(avatarURL).into(avatar);
+//        }
+    }
+
+    private void setNameAndEmailOnNavigationView(View headerView) {
+        Retrofit retrofit = RetrofitBuilder.createRetrofit(this);
+        UserClient userClient = retrofit.create(UserClient.class);
+        String authHeader = accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken();
+        Call<UserDetailsResponse> call = userClient.getLoggedUserDetails(authHeader);
+        call.enqueue(new Callback<UserDetailsResponse>() {
+            @Override
+            public void onResponse(Call<UserDetailsResponse> call, Response<UserDetailsResponse> response) {
+                UserDetailsResponse userDetails = response.body();
+                if (response.isSuccessful() && userDetails != null){
+                    String nameAndLastName = userDetails.getFirstName() + " " + userDetails.getLastName();
+                    TextView logged = headerView.findViewById(R.id.logged_name);
+                    logged.setText(nameAndLastName);
+                    logged = headerView.findViewById(R.id.logged_email);
+                    logged.setText(userDetails.getEmail());
+                }else
+                    Toast.makeText(context, "Error on server", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<UserDetailsResponse> call, Throwable t) {
+                Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     @Override
@@ -97,7 +118,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-            accessTokenDetails = savedInstanceState.getParcelable("access_token_details");
+        accessTokenDetails = savedInstanceState.getParcelable("access_token_details");
     }
 
     @Override
@@ -135,23 +156,35 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_first_option) {
-            createPetrolStationFragment(savedStationDistance);
-        } else if (id == R.id.nav_second_option) {
-            createAddStationFragment();
-        } else if (id == R.id.nav_third_option) {
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-        } else if (id == R.id.nav_logout) {
-
+        switch (id) {
+            case R.id.nav_first_option:
+                createPetrolStationFragment(savedStationDistance);
+                break;
+            case R.id.nav_second_option:
+                createAddStationFragment();
+                break;
+            case R.id.nav_third_option:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.nav_fourth_option:
+                startMapActivity();
+            case R.id.nav_logout:
+                logoutUser();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void logoutUser() {
+
+    }
+
+    private void startMapActivity() {
     }
 
     private void createAddStationFragment() {
@@ -175,15 +208,15 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
-    public void setCheckedFirstItem(){
+    public void setCheckedFirstItem() {
         navigationView.setCheckedItem(R.id.nav_first_option);
     }
 
-    public void setCheckedSecondItem(){
+    public void setCheckedSecondItem() {
         navigationView.setCheckedItem(R.id.nav_second_option);
     }
 
-    public void setActionBarTitle(String title){
+    public void setActionBarTitle(String title) {
         getSupportActionBar().setTitle(title);
     }
 

@@ -8,7 +8,7 @@ import java.util.Objects;
 @Table(name = "historic_on_prices", schema = "tcpsdb", catalog = "")
 public class HistoricOnPricesEntity {
     private long historicOnPriceId;
-    private long userId;
+    private Long userId;
     private long stationId;
     private float onPrice;
     private Timestamp insertDate;
@@ -36,11 +36,11 @@ public class HistoricOnPricesEntity {
 
     @Basic
     @Column(name = "user_id", nullable = false)
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -93,7 +93,7 @@ public class HistoricOnPricesEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = true, insertable = false, updatable = false)
     public UsersEntity getUsersByUserId() {
         return usersByUserId;
     }

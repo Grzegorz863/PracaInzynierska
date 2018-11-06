@@ -78,7 +78,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 }
 
                 String email = etEmail.getText().toString();
-                Boolean val = Patterns.EMAIL_ADDRESS.matcher(email).matches();
                 if (TextUtils.isEmpty(email)) {
                     Toast.makeText(RegistrationActivity.this, "Enter e-mail!", Toast.LENGTH_SHORT).show();
                     return;

@@ -11,7 +11,9 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -71,6 +73,7 @@ public class PetrolStationFragment extends Fragment {
     private Double distance;
     private AccessTokenDetails accessTokenDetails;
     private RecyclerView recyclerView;
+    private Boolean isFirstLocationResult = true;
 
     public PetrolStationFragment() {
         // Required empty public constructor
@@ -120,12 +123,14 @@ public class PetrolStationFragment extends Fragment {
             public void onLocationResult(LocationResult locationResult) {
                 List<Location> locations = locationResult.getLocations();
                 Location location = locations.get(locations.size() - 1);
-                getPetrolStationFitInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
+                if(isFirstLocationResult)
+                    getAllPetrolStationFittingInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
+                isFirstLocationResult = false;
             }
         };
     }
 
-    private void getPetrolStationFitInRange(Double latitude, Double longitude, Double distance, AccessTokenDetails accessTokenDetails) {
+    private void getAllPetrolStationFittingInRange(Double latitude, Double longitude, Double distance, AccessTokenDetails accessTokenDetails) {
         Retrofit retrofit = RetrofitBuilder.createRetrofit(petrolStationFragment.getContext());
         PetrolStationClient petrolStationClient = retrofit.create(PetrolStationClient.class);
         String authHeader = accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken();
@@ -185,6 +190,21 @@ public class PetrolStationFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(getString(R.string.key_recycle_view_state), recyclerView.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState != null){
+            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(getString(R.string.key_recycle_view_state));
+            recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+        }
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
@@ -227,7 +247,7 @@ public class PetrolStationFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        //isFirstLocationResult = true;
         SharedPreferences preferences = mainActivity.getSharedPreferences("settings", Context.MODE_PRIVATE);
         Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToLongBits(mainActivity.DEFAULT_DISTANCE));
         Double changedDistanceFromSettings = Double.longBitsToDouble(savedStationDistanceRawBits);
@@ -242,12 +262,33 @@ public class PetrolStationFragment extends Fragment {
         mainActivity.setCheckedFirstItem();
     }
 
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//    }
+
     @Override
     public void onPause() {
         super.onPause();
+
         if (fusedLocationProviderClient != null)
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
+//
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//    }
+//
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//    }
+//
+//    @Override
+//    public void onDestroy() {
+//        super.onDestroy();
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -271,7 +312,7 @@ public class PetrolStationFragment extends Fragment {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
-                        getPetrolStationFitInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
+                        getAllPetrolStationFittingInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
                     }
                 }
             });

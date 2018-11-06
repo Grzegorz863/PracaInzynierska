@@ -16,7 +16,7 @@ public class Oauth2AuthServerConfig extends AuthorizationServerConfigurerAdapter
 
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
-    private final int expirationAccessToken = 3600;
+    private final int expirationAccessToken = 60;
     private final int expirationRefreshToken = expirationAccessToken * 24 * 28;
 
     @Autowired
@@ -41,5 +41,6 @@ public class Oauth2AuthServerConfig extends AuthorizationServerConfigurerAdapter
                 .scopes("read","write","trust")
                 .authorizedGrantTypes("password", "refresh_token")
                 .resourceIds("resource");
+
     }
 }

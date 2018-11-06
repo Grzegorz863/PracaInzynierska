@@ -42,7 +42,7 @@ create table tcpsdb.ratings(
 
 alter table tcpsdb.ratings
 add constraint user_rating_fk
-foreign key(user_id) references tcpsdb.users(user_id);
+foreign key(user_id) references tcpsdb.users(user_id) on delete cascade;
 
 alter table tcpsdb.ratings
 add constraint station_rating_fk

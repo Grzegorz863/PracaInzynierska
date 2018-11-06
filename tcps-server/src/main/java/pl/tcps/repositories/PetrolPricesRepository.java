@@ -17,21 +17,21 @@ public interface PetrolPricesRepository extends JpaRepository<PetrolPricesEntity
 
     @Modifying
     @Transactional
-    @Query("update PetrolPricesEntity p set p.pb95Price = :pb95_price where p.stationId = :station_id")
-    void updatePb95Price(@Param("station_id") Long stationId, @Param("pb95_price") Float pb95Price);
+    @Query("update PetrolPricesEntity p set p.userId = :user_id, p.pb95Price = :pb95_price where p.stationId = :station_id")
+    void updatePb95Price(@Param("station_id") Long stationId, @Param("user_id") Long userId, @Param("pb95_price") Float pb95Price);
 
     @Modifying
     @Transactional
-    @Query("update PetrolPricesEntity p set p.pb98Price = :pb98_price where p.stationId = :station_id")
-    void updatePb98Price(@Param("station_id") Long stationId, @Param("pb98_price") Float pb98Price);
+    @Query("update PetrolPricesEntity p set p.userId = :user_id, p.pb98Price = :pb98_price where p.stationId = :station_id")
+    void updatePb98Price(@Param("station_id") Long stationId, @Param("user_id") Long userId, @Param("pb98_price") Float pb98Price);
 
     @Modifying
     @Transactional
-    @Query("update PetrolPricesEntity p set p.onPrice = :on_price where p.stationId = :station_id")
-    void updateOnPrice(@Param("station_id") Long stationId, @Param("on_price") Float onPrice);
+    @Query("update PetrolPricesEntity p set p.userId = :user_id, p.onPrice = :on_price where p.stationId = :station_id")
+    void updateOnPrice(@Param("station_id") Long stationId, @Param("user_id") Long userId, @Param("on_price") Float onPrice);
 
     @Modifying
     @Transactional
-    @Query("update PetrolPricesEntity p set p.lpgPrice = :lpg_price where p.stationId = :station_id")
-    void updateLpgPrice(@Param("station_id") Long stationId, @Param("lpg_price") Float lpgPrice);
+    @Query("update PetrolPricesEntity p set p.userId = :user_id, p.lpgPrice = :lpg_price where p.stationId = :station_id")
+    void updateLpgPrice(@Param("station_id") Long stationId, @Param("user_id") Long userId, @Param("lpg_price") Float lpgPrice);
 }

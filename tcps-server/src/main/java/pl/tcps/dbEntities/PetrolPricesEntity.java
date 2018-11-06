@@ -18,7 +18,7 @@ public class PetrolPricesEntity {
     private long stationId;
 
     @JsonProperty("user_id")
-    private long userId;
+    private Long userId;
 
     @JsonProperty("pb95_price")
     private float pb95Price;
@@ -70,12 +70,12 @@ public class PetrolPricesEntity {
     }
 
     @Basic
-    @Column(name = "user_id", nullable = false)
-    public long getUserId() {
+    @Column(name = "user_id", nullable = true)
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -160,7 +160,7 @@ public class PetrolPricesEntity {
     }
 
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, insertable = false, updatable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = true, insertable = false, updatable = false)
     public UsersEntity getUsersByUserId() {
         return usersByUserId;
     }

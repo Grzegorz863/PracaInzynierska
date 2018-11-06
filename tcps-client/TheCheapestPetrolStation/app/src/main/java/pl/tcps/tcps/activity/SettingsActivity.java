@@ -1,6 +1,7 @@
 package pl.tcps.tcps.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
@@ -8,24 +9,35 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import pl.tcps.tcps.R;
+import pl.tcps.tcps.fragment.ChangePasswordDialog;
+import pl.tcps.tcps.fragment.DeleteUserDialog;
+import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 
 import static java.security.AccessController.getContext;
 
 public class SettingsActivity extends AppCompatActivity {
 
     private SharedPreferences preferences;
+    private AccessTokenDetails accessTokenDetails;
+
+    private Button buttonChangePassword;
+    private Button buttonDeleteUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         getSupportActionBar().setTitle("Settings");
+        bindViews();
+        Intent intent = getIntent();
+        accessTokenDetails = intent.getParcelableExtra(getString(R.string.key_access_token_details));
 
         preferences = getSharedPreferences("settings" ,Context.MODE_PRIVATE);
         Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToRawLongBits(20));
@@ -52,10 +64,43 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
+            public void onNothingSelected(AdapterView<?> parent) { }
         });
 
+        setOnClickListenerChangePasswordButton();
+        setOnClickListenerDeleteUserButton();
+    }
+
+    private void setOnClickListenerChangePasswordButton() {
+        buttonChangePassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ChangePasswordDialog changePasswordDialog = new ChangePasswordDialog();
+                Bundle args = new Bundle();
+                args.putParcelable(getString(R.string.key_access_token_details), accessTokenDetails);
+                changePasswordDialog.setArguments(args);
+                changePasswordDialog.show(getSupportFragmentManager(), "change_password_dialog");
+            }
+        });
+    }
+
+    private void setOnClickListenerDeleteUserButton() {
+        buttonDeleteUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DeleteUserDialog deleteUserDialog = new DeleteUserDialog();
+                Bundle args = new Bundle();
+                args.putParcelable(getString(R.string.key_access_token_details), accessTokenDetails);
+                deleteUserDialog.setArguments(args);
+                deleteUserDialog.show(getSupportFragmentManager(), "delete_user_dialog");
+            }
+        });
+    }
+
+
+
+    private void bindViews() {
+        buttonChangePassword = findViewById(R.id.settings_change_password_button);
+        buttonDeleteUser = findViewById(R.id.settings_delete_user_button);
     }
 }

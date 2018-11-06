@@ -5,10 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.tcps.exceptions.EntityNotFoundException;
+import pl.tcps.exceptions.WrongPasswordException;
 import pl.tcps.pojo.UserDetailsResponse;
 import pl.tcps.services.UserService;
 
@@ -28,5 +27,27 @@ public class UserController {
     public ResponseEntity<UserDetailsResponse> getLoggedUserDetails(Authentication authentication){
 
         return new ResponseEntity<>(userService.getLoggedUserDetails(authentication.getName()), HttpStatus.OK) ;
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping(value = "/me/password", produces = "application/json")
+    public void changeUserPassword(Authentication authentication, @RequestHeader("old_password") String oldPassword,
+                                   @RequestHeader("new_password") String newPassword) throws EntityNotFoundException, WrongPasswordException{
+
+        String userName = authentication.getName();
+        Long userId = userService.getUserIdByName(userName);
+
+        userService.changeUserPassword(userId, oldPassword, newPassword);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(value = "/me", produces = "application/json")
+    public void deleteUser(Authentication authentication, @RequestHeader("password") String password)
+            throws EntityNotFoundException, WrongPasswordException{
+
+        String userName = authentication.getName();
+        Long userId = userService.getUserIdByName(userName);
+
+        userService.deleteUser(userId, password);
     }
 }

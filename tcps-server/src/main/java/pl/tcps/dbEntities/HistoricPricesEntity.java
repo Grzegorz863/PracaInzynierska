@@ -8,7 +8,7 @@ import java.util.Objects;
 @Table(name = "historic_prices", schema = "tcpsdb", catalog = "")
 public class HistoricPricesEntity {
     private long historicPriceId;
-    private long userId;
+    private Long userId;
     private long stationId;
     private float pb95Price;
     private float pb98Price;
@@ -30,11 +30,11 @@ public class HistoricPricesEntity {
 
     @Basic
     @Column(name = "user_id", nullable = false)
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

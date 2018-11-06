@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -138,20 +139,26 @@ public class LoginActivity extends AppCompatActivity {
 
                 String userName = loginTextView.getText().toString();
                 String password = passwordTextView.getText().toString();
-//                if(TextUtils.isEmpty(userName)) {
-//                    Toast.makeText(LoginActivity.this, "Enter username!", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                if(TextUtils.isEmpty(password)) {
-//                    Toast.makeText(LoginActivity.this, "Enter password!", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
+                if(TextUtils.isEmpty(userName)) {
+                    Toast.makeText(LoginActivity.this, "Enter username!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(TextUtils.isEmpty(password)) {
+                    Toast.makeText(LoginActivity.this, "Enter password!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 Map<String, Object> fieldMap = new HashMap<>();
                 fieldMap.put("grant_type", "password");
-                fieldMap.put("username", "user1"); // <== DO ZMIANY NA USERNAME
-                fieldMap.put("password", "user1"); // <== DO ZMIANY NA PASSWORD
+                fieldMap.put("username", userName); // <== DO ZMIANY NA USERNAME
+                fieldMap.put("password", password); // <== DO ZMIANY NA PASSWORD
                 fieldMap.put("scope", "read write trust");
+
+//                Map<String, Object> fieldMap = new HashMap<>();
+//                fieldMap.put("grant_type", "refresh_token");
+//                fieldMap.put("client_id", "android_app");
+//                fieldMap.put("refresh_token", "65244e60-a2c9-4a02-8bb7-dc8f6a6b7bd7"); // <== DO ZMIANY NA USERNAME
+//                //fieldMap.put("scope", "read write trust");
 
                 Retrofit retrofit = RetrofitBuilder.createRetrofit(LoginActivity.this);
 
@@ -181,7 +188,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         intent.putExtra("access_token_details", accessTokenDetails);
         startActivity(intent);
-        //finish();
+        finish();
     }
 
 //    private void sendAndGoToMainActivityFromFBLogin(JSONObject object) {

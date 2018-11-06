@@ -9,9 +9,11 @@
     android:padding="10dp">
 
     <LinearLayout
+        android:id="@+id/settings_linear_layout1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="40dp"
         android:orientation="horizontal">
 
         <TextView
@@ -29,6 +31,28 @@
             android:layout_height="match_parent"
             android:layout_weight="2"/>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/settings_linear_layout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/settings_linear_layout1"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/settings_change_password_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/settings_change_password_button_text"/>
+
+        <Button
+            android:id="@+id/settings_delete_user_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/settings_delete_user_button_text" />
     </LinearLayout>
 
 </RelativeLayout>

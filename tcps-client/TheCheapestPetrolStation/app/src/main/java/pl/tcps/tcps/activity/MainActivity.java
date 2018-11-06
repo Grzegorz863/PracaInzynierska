@@ -167,6 +167,7 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.nav_third_option:
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                intent.putExtra(getString(R.string.key_access_token_details), accessTokenDetails);
                 startActivity(intent);
                 break;
             case R.id.nav_fourth_option:
@@ -220,33 +221,33 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle(title);
     }
 
-    //    @Override
-//    protected void onPause() {
-//        super.onPause();
-//    }
+        @Override
+    protected void onPause() {
+        super.onPause();
+    }
 //
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
 //
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 //
-//    @Override
-//    protected void onRestart() {
-//        super.onRestart();
-//    }
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
 //
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//    }
-//
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }

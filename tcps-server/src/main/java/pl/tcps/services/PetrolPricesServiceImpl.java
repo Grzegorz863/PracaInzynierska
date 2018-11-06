@@ -66,16 +66,16 @@ public class PetrolPricesServiceImpl implements PetrolPricesService {
             throw new PetrolPricesNotExistsException("Petrol prices do not exists for this station");
 
         if(pb95Price != null)
-            petrolPricesRepository.updatePb95Price(stationId, pb95Price);
+            petrolPricesRepository.updatePb95Price(stationId, userId, pb95Price);
 
         if(pb98Price != null)
-            petrolPricesRepository.updatePb98Price(stationId, pb98Price);
+            petrolPricesRepository.updatePb98Price(stationId, userId, pb98Price);
 
         if(onPrice != null)
-            petrolPricesRepository.updateOnPrice(stationId, onPrice);
+            petrolPricesRepository.updateOnPrice(stationId, userId, onPrice);
 
         if(lpgPrice != null)
-            petrolPricesRepository.updateLpgPrice(stationId, lpgPrice);
+            petrolPricesRepository.updateLpgPrice(stationId, userId, lpgPrice);
 
         historicPricesService.addHistoricPrices(stationId, userId, pb95Price, pb98Price, onPrice, lpgPrice);
     }

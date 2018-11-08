@@ -1,6 +1,8 @@
 package pl.tcps.tcps.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -27,13 +29,18 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 import pl.tcps.tcps.R;
 import pl.tcps.tcps.api_client.LoginClient;
 import pl.tcps.tcps.api_client.retrofit.RetrofitBuilder;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 import pl.tcps.tcps.pojo.UserDetails;
+import pl.tcps.tcps.pojo.login.CheckAccessToken;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,12 +68,39 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginButton = findViewById(R.id.login_activity_button_login);
-        registrationButton = findViewById(R.id.login_activity_button_registration);
-        loginTextView = findViewById(R.id.login_activity_et_login);
-        passwordTextView = findViewById(R.id.login_activity_et_password);
+        bindViews();
 
-        setListenersForLoginButton();
+        SharedPreferences sharedPreferences = getSharedPreferences("access_token", Context.MODE_PRIVATE);
+        String accessToken = sharedPreferences.getString(getString(R.string.key_token), null);
+        String tokenType = sharedPreferences.getString(getString(R.string.key_token_type), null);
+        String refreshToken = sharedPreferences.getString(getString(R.string.key_refresh_token), null);
+
+        if(accessToken != null && tokenType != null && refreshToken != null){
+            Retrofit retrofit = RetrofitBuilder.createRetrofit(this);
+            LoginClient loginClient = retrofit.create(LoginClient.class);
+            Call<CheckAccessToken> call = loginClient.checkAccessToken(accessToken);
+            call.enqueue(new Callback<CheckAccessToken>() {
+                @Override
+                public void onResponse(Call<CheckAccessToken> call, Response<CheckAccessToken> response) {
+                    CheckAccessToken checkAccessToken = response.body();
+                    if (response.isSuccessful() && checkAccessToken != null){
+                        if (checkAccessToken.getActive()) {
+                            AccessTokenDetails accessTokenDetails = new AccessTokenDetails(accessToken, tokenType, refreshToken,
+                                    checkAccessToken.getExp(), checkAccessToken.getScope().toString());
+                            sendAndGoToMainActivityFromNativeLogin(accessTokenDetails, sharedPreferences);
+                        }
+                    }
+
+                }
+
+                @Override
+                public void onFailure(Call<CheckAccessToken> call, Throwable t) {
+
+                }
+            });
+        }
+
+        setListenersForLoginButton(sharedPreferences);
         setListenersForRegistrationButton();
 
         //KOMENTARZE SA OD FB LOGIN
@@ -122,6 +156,13 @@ public class LoginActivity extends AppCompatActivity {
 //        }
     }
 
+    private void bindViews() {
+        loginButton = findViewById(R.id.login_activity_button_login);
+        registrationButton = findViewById(R.id.login_activity_button_registration);
+        loginTextView = findViewById(R.id.login_activity_et_login);
+        passwordTextView = findViewById(R.id.login_activity_et_password);
+    }
+
     private void setListenersForRegistrationButton() {
         registrationButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void setListenersForLoginButton(){
+    private void setListenersForLoginButton(SharedPreferences sharedPreferences){
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,8 +209,9 @@ public class LoginActivity extends AppCompatActivity {
                 call.enqueue(new Callback<AccessTokenDetails>() {
                     @Override
                     public void onResponse(Call<AccessTokenDetails> call, Response<AccessTokenDetails> response) {
-                        if(response.isSuccessful()){
-                            sendAndGoToMainActivityFromNativeLogin(response.body());
+                        AccessTokenDetails accessTokenDetails = response.body();
+                        if(response.isSuccessful() && accessTokenDetails != null){
+                            sendAndGoToMainActivityFromNativeLogin(accessTokenDetails, sharedPreferences);
                         }else{
                             Toast.makeText(LoginActivity.this, "Wrong credentials", Toast.LENGTH_LONG).show();
                         }
@@ -184,8 +226,13 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void sendAndGoToMainActivityFromNativeLogin(AccessTokenDetails accessTokenDetails){
+    private void sendAndGoToMainActivityFromNativeLogin(AccessTokenDetails accessTokenDetails, SharedPreferences sharedPreferences){
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.key_token), accessTokenDetails.getAccessToken());
+        editor.putString(getString(R.string.key_token_type), accessTokenDetails.getTokenType());
+        editor.putString(getString(R.string.key_refresh_token), accessTokenDetails.getRefreshToken());
+        editor.apply();
         intent.putExtra("access_token_details", accessTokenDetails);
         startActivity(intent);
         finish();

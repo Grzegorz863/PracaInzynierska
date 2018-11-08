@@ -50,6 +50,9 @@
     <string name="delete_user_dialog_enter_pw_hint">password</string>
 
     <string name="key_access_token_details">access_token_details</string>
+    <string name="key_token">access_token</string>
+    <string name="key_token_type">token_type</string>
+    <string name="key_refresh_token">refresh_token</string>
     <string name="key_distance">distance</string>
     <string name="key_station_id">station_id</string>
     <string name="key_recycle_view_state">recycle_view_state</string>

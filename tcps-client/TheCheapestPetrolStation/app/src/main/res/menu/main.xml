@@ -13,5 +13,12 @@
         android:title="Refresh"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/main_activity_sort"
+        android:icon="@drawable/ic_sort_black_24dp"
+        android:title="Sort"
+        app:showAsAction="ifRoom" />
+
+
 
 </menu>

@@ -228,9 +228,14 @@ public class AddStationFragment extends Fragment{
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.action_menu_add_station_fragment, menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.main_activity_refresh:
+            case R.id.add_station_activity_refresh:
                 cleanTextViews();
                 return true;
 

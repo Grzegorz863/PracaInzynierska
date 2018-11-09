@@ -131,12 +131,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
+//    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        //getMenuInflater().inflate(R.menu.action_menu_petrol_station_fragment, menu);
+//        return true;
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -146,9 +146,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -182,7 +182,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void logoutUser() {
-
+        SharedPreferences sharedPreferences = getSharedPreferences("access_token", Context.MODE_PRIVATE);
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.key_token), null);
+        editor.putString(getString(R.string.key_token_type), null);
+        editor.putString(getString(R.string.key_refresh_token), null);
+        editor.commit();
+        startActivity(intent);
+        finish();
     }
 
     private void startMapActivity() {
@@ -221,33 +229,33 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setTitle(title);
     }
 
-        @Override
-    protected void onPause() {
-        super.onPause();
-    }
+//        @Override
+//    protected void onPause() {
+//        super.onPause();
+//    }
+////
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//    }
+////
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//    }
+////
+//    @Override
+//    protected void onRestart() {
+//        super.onRestart();
+//    }
 //
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }
-//
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-//
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-//
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//    }
+////
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//    }
 }

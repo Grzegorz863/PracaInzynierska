@@ -12,6 +12,12 @@
     <string name="menu_third_option">Settings</string>
     <string name="menu_fourth_option">Map</string>
 
+    <string name="popup_menu_sort_by_distance_text">Sort by distance</string>
+    <string name="popup_menu_sort_by_pb95_price_text">Sort by Pb95 price</string>
+    <string name="popup_menu_sort_by_pb98_price_text">Sort by Pb98 price</string>
+    <string name="popup_menu_sort_by_on_price_text">Sort by ON price</string>
+    <string name="popup_menu_sort_by_lpg_price_text">Sort by LPG price</string>
+
     <string name="logout">Logout</string>
     <string name="account">Account</string>
     <string name="avatar_url">https://graph.facebook.com/%1$s/picture?width=200&amp;height=200</string>

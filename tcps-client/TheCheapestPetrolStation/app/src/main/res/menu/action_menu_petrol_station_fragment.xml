@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--<item-->
+        <!--android:id="@+id/action_settings"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="@string/action_settings"-->
+        <!--app:showAsAction="never" />-->
+
+    <item
+        android:id="@+id/petrol_station_activity_refresh"
+        android:icon="@drawable/ic_refresh_white_24dp"
+        android:title="Refresh"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/petrol_station_activity_sort"
+        android:icon="@drawable/ic_sort_black_24dp"
+        android:title="Sort"
+        app:showAsAction="ifRoom" >
+
+        <menu>
+            <group android:checkableBehavior="single">
+            <item
+                android:id="@+id/popup_menu_sort_by_distance"
+                android:checked="true"
+                android:title="@string/popup_menu_sort_by_distance_text"/>
+
+            <item
+                android:id="@+id/popup_menu_sort_by_pb95_price"
+                android:title="@string/popup_menu_sort_by_pb95_price_text"/>
+
+            <item
+                android:id="@+id/popup_menu_sort_by_pb98_price"
+                android:title="@string/popup_menu_sort_by_pb98_price_text"/>
+
+            <item
+                android:id="@+id/popup_menu_sort_by_on_price"
+                android:title="@string/popup_menu_sort_by_on_price_text"/>
+
+            <item
+                android:id="@+id/popup_menu_sort_by_lpg_price"
+                android:title="@string/popup_menu_sort_by_lpg_price_text"/>
+            </group>
+        </menu>
+
+
+    </item>
+
+
+
+</menu>

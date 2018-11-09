@@ -5,11 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.provider.token.ConsumerTokenServices;
 import org.springframework.web.bind.annotation.*;
 import pl.tcps.exceptions.EntityNotFoundException;
 import pl.tcps.exceptions.WrongPasswordException;
 import pl.tcps.pojo.UserDetailsResponse;
 import pl.tcps.services.UserService;
+
+import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/users")

@@ -21,6 +21,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +44,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.net.HttpURLConnection;
+import java.util.Comparator;
 import java.util.List;
 
 import pl.tcps.tcps.R;
@@ -49,8 +52,10 @@ import pl.tcps.tcps.activity.MainActivity;
 import pl.tcps.tcps.api_client.PetrolStationClient;
 import pl.tcps.tcps.api_client.retrofit.RetrofitBuilder;
 import pl.tcps.tcps.layouts.PetrolStationRecycleViewAdapter;
+import pl.tcps.tcps.layouts.SORTING_WAYS;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
+import pl.tcps.tcps.pojo.responses.PetrolPriceRecycleViewItem;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -74,6 +79,8 @@ public class PetrolStationFragment extends Fragment {
     private AccessTokenDetails accessTokenDetails;
     private RecyclerView recyclerView;
     private Boolean isFirstLocationResult = true;
+    private List<PetrolStationRecycleViewItem> petrolStations;
+    private SORTING_WAYS sortingWay;
 
     public PetrolStationFragment() {
         // Required empty public constructor
@@ -92,6 +99,8 @@ public class PetrolStationFragment extends Fragment {
         accessTokenDetails = args.getParcelable(getString(R.string.key_access_token_details));
         distance = args.getDouble(getString(R.string.key_distance));
 
+        sortingWay = setSortingWay();
+
         recyclerView = petrolStationFragment.findViewById(R.id.petrol_stations);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(petrolStationFragment.getContext()));
@@ -108,6 +117,7 @@ public class PetrolStationFragment extends Fragment {
         return petrolStationFragment;
     }
 
+
     private void createLocationRequest() {
         locationRequest = new LocationRequest();
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -123,7 +133,7 @@ public class PetrolStationFragment extends Fragment {
             public void onLocationResult(LocationResult locationResult) {
                 List<Location> locations = locationResult.getLocations();
                 Location location = locations.get(locations.size() - 1);
-                if(isFirstLocationResult)
+                if (isFirstLocationResult)
                     getAllPetrolStationFittingInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
                 isFirstLocationResult = false;
             }
@@ -140,7 +150,8 @@ public class PetrolStationFragment extends Fragment {
             @Override
             public void onResponse(Call<List<PetrolStationRecycleViewItem>> call, Response<List<PetrolStationRecycleViewItem>> response) {
                 if (response.isSuccessful()) {
-                    List<PetrolStationRecycleViewItem> petrolStations = response.body();
+                    petrolStations = response.body();
+                    sortPetrolStations();
 
                     recyclerView.setAdapter(new PetrolStationRecycleViewAdapter(petrolStations, accessTokenDetails, recyclerView));
                 } else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
@@ -153,6 +164,7 @@ public class PetrolStationFragment extends Fragment {
             }
         });
     }
+
 
     private void createLocationClient() {
         if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -198,7 +210,7 @@ public class PetrolStationFragment extends Fragment {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable(getString(R.string.key_recycle_view_state));
             recyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
         }
@@ -273,6 +285,8 @@ public class PetrolStationFragment extends Fragment {
 
         if (fusedLocationProviderClient != null)
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+
+        saveSortingWayInSharedPreferences(sortingWay);
     }
 //
 //    @Override
@@ -290,16 +304,221 @@ public class PetrolStationFragment extends Fragment {
 //        super.onDestroy();
 //    }
 
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.action_menu_petrol_station_fragment, menu);
+        MenuItem item;
+
+        switch (sortingWay) {
+            case SORT_BY_DISTANCE:
+                item = menu.findItem(R.id.popup_menu_sort_by_distance);
+                item.setChecked(true);
+                break;
+
+            case SORT_BY_PB_95_PRICE:
+                item = menu.findItem(R.id.popup_menu_sort_by_pb95_price);
+                item.setChecked(true);
+                break;
+
+            case SORT_BY_PB_98_PRICE:
+                item = menu.findItem(R.id.popup_menu_sort_by_pb98_price);
+                item.setChecked(true);
+                break;
+
+            case SORT_BY_ON_PRICE:
+                item = menu.findItem(R.id.popup_menu_sort_by_on_price);
+                item.setChecked(true);
+                break;
+
+            case SORT_BY_LPG_PRICE:
+                item = menu.findItem(R.id.popup_menu_sort_by_lpg_price);
+                item.setChecked(true);
+                break;
+
+            default:
+                item = menu.findItem(R.id.popup_menu_sort_by_distance);
+                item.setChecked(true);
+                break;
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.main_activity_refresh:
+            case R.id.petrol_station_activity_refresh:
                 refreshRecycleView();
+                return true;
+
+            case R.id.popup_menu_sort_by_distance:
+                sortPetrolStationsByDistances();
+                sortingWay = SORTING_WAYS.SORT_BY_DISTANCE;
+                item.setChecked(true);
+                return true;
+
+            case R.id.popup_menu_sort_by_pb95_price:
+                sortPetrolStationsByPb95Price();
+                sortingWay = SORTING_WAYS.SORT_BY_PB_95_PRICE;
+                item.setChecked(true);
+                return true;
+
+            case R.id.popup_menu_sort_by_pb98_price:
+                sortPetrolStationsByPb98Price();
+                sortingWay = SORTING_WAYS.SORT_BY_PB_98_PRICE;
+                item.setChecked(true);
+                return true;
+
+            case R.id.popup_menu_sort_by_on_price:
+                sortPetrolStationsByOnPrice();
+                sortingWay = SORTING_WAYS.SORT_BY_ON_PRICE;
+                item.setChecked(true);
+                return true;
+
+            case R.id.popup_menu_sort_by_lpg_price:
+                sortPetrolStationsByLpgPrice();
+                sortingWay = SORTING_WAYS.SORT_BY_LPG_PRICE;
+                item.setChecked(true);
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    private void saveSortingWayInSharedPreferences(SORTING_WAYS sortingWay) {
+        SharedPreferences preferences = mainActivity.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("sorting_way", sortingWay.getValue());
+        editor.apply();
+    }
+
+    private SORTING_WAYS setSortingWay() {
+        SharedPreferences preferences = mainActivity.getSharedPreferences("settings", Context.MODE_PRIVATE);
+        Integer way = preferences.getInt("sorting_way", 0);
+        MenuItem item;
+
+        switch (way) {
+            case 0:
+                return SORTING_WAYS.SORT_BY_DISTANCE;
+            case 1:
+                return SORTING_WAYS.SORT_BY_PB_95_PRICE;
+            case 2:
+                return SORTING_WAYS.SORT_BY_PB_98_PRICE;
+            case 3:
+                return SORTING_WAYS.SORT_BY_ON_PRICE;
+            case 4:
+                return SORTING_WAYS.SORT_BY_LPG_PRICE;
+        }
+
+        item = mainActivity.findViewById(R.id.popup_menu_sort_by_distance);
+        item.setChecked(true);
+        return SORTING_WAYS.SORT_BY_DISTANCE;
+    }
+
+    private void sortPetrolStations() {
+
+        switch (sortingWay) {
+            case SORT_BY_DISTANCE:
+                sortPetrolStationsByDistances();
+                break;
+
+            case SORT_BY_PB_95_PRICE:
+                sortPetrolStationsByPb95Price();
+                break;
+
+            case SORT_BY_PB_98_PRICE:
+                sortPetrolStationsByPb98Price();
+                break;
+
+            case SORT_BY_ON_PRICE:
+                sortPetrolStationsByOnPrice();
+                break;
+
+            case SORT_BY_LPG_PRICE:
+                sortPetrolStationsByLpgPrice();
+                break;
+
+            default:
+                sortPetrolStationsByLpgPrice();
+
+        }
+    }
+
+    private void sortPetrolStationsByDistances() {
+        if (petrolStations != null && petrolStations.size() != 0) {
+            petrolStations.sort(Comparator.comparing(PetrolStationRecycleViewItem::getDistance));
+            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
+                    accessTokenDetails, recyclerView);
+            recyclerView.setAdapter(adapter);
+        }
+    }
+
+    private void sortPetrolStationsByPb95Price() {
+        if (petrolStations != null && petrolStations.size() != 0) {
+            petrolStations.sort((o1, o2) -> {
+                PetrolPriceRecycleViewItem prices1 = o1.getPriceRecycleViewItem();
+                PetrolPriceRecycleViewItem prices2 = o2.getPriceRecycleViewItem();
+                if (prices1.getPb95Price() == 0f)
+                    return 1;
+                if (prices2.getPb95Price() == 0f)
+                    return -1;
+                return prices1.getPb95Price() > prices2.getPb95Price() ? 1 : (prices1.getPb95Price() < prices2.getPb95Price()) ? -1 : 0;
+            });
+            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
+                    accessTokenDetails, recyclerView);
+            recyclerView.setAdapter(adapter);
+        }
+    }
+
+    private void sortPetrolStationsByPb98Price() {
+        if (petrolStations != null && petrolStations.size() != 0) {
+            petrolStations.sort((o1, o2) -> {
+                PetrolPriceRecycleViewItem prices1 = o1.getPriceRecycleViewItem();
+                PetrolPriceRecycleViewItem prices2 = o2.getPriceRecycleViewItem();
+                if (prices1.getPb98Price() == 0f)
+                    return 1;
+                if (prices2.getPb98Price() == 0f)
+                    return -1;
+                return prices1.getPb98Price() > prices2.getPb98Price() ? 1 : (prices1.getPb98Price() < prices2.getPb98Price()) ? -1 : 0;
+            });
+            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
+                    accessTokenDetails, recyclerView);
+            recyclerView.setAdapter(adapter);
+        }
+    }
+
+    private void sortPetrolStationsByOnPrice() {
+        if (petrolStations != null && petrolStations.size() != 0) {
+            petrolStations.sort((o1, o2) -> {
+                PetrolPriceRecycleViewItem prices1 = o1.getPriceRecycleViewItem();
+                PetrolPriceRecycleViewItem prices2 = o2.getPriceRecycleViewItem();
+                if (prices1.getOnPrice() == 0f)
+                    return 1;
+                if (prices2.getOnPrice() == 0f)
+                    return -1;
+                return prices1.getOnPrice() > prices2.getOnPrice() ? 1 : (prices1.getOnPrice() < prices2.getOnPrice()) ? -1 : 0;
+            });
+            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
+                    accessTokenDetails, recyclerView);
+            recyclerView.setAdapter(adapter);
+        }
+    }
+
+    private void sortPetrolStationsByLpgPrice() {
+        if (petrolStations != null && petrolStations.size() != 0) {
+            petrolStations.sort((o1, o2) -> {
+                PetrolPriceRecycleViewItem prices1 = o1.getPriceRecycleViewItem();
+                PetrolPriceRecycleViewItem prices2 = o2.getPriceRecycleViewItem();
+                if (prices1.getLpgPrice() == 0f)
+                    return 1;
+                if (prices2.getLpgPrice() == 0f)
+                    return -1;
+                return prices1.getLpgPrice() > prices2.getLpgPrice() ? 1 : (prices1.getLpgPrice() < prices2.getLpgPrice()) ? -1 : 0;
+            });
+            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
+                    accessTokenDetails, recyclerView);
+            recyclerView.setAdapter(adapter);
         }
     }
 

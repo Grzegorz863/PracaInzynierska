@@ -4,7 +4,6 @@ package pl.tcps.tcps.fragment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -16,7 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,6 +52,7 @@ import pl.tcps.tcps.api_client.PetrolStationClient;
 import pl.tcps.tcps.api_client.retrofit.RetrofitBuilder;
 import pl.tcps.tcps.layouts.PetrolStationRecycleViewAdapter;
 import pl.tcps.tcps.layouts.SORTING_WAYS;
+import pl.tcps.tcps.other.LocationConfiguration;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
 import pl.tcps.tcps.pojo.responses.PetrolPriceRecycleViewItem;
@@ -109,7 +109,8 @@ public class PetrolStationFragment extends Fragment {
         if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
         } else {
-            displayLocationSettingsRequest(petrolStationFragment.getContext());
+            createLocationRequest();
+            LocationConfiguration.displayLocationSettingsRequest(petrolStationFragment.getContext(), mainActivity, locationRequest);
             createLocationCallback(distance, accessTokenDetails);
             createLocationClient();
         }
@@ -173,34 +174,6 @@ public class PetrolStationFragment extends Fragment {
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
     }
 
-    private void displayLocationSettingsRequest(Context context) {
-        createLocationRequest();
-
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
-        builder.setAlwaysShow(true);
-
-        SettingsClient settingsClient = LocationServices.getSettingsClient(context);
-        Task<LocationSettingsResponse> result = settingsClient.checkLocationSettings(builder.build());
-
-        result.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception error) {
-                Integer statusCode = ((ApiException) error).getStatusCode();
-                switch (statusCode) {
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        try {
-                            ResolvableApiException resolvable = (ResolvableApiException) error;
-                            resolvable.startResolutionForResult(mainActivity, 1);
-                        } catch (IntentSender.SendIntentException ignored) {
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                        break;
-                }
-            }
-        });
-    }
-
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -223,36 +196,15 @@ public class PetrolStationFragment extends Fragment {
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    displayLocationSettingsRequest(petrolStationFragment.getContext());
+                    createLocationRequest();
+                    LocationConfiguration.displayLocationSettingsRequest(petrolStationFragment.getContext(), mainActivity, locationRequest);
                     createLocationCallback(distance, accessTokenDetails);
                     createLocationClient();
                 } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
-                    showLocationPermissionDenialInformation();
+                    LocationConfiguration.show(mainActivity);
                 }
             }
         }
-    }
-
-    private void showLocationPermissionDenialInformation() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity, R.style.Theme_AppCompat_Dialog_Alert);
-        builder
-                .setTitle("App does not have locate permission")
-                .setMessage(R.string.permission_denied_message)
-                .setIcon(R.drawable.ic_location_permission_denied_24dp)
-                .setPositiveButton(R.string.permission_denied_ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                })
-                .setNeutralButton(R.string.permission_denied_close_app, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mainActivity.finishAndRemoveTask();
-                    }
-                })
-                .show();
-
     }
 
     @SuppressLint("MissingPermission")
@@ -524,14 +476,18 @@ public class PetrolStationFragment extends Fragment {
 
     @SuppressLint("MissingPermission")
     private void refreshRecycleView() {
-
-        displayLocationSettingsRequest(petrolStationFragment.getContext());
+        createLocationRequest();
+        LocationConfiguration.displayLocationSettingsRequest(petrolStationFragment.getContext(), mainActivity, locationRequest);
         if (fusedLocationProviderClient != null)
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(mainActivity, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
                         getAllPetrolStationFittingInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
+                    }else {
+                        isFirstLocationResult = true;
+                        createLocationCallback(distance, accessTokenDetails);
+
                     }
                 }
             });

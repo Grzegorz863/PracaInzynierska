@@ -162,16 +162,21 @@ public class MainActivity extends AppCompatActivity
             case R.id.nav_first_option:
                 createPetrolStationFragment(savedStationDistance);
                 break;
+
             case R.id.nav_second_option:
                 createAddStationFragment();
                 break;
+
             case R.id.nav_third_option:
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 intent.putExtra(getString(R.string.key_access_token_details), accessTokenDetails);
                 startActivity(intent);
                 break;
+
             case R.id.nav_fourth_option:
                 startMapActivity();
+                break;
+
             case R.id.nav_logout:
                 logoutUser();
         }
@@ -194,6 +199,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startMapActivity() {
+        Intent intent = new Intent(MainActivity.this, MapsActivity.class);
+        intent.putExtra(getString(R.string.key_access_token_details), accessTokenDetails);
+        intent.putExtra(getString(R.string.key_distance), savedStationDistance);
+        startActivity(intent);
     }
 
     private void createAddStationFragment() {

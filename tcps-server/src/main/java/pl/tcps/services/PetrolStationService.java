@@ -48,4 +48,8 @@ public interface PetrolStationService {
 
     @PreAuthorize("hasAuthority('android_user')")
     GeoLocationResponse getStationGeoLocation(Long stationId) throws EntityNotFoundException;
+
+    @PreAuthorize("hasAuthority('android_user')")
+    Collection<PetrolStationMapMarker> findPetrolStationByDistanceForMap(Double latitude, Double longitude, Double distance)
+            throws EntityNotFoundException;
 }

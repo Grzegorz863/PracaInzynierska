@@ -167,6 +167,35 @@ public class PetrolStationServiceImpl implements PetrolStationService {
         return new GeoLocationResponse(petrolStationEntity.getStationName(), petrolStationEntity.getLatitude(),petrolStationEntity.getLongitude());
     }
 
+    @Override
+    public Collection<PetrolStationMapMarker> findPetrolStationByDistanceForMap(Double currentLatitude, Double currentLongitude, Double distanceInKM) throws EntityNotFoundException {
+
+        Double actualDistance;
+        Double distanceInMeters = distanceInKM * 1000;
+        List<PetrolStationMapMarker> petrolStationsForMap = new ArrayList<>();
+        Collection<PetrolStationEntity> petrolStationEntities = petrolStationRepository.findAll();
+
+        for (PetrolStationEntity petrolStationEntity : petrolStationEntities){
+            actualDistance = countDistanceBetweenTwoPoints(currentLatitude, currentLongitude,
+                    petrolStationEntity.getLatitude(), petrolStationEntity.getLongitude());
+            if(actualDistance<=distanceInMeters)
+                petrolStationsForMap.add(preparePetrolStationToDeserializeForMap(petrolStationEntity));
+        }
+
+        if(petrolStationsForMap.isEmpty())
+            throw new EntityNotFoundException("petrol station in chosen distance not found");
+
+        return petrolStationsForMap;
+    }
+
+    private PetrolStationMapMarker preparePetrolStationToDeserializeForMap(PetrolStationEntity petrolStationEntity) {
+        AddressResponse addressResponse = new AddressResponse(petrolStationEntity.getStreet(),
+                petrolStationEntity.getApartmentNumber(), petrolStationEntity.getCity(), petrolStationEntity.getPostalCode());
+
+        return new PetrolStationMapMarker(petrolStationEntity.getStationId(), petrolStationEntity.getStationName(),
+                petrolStationEntity.getLatitude(), petrolStationEntity.getLongitude(), addressResponse);
+    }
+
     private Double countDistanceBetweenTwoPoints(Double latitudePoint1, Double longitudePoint1,
                                                  Double latitudePoint2, Double longitudePoint2){
 

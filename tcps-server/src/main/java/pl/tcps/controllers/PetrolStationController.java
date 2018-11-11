@@ -186,4 +186,17 @@ public class PetrolStationController {
 
         return new ResponseEntity<>(petrolStationEntity, httpHeaders, HttpStatus.CREATED);
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/map/{latitude}/{longitude}/{distance}", produces = "application/json")
+    public ResponseEntity<Collection<PetrolStationMapMarker>> findPetrolStationByDistanceForMap(@PathVariable("latitude") Double latitude,
+                                                                                                @PathVariable("longitude") Double longitude,
+                                                                                                @PathVariable("distance") Double distance)
+            throws EntityNotFoundException {
+
+        Collection<PetrolStationMapMarker> petrolStationEntitiesForMap =
+                petrolStationService.findPetrolStationByDistanceForMap(latitude, longitude, distance);
+
+        return new ResponseEntity<>(petrolStationEntitiesForMap, HttpStatus.OK);
+    }
 }

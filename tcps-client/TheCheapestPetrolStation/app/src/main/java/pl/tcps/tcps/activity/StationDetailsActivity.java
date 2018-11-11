@@ -82,6 +82,7 @@ public class StationDetailsActivity extends AppCompatActivity {
         setOnClickListenerForLeadMeButton();
         setOnClickListenerForUpdatePricesButton(chosenStationId);
         setOnClickListenerForAddressTextViewAndImageView(chosenStationId);
+
     }
 
     public void refreshActivityContent(){
@@ -342,6 +343,10 @@ public class StationDetailsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.station_details_refresh:
                 refreshActivityContent();
+                return true;
+
+            case android.R.id.home:
+                finish();
                 return true;
 
             default:

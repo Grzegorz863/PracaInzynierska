@@ -6,6 +6,7 @@ import java.util.Map;
 import pl.tcps.tcps.pojo.responses.CreatePetrolStationResponse;
 import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
 import pl.tcps.tcps.pojo.responses.GeoLocationResponse;
+import pl.tcps.tcps.pojo.responses.PetrolStationMapMarker;
 import pl.tcps.tcps.pojo.responses.PetrolStationSpecificInfoResponse;
 import retrofit2.Call;
 import retrofit2.http.FieldMap;
@@ -35,5 +36,11 @@ public interface PetrolStationClient {
     @GET("station/{station_id}/location")
     Call<GeoLocationResponse> getPetrolStationGeoLocation(@Header("Authorization") String accessToken,
                                                           @Path("station_id") Long stationId);
+
+    @GET("station/map/{latitude}/{longitude}/{distance}")
+    Call<List<PetrolStationMapMarker>> findPetrolStationByDistanceForMap(@Header("Authorization") String accessToken,
+                                                                         @Path("latitude") Double latitude,
+                                                                         @Path("longitude") Double longitude,
+                                                                         @Path("distance") Double distance);
 
 }

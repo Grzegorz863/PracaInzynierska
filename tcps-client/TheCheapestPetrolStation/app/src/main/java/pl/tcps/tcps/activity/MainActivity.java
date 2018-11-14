@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void logoutUser() {
+    void logoutUser() {
         SharedPreferences sharedPreferences = getSharedPreferences("access_token", Context.MODE_PRIVATE);
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity
         args.putDouble(getString(R.string.key_distance), distance);
         petrolStationFragment.setArguments(args);
         final FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.flMain, petrolStationFragment);
+        fragmentTransaction.replace(R.id.flMain, petrolStationFragment, getString(R.string.key_petrol_station_fragment_tag));
         fragmentTransaction.commit();
     }
 

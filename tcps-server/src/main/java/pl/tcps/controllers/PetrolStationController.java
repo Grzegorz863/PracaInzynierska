@@ -34,7 +34,7 @@ public class PetrolStationController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/id/{station_id}", produces = "application/json")
+    @GetMapping(value = "/{station_id}/details", produces = "application/json")
     public ResponseEntity<PetrolStationSpecificInfoResponse> getPetrolStationSpecyficInfo(@PathVariable("station_id") Long stationId) throws EntityNotFoundException {
 
         PetrolStationSpecificInfoResponse petrolStationSpecificInfo = petrolStationService.getPetrolStationSpecificInfo(stationId);
@@ -108,12 +108,18 @@ public class PetrolStationController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping(value = "/{stationId}/rating", produces = "application/json")
+    @GetMapping(value = "/{stationId}/rating/user", produces = "application/json")
     public ResponseEntity<Double> getStationRatingForOneUser(@PathVariable("stationId") Long stationId,
                                                              Authentication authentication) throws EntityNotFoundException {
         String userName = authentication.getName();
         Long userId = userService.getUserIdByName(userName);
         return new ResponseEntity<>(petrolStationService.getStationRatingForOneUser(userId, stationId), HttpStatus.OK);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/{stationId}/rating", produces = "application/json")
+    public ResponseEntity<Double> getStationAverageRating(@PathVariable("stationId") Long stationId) throws EntityNotFoundException {
+        return new ResponseEntity<>(petrolStationService.getStationAverageRating(stationId), HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -199,4 +205,5 @@ public class PetrolStationController {
 
         return new ResponseEntity<>(petrolStationEntitiesForMap, HttpStatus.OK);
     }
+
 }

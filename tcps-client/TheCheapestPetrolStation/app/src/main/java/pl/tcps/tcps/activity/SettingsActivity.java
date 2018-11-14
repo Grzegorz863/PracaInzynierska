@@ -26,6 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private SharedPreferences preferences;
     private AccessTokenDetails accessTokenDetails;
+    private MainActivity parentActivity;
 
     private Button buttonChangePassword;
     private Button buttonDeleteUser;
@@ -37,22 +38,29 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Settings");
         bindViews();
         Intent intent = getIntent();
+        parentActivity = (MainActivity) getParent();
         accessTokenDetails = intent.getParcelableExtra(getString(R.string.key_access_token_details));
 
-        preferences = getSharedPreferences("settings" ,Context.MODE_PRIVATE);
+        preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToRawLongBits(20));
         Double savedStationDistance = Double.longBitsToDouble(savedStationDistanceRawBits);
 
         Spinner spinnerStationDistance = findViewById(R.id.settings_station_distance_spinner);
         List<Double> allDistances = new ArrayList<>();
-        allDistances.add(1d);allDistances.add(2d);allDistances.add(5d);allDistances.add(10d);
-        allDistances.add(20d);allDistances.add(50d);allDistances.add(100d);allDistances.add(200d);
+        allDistances.add(1d);
+        allDistances.add(2d);
+        allDistances.add(5d);
+        allDistances.add(10d);
+        allDistances.add(20d);
+        allDistances.add(50d);
+        allDistances.add(100d);
+        allDistances.add(200d);
 
         ArrayAdapter<Double> dataAdapter = new ArrayAdapter<>(this, R.layout.distance_spinner_item, allDistances);
         dataAdapter.setDropDownViewResource(R.layout.distance_spinner_item);
         spinnerStationDistance.setAdapter(dataAdapter);
 
-        if(savedStationDistance!=0)
+        if (savedStationDistance != 0)
             spinnerStationDistance.setSelection(allDistances.indexOf(savedStationDistance));
 
         spinnerStationDistance.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -61,10 +69,11 @@ public class SettingsActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putLong(getString(R.string.settings_saved_station_distance), Double.doubleToRawLongBits((Double) parent.getItemAtPosition(position)));
                 editor.apply();
-        }
+            }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
         });
 
         setOnClickListenerChangePasswordButton();
@@ -97,7 +106,9 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-
+    public void logoutAfterDeleteAccount() {
+        parentActivity.logoutUser();
+    }
 
     private void bindViews() {
         buttonChangePassword = findViewById(R.id.settings_change_password_button);

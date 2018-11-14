@@ -63,6 +63,14 @@ public class PetrolStationServiceImpl implements PetrolStationService {
     }
 
     @Override
+    public Double getStationAverageRating(Long stationId) throws EntityNotFoundException {
+        if(!petrolStationRepository.existsByStationId(stationId))
+            throw new EntityNotFoundException("petrol station not found");
+
+        return ratingService.countAverageRatingForPetrolStation(stationId);
+    }
+
+    @Override
     public RatingsEntity createStationRating(Long userId, Long stationId, Double rate) throws StationRatedAlreadyByThisUserException {
         return ratingService.createStationRating(userId, stationId, rate);
     }

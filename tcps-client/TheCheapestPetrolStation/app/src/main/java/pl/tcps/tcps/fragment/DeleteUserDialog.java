@@ -74,6 +74,7 @@ public class DeleteUserDialog extends AppCompatDialogFragment {
                 if (response.isSuccessful()){
                     if(response.code() == HttpURLConnection.HTTP_NO_CONTENT) {
                         Toast.makeText(activity, "You deleted you account", Toast.LENGTH_LONG).show();
+                        activity.logoutAfterDeleteAccount();
                         activity.finishAndRemoveTask();
                     }
                 }else{

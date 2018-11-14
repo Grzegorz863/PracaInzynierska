@@ -30,6 +30,9 @@ public interface PetrolStationService {
     Double getStationRatingForOneUser(Long userId, Long stationId) throws EntityNotFoundException;
 
     @PreAuthorize("hasAuthority('android_user')")
+    Double getStationAverageRating(Long stationId) throws EntityNotFoundException;
+
+    @PreAuthorize("hasAuthority('android_user')")
     RatingsEntity createStationRating(Long userId, Long stationId, Double rate) throws StationRatedAlreadyByThisUserException;
 
     @PreAuthorize("hasAuthority('android_user')")

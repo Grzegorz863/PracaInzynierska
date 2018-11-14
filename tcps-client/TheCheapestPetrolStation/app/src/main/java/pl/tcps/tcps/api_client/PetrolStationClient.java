@@ -29,7 +29,7 @@ public interface PetrolStationClient {
                                                                          @Path("longitude") Double longitude,
                                                                          @Path("distance") Double distance);
 
-    @GET("station/id/{station_id}")
+    @GET("station/{station_id}/details")
     Call<PetrolStationSpecificInfoResponse> getPetrolStationSpecificInfo(@Header("Authorization") String accessToken,
                                                                          @Path("station_id") Long stationId);
 

@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import pl.tcps.tcps.R;
 import pl.tcps.tcps.activity.StationDetailsActivity;
+import pl.tcps.tcps.fragment.PetrolStationFragment;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
 
@@ -24,6 +25,7 @@ public class PetrolStationRecycleViewAdapter extends RecyclerView.Adapter<Petrol
     private AccessTokenDetails accessTokenDetails;
     private Context context;
     private RecyclerView recyclerView;
+    private PetrolStationFragment parentFragment;
 
     static class PetrolStationItemViewHolder extends RecyclerView.ViewHolder {
         TextView tvStationName;
@@ -49,10 +51,12 @@ public class PetrolStationRecycleViewAdapter extends RecyclerView.Adapter<Petrol
     }
 
     public PetrolStationRecycleViewAdapter(List<PetrolStationRecycleViewItem> petrolStationList,
-                                           AccessTokenDetails accessTokenDetails, RecyclerView recyclerView) {
+                                           AccessTokenDetails accessTokenDetails, RecyclerView recyclerView,
+                                           PetrolStationFragment parentFragment) {
         this.petrolStationList = petrolStationList;
         this.accessTokenDetails = accessTokenDetails;
         this.recyclerView = recyclerView;
+        this.parentFragment = parentFragment;
     }
 
     @NonNull
@@ -63,16 +67,17 @@ public class PetrolStationRecycleViewAdapter extends RecyclerView.Adapter<Petrol
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Integer chosenStation = recyclerView.getChildAdapterPosition(v);
-                Long stationId = petrolStationList.get(chosenStation).getStationId();
-                Double distance = petrolStationList.get(chosenStation).getDistance();
+                Integer recycleViewStationIndex = recyclerView.getChildAdapterPosition(v);
+                Long stationId = petrolStationList.get(recycleViewStationIndex).getStationId();
+                Double distance = petrolStationList.get(recycleViewStationIndex).getDistance();
 
                 Intent intent = new Intent(context, StationDetailsActivity.class);
                 intent.putExtra(context.getString(R.string.key_access_token_details), accessTokenDetails);
                 intent.putExtra(context.getString(R.string.key_station_id), stationId);
                 intent.putExtra(context.getString(R.string.key_distance), distance);
+                intent.putExtra(context.getString(R.string.key_recycleview_station_index), recycleViewStationIndex);
 
-                context.startActivity(intent);
+                parentFragment.startActivityForResult(intent, parentFragment.STATION_DETAILS_REQUEST_CODE);
             }
         });
 

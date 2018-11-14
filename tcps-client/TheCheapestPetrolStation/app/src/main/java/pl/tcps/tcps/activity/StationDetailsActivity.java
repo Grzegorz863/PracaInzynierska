@@ -1,8 +1,11 @@
 package pl.tcps.tcps.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -43,6 +46,7 @@ public class StationDetailsActivity extends AppCompatActivity {
     private Context context;
     private Double distance;
     private Long chosenStationId;
+    private Integer recycleViewStationIndex;
 
     private TextView tvStationName;
     private ImageView ivAddressSymbol;
@@ -70,12 +74,20 @@ public class StationDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_station_details);
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null){
+           actionBar.setDisplayHomeAsUpEnabled(true);
+           actionBar.setTitle(R.string.action_bar_station_details);
+        }
+
+
         bindViews();
         context = this;
         Intent intent = getIntent();
         accessTokenDetails = intent.getParcelableExtra(getString(R.string.key_access_token_details));
         chosenStationId = intent.getLongExtra(getString(R.string.key_station_id), 0);
         distance = intent.getDoubleExtra(getString(R.string.key_distance), 0);
+        recycleViewStationIndex = intent.getIntExtra(getString(R.string.key_recycleview_station_index), -1);
 
         refreshActivityContent();
         setOnClickListenerForMakeRateButton(chosenStationId);
@@ -208,6 +220,7 @@ public class StationDetailsActivity extends AppCompatActivity {
         });
     }
 
+
     private void findPetrolStationLocation(Boolean isNavigation) {
         Retrofit retrofit = RetrofitBuilder.createRetrofit(context);
         PetrolStationClient petrolStationClient = retrofit.create(PetrolStationClient.class);
@@ -330,6 +343,14 @@ public class StationDetailsActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
+        intent.putExtra(getString(R.string.key_recycleview_station_index), recycleViewStationIndex);
+        setResult(Activity.RESULT_OK, intent);
+        super.onBackPressed();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.station_details_menu, menu);
@@ -346,6 +367,9 @@ public class StationDetailsActivity extends AppCompatActivity {
                 return true;
 
             case android.R.id.home:
+                Intent intent = new Intent();
+                intent.putExtra(getString(R.string.key_recycleview_station_index), recycleViewStationIndex);
+                setResult(Activity.RESULT_OK, intent);
                 finish();
                 return true;
 

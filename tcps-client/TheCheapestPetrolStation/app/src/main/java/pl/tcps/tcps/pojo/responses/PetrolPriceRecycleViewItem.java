@@ -26,6 +26,13 @@ public class PetrolPriceRecycleViewItem {
         this.lpgPrice = lpgPrice;
     }
 
+    public PetrolPriceRecycleViewItem(PetrolPricesResponse petrolPricesResponse) {
+        this.pb95Price = petrolPricesResponse.getPb95Price();
+        this.pb98Price = petrolPricesResponse.getPb98Price();
+        this.onPrice = petrolPricesResponse.getOnPrice();
+        this.lpgPrice = petrolPricesResponse.getLpgPrice();
+    }
+
     public Float getPb95Price() {
         return pb95Price;
     }

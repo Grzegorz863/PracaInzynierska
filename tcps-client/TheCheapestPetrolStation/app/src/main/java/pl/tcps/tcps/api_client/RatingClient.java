@@ -16,15 +16,21 @@ import retrofit2.http.Path;
 
 public interface RatingClient {
 
-    @GET("station/{stationId}/rating")
+    @GET("station/{stationId}/rating/user")
     Call<Double> getStationRatingForOneUser(@Header("Authorization") String accessToken,
                                             @Path("stationId") Long stationId);
 
+    @GET("station/{stationId}/rating")
+    Call<Double> getStationAverateRating(@Header("Authorization") String accessToken,
+                                         @Path("stationId") Long stationId);
+
     @FormUrlEncoded
     @POST("station/rating")
-    Call<StationRatingResponse> createStationRating(@Header("Authorization") String accessToken, @FieldMap Map<String, Object> body);
+    Call<StationRatingResponse> createStationRating(@Header("Authorization") String accessToken,
+                                                    @FieldMap Map<String, Object> body);
 
     @FormUrlEncoded
     @PUT("station/rating")
-    Call<StationRatingResponse> updateStationRating(@Header("Authorization") String accessToken, @FieldMap Map<String, Object> body);
+    Call<StationRatingResponse> updateStationRating(@Header("Authorization") String accessToken,
+                                                    @FieldMap Map<String, Object> body);
 }

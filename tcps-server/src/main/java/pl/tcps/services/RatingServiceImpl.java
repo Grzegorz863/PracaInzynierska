@@ -24,20 +24,19 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public Double countAverageRatingForPetrolStation(PetrolStationEntity petrolStationEntity) {
-
-        Collection<RatingsEntity> ratingsEntities = ratingRepository.findByStationId(petrolStationEntity.getStationId());
-        if(ratingsEntities==null)
-            return 0d;
-
-        OptionalDouble optionalAverage = ratingsEntities.stream().mapToDouble(RatingsEntity::getRate).average();
-
-        return optionalAverage.isPresent() ? optionalAverage.getAsDouble() : 0d;
+        return _countAverageRatingForPetrolStation(petrolStationEntity.getStationId());
     }
+
+    @Override
+    public Double countAverageRatingForPetrolStation(Long stationId) {
+        return _countAverageRatingForPetrolStation(stationId);
+    }
+
 
     @Override
     public Double getStationRatingForOneUser(Long userId, Long stationId) throws EntityNotFoundException {
 
-        if(ratingRepository.existsByUserIdAndStationId(userId, stationId)){
+        if (ratingRepository.existsByUserIdAndStationId(userId, stationId)) {
             RatingsEntity ratingsEntity = ratingRepository.findByUserIdAndStationId(userId, stationId);
             return ratingsEntity.getRate();
         } else
@@ -48,7 +47,7 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public RatingsEntity createStationRating(Long userId, Long stationId, Double rate) throws StationRatedAlreadyByThisUserException {
 
-        if(ratingRepository.existsByUserIdAndStationId(userId, stationId))
+        if (ratingRepository.existsByUserIdAndStationId(userId, stationId))
             throw new StationRatedAlreadyByThisUserException("This user already added rating to that station");
 
         RatingsEntity ratingsEntity = new RatingsEntity(userId, stationId, rate);
@@ -60,10 +59,20 @@ public class RatingServiceImpl implements RatingService {
     @Override
     public void updateStationRating(Long userId, Long stationId, Double newRate) throws NoRatingToUpdateException {
 
-        if(!ratingRepository.existsByUserIdAndStationId(userId, stationId))
+        if (!ratingRepository.existsByUserIdAndStationId(userId, stationId))
             throw new NoRatingToUpdateException("User did not rate this station");
 
         RatingsEntity ratingsEntity = ratingRepository.findByUserIdAndStationId(userId, stationId);
         ratingRepository.updateStationRating(ratingsEntity.getRatingId(), newRate);
+    }
+
+    private Double _countAverageRatingForPetrolStation(Long stationId) {
+        Collection<RatingsEntity> ratingsEntities = ratingRepository.findByStationId(stationId);
+        if (ratingsEntities == null)
+            return 0d;
+
+        OptionalDouble optionalAverage = ratingsEntities.stream().mapToDouble(RatingsEntity::getRate).average();
+
+        return optionalAverage.isPresent() ? optionalAverage.getAsDouble() : 0d;
     }
 }

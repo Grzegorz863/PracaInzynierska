@@ -6,6 +6,7 @@
     <string name="nav_header_subtitle">email@email.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="action_bar_station_details">Station Details</string>
 
     <string name="menu_first_option">Petrol Stations</string>
     <string name="menu_second_option">Add Station</string>
@@ -62,6 +63,8 @@
     <string name="key_distance">distance</string>
     <string name="key_station_id">station_id</string>
     <string name="key_recycle_view_state">recycle_view_state</string>
+    <string name="key_petrol_station_fragment_tag">petrol_station_fragment_tag</string>
+    <string name="key_recycleview_station_index">recycleview_station_index</string>
 
     <string name="recycleview_pb95_text_value">Pb95:\u0020</string>
     <string name="recycleview_pb98_text_value">Pb98:\u0020</string>

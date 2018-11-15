@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +38,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.net.HttpURLConnection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import pl.tcps.tcps.R;
 import pl.tcps.tcps.activity.MainActivity;
@@ -51,6 +53,7 @@ import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
 import pl.tcps.tcps.pojo.responses.PetrolPriceRecycleViewItem;
 import pl.tcps.tcps.pojo.responses.PetrolPricesResponse;
+import pl.tcps.tcps.pojo.responses.PetrolStationReloadRecycleViewResponse;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -90,7 +93,12 @@ public class PetrolStationFragment extends Fragment {
 
         petrolStationFragmentView = inflater.inflate(R.layout.fragment_petrol_station, container, false);
         mainActivity = (MainActivity) getActivity();
-        mainActivity.setActionBarTitle("Petrol Stations");
+        //mainActivity.setActionBarTitle("Petrol Stations");
+        ActionBar actionBar = mainActivity.getSupportActionBar();
+        if(actionBar != null){
+            actionBar.setDisplayShowTitleEnabled(false);
+            //actionBar.setNavigationMode();
+        }
         setHasOptionsMenu(true);
 
         petrolStationFragment = (PetrolStationFragment) mainActivity
@@ -137,6 +145,8 @@ public class PetrolStationFragment extends Fragment {
                 Location location = locations.get(locations.size() - 1);
                 if (isFirstLocationResult)
                     getAllPetrolStationFittingInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
+                else
+                    getNewDataAndUpdateRecycleView(location.getLatitude(), location.getLongitude(), accessTokenDetails);
                 isFirstLocationResult = false;
             }
         };
@@ -167,6 +177,49 @@ public class PetrolStationFragment extends Fragment {
         });
     }
 
+    private void getNewDataAndUpdateRecycleView(Double latitude, Double longitude, AccessTokenDetails accessTokenDetails) {
+        Retrofit retrofit = RetrofitBuilder.createRetrofit(petrolStationFragmentView.getContext());
+        PetrolStationClient petrolStationClient = retrofit.create(PetrolStationClient.class);
+        String authHeader = accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken();
+
+        if (petrolStations == null)
+            return;
+
+        List<Long> stationsId = petrolStations.stream().map(PetrolStationRecycleViewItem::getStationId).collect(Collectors.toList());
+
+        Call<List<PetrolStationReloadRecycleViewResponse>> call =
+                petrolStationClient.reloadSpecificPetrolStations(authHeader, latitude, longitude, stationsId);
+
+        call.enqueue(new Callback<List<PetrolStationReloadRecycleViewResponse>>() {
+            @Override
+            public void onResponse(Call<List<PetrolStationReloadRecycleViewResponse>> call, Response<List<PetrolStationReloadRecycleViewResponse>> response) {
+                List<PetrolStationReloadRecycleViewResponse> stationsToReload = response.body();
+                if(response.isSuccessful() && stationsToReload != null){
+                    updateRecycleView(stationsToReload);
+                }else
+                    if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
+                        Toast.makeText(petrolStationFragmentView.getContext(), "No station was found!", Toast.LENGTH_SHORT).show();
+                    else Toast.makeText(petrolStationFragmentView.getContext(), "Error on server", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<List<PetrolStationReloadRecycleViewResponse>> call, Throwable t) {
+                Toast.makeText(petrolStationFragmentView.getContext(), "Error", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateRecycleView(List<PetrolStationReloadRecycleViewResponse> stationsToReload) {
+        for (PetrolStationRecycleViewItem station : petrolStations){
+            PetrolStationReloadRecycleViewResponse stationToReload = stationsToReload.stream()
+                    .filter(item -> item.getStationId().equals(station.getStationId())).collect(Collectors.toList()).get(0);
+            station.setPriceRecycleViewItem(new PetrolPriceRecycleViewItem(stationToReload.getPetrolPricesResponse()));
+            station.setRating(stationToReload.getRating());
+            station.setDistance(stationToReload.getDistance());
+        }
+        Toast.makeText(petrolStationFragmentView.getContext(), "Just updated!", Toast.LENGTH_SHORT).show();
+        recyclerView.getAdapter().notifyDataSetChanged();
+    }
 
     private void createLocationClient() {
         if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -220,12 +273,6 @@ public class PetrolStationFragment extends Fragment {
 
             PetrolStationRecycleViewItem oldStation = petrolStations.get(recycleViewStationIndex);
             loadStationPriceAndRatingThenUpdateRecycleViewItem(oldStation, recycleViewStationIndex);
-
-            PetrolStationRecycleViewItem petrolStationRecycleViewItem = new PetrolStationRecycleViewItem(
-                    oldStation.getStationId(), oldStation.getStationName(), oldStation.getConsortiumName(),
-                    oldStation.getPriceRecycleViewItem(), 1.0, oldStation.getDistance());
-            petrolStations.set(recycleViewStationIndex, petrolStationRecycleViewItem);
-            recyclerView.getAdapter().notifyItemChanged(recycleViewStationIndex);
         }
     }
 
@@ -301,12 +348,11 @@ public class PetrolStationFragment extends Fragment {
         Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToLongBits(mainActivity.DEFAULT_DISTANCE));
         Double changedDistanceFromSettings = Double.longBitsToDouble(savedStationDistanceRawBits);
 
-        //petrolStations.set(pe)
-
-        //PetrolStationRecycleViewAdapter adapter = (PetrolStationRecycleViewAdapter) recyclerView.getAdapter();
-
-        if (!changedDistanceFromSettings.equals(distance))
+        if (!changedDistanceFromSettings.equals(distance)) {
             createLocationCallback(changedDistanceFromSettings, accessTokenDetails);
+            distance = changedDistanceFromSettings;
+            refreshRecycleView();
+        }
 
         if (fusedLocationProviderClient != null)
             fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());

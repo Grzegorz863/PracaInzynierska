@@ -16,17 +16,21 @@ public class PetrolStationMapMarker {
     @SerializedName("longitude")
     private Double longitude;
 
+    @SerializedName("distance")
+    private Double distance;
+
     @SerializedName("address")
     private AddressResponse address;
 
     public PetrolStationMapMarker() {
     }
 
-    public PetrolStationMapMarker(Long stationId, String stationName, Double latitude, Double longitude, AddressResponse address) {
+    public PetrolStationMapMarker(Long stationId, String stationName, Double latitude, Double longitude, Double distance, AddressResponse address) {
         this.stationId = stationId;
         this.stationName = stationName;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.distance = distance;
         this.address = address;
     }
 
@@ -60,6 +64,14 @@ public class PetrolStationMapMarker {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Double distance) {
+        this.distance = distance;
     }
 
     public AddressResponse getAddress() {

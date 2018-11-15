@@ -187,7 +187,7 @@ public class PetrolStationServiceImpl implements PetrolStationService {
             actualDistance = countDistanceBetweenTwoPoints(currentLatitude, currentLongitude,
                     petrolStationEntity.getLatitude(), petrolStationEntity.getLongitude());
             if(actualDistance<=distanceInMeters)
-                petrolStationsForMap.add(preparePetrolStationToDeserializeForMap(petrolStationEntity));
+                petrolStationsForMap.add(preparePetrolStationToDeserializeForMap(petrolStationEntity, actualDistance));
         }
 
         if(petrolStationsForMap.isEmpty())
@@ -196,16 +196,37 @@ public class PetrolStationServiceImpl implements PetrolStationService {
         return petrolStationsForMap;
     }
 
-    private PetrolStationMapMarker preparePetrolStationToDeserializeForMap(PetrolStationEntity petrolStationEntity) {
+    @Override
+    public Collection<PetrolStationReloadRecycleViewResponse> reloadSpecificPetrolStations(Double currentLatitude,
+                                                                                           Double currentLongitude, List<Long> stationsId)
+            throws EntityNotFoundException {
+
+        List<PetrolStationReloadRecycleViewResponse> responseStations = new ArrayList<>();
+        for(Long stationId : stationsId){
+            PetrolPricesResponse prices = getPetrolPricesForStation(stationId);
+            Double rating = getStationAverageRating(stationId);
+            PetrolStationEntity petrolStationEntity = petrolStationRepository.findByStationId(stationId);
+            if(petrolStationEntity == null)
+                throw new EntityNotFoundException(String.format("Station with id %d does not exist!", stationId));
+
+            Double distance = countDistanceBetweenTwoPoints(currentLatitude, currentLongitude,
+                    petrolStationEntity.getLatitude(), petrolStationEntity.getLongitude());
+
+            responseStations.add(new PetrolStationReloadRecycleViewResponse(stationId, prices, distance, rating));
+        }
+        return responseStations;
+    }
+
+    private PetrolStationMapMarker preparePetrolStationToDeserializeForMap(PetrolStationEntity petrolStationEntity, Double actualDistance) {
         AddressResponse addressResponse = new AddressResponse(petrolStationEntity.getStreet(),
                 petrolStationEntity.getApartmentNumber(), petrolStationEntity.getCity(), petrolStationEntity.getPostalCode());
 
         return new PetrolStationMapMarker(petrolStationEntity.getStationId(), petrolStationEntity.getStationName(),
-                petrolStationEntity.getLatitude(), petrolStationEntity.getLongitude(), addressResponse);
+                petrolStationEntity.getLatitude(), petrolStationEntity.getLongitude(), actualDistance, addressResponse);
     }
 
     private Double countDistanceBetweenTwoPoints(Double latitudePoint1, Double longitudePoint1,
-                                                 Double latitudePoint2, Double longitudePoint2){
+                                                 Double latitudePoint2, Double longitudePoint2) {
 
         final Integer earthRadius = 6371;
 

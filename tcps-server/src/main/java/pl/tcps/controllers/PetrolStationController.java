@@ -19,6 +19,7 @@ import pl.tcps.services.UserService;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/station")
@@ -206,4 +207,16 @@ public class PetrolStationController {
         return new ResponseEntity<>(petrolStationEntitiesForMap, HttpStatus.OK);
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping(value = "/reload/{latitude}/{longitude}", produces = "application/json")
+    public ResponseEntity<Collection<PetrolStationReloadRecycleViewResponse>> reloadSpecificPetrolStations(@PathVariable("latitude") Double latitude,
+                                                                                           @PathVariable("longitude") Double longitude,
+                                                                                           @RequestParam("stations_id") List<Long> stationsId)
+            throws EntityNotFoundException {
+
+        Collection<PetrolStationReloadRecycleViewResponse> petrolStationReloadRecycleViewResponses =
+                petrolStationService.reloadSpecificPetrolStations(latitude, longitude, stationsId);
+
+        return new ResponseEntity<>(petrolStationReloadRecycleViewResponses, HttpStatus.OK);
+    }
 }

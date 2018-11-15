@@ -71,6 +71,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Double distance;
     private AccessTokenDetails accessTokenDetails;
     private List<PetrolStationMapMarker> petrolStations;
+
     //private Map<Marker, Long> markersWithStationsId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +98,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         createLocationRequest();
         createLocationCallback(distance, accessTokenDetails);
         createLocationClient();
-        //mMap.addMarker(new MarkerOptions()..position(sydney).title("Marker in Sydney"));
-        //mMap.moveCamera(CameraUpdateFactory.newLatLng(googleMap.ge));
     }
-
-
 
     private void getDeviceLocation() {
         try {
@@ -115,12 +112,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
                         } else {
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(50.15, 19.01), DEFAULT_ZOOM)); //Katowice
-                            //mMap.getUiSettings().setMyLocationButtonEnabled(false);
+                            mMap.getUiSettings().setMyLocationButtonEnabled(false);
                         }
                     }
                 });
             }
-        } catch(SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -154,7 +151,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
     }
 
-
     private void getAllPetrolStationFittingInRange(Double latitude, Double longitude, Double distance, AccessTokenDetails accessTokenDetails) {
         Retrofit retrofit = RetrofitBuilder.createRetrofit(this);
         PetrolStationClient petrolStationClient = retrofit.create(PetrolStationClient.class);
@@ -180,9 +176,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void putMapMarkers(List<PetrolStationMapMarker> petrolStations) {
-        Map<Marker, Long> markersWithStationsId = new HashMap<>();
+        Map<Marker, PetrolStationMapMarker> markersWithStationsId = new HashMap<>();
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
-        for (PetrolStationMapMarker station : petrolStations){
+        for (PetrolStationMapMarker station : petrolStations) {
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(new LatLng(station.getLatitude(), station.getLongitude()));
             markerOptions.title(station.getStationName());
@@ -190,28 +186,28 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             markerOptions.snippet(String.format(Locale.ENGLISH, "%s %s, %s", address.getStreet(), address.getApartmentNumber(), address.getCity()));
             Marker marker = mMap.addMarker(markerOptions);
             builder.include(marker.getPosition());
-            markersWithStationsId.put(marker, station.getStationId());
+            markersWithStationsId.put(marker, station);
         }
         LatLngBounds bounds = builder.build();
         int height = getResources().getDisplayMetrics().heightPixels;
         int width = getResources().getDisplayMetrics().widthPixels;
-        int padding = (int)(width * 0.1);
+        int padding = (int) (width * 0.1);
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
         mMap.animateCamera(cameraUpdate);
         setMarkerOnClickListener(markersWithStationsId);
     }
 
-    private void setMarkerOnClickListener(Map<Marker, Long> markersWithStationsId) {
+    private void setMarkerOnClickListener(Map<Marker, PetrolStationMapMarker> markersWithStationsId) {
         Context context = this;
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
-                Long stationId = markersWithStationsId.get(marker);
+                PetrolStationMapMarker station = markersWithStationsId.get(marker);
 
                 Intent intent = new Intent(context, StationDetailsActivity.class);
                 intent.putExtra(context.getString(R.string.key_access_token_details), accessTokenDetails);
-                intent.putExtra(context.getString(R.string.key_station_id), stationId);
-                intent.putExtra(context.getString(R.string.key_distance), distance);
+                intent.putExtra(context.getString(R.string.key_station_id), station.getStationId());
+                intent.putExtra(context.getString(R.string.key_distance), station.getDistance());
 
                 context.startActivity(intent);
             }
@@ -237,7 +233,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 mMap.getUiSettings().setMyLocationButtonEnabled(false);
                 checkLocationPermission();
             }
-        } catch (SecurityException e)  {
+        } catch (SecurityException e) {
             Log.e("Exception: %s", e.getMessage());
         }
     }
@@ -283,7 +279,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 public void onSuccess(Location location) {
                     if (location != null) {
                         getAllPetrolStationFittingInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
-                    }else {
+                    } else {
                         isFirstLocationResult = true;
                         createLocationCallback(distance, accessTokenDetails);
 
@@ -298,7 +294,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0) {
-               if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                     mLocationPermissionGranted = false;
                     LocationConfiguration.show(this);
                 }

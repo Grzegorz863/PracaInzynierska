@@ -263,8 +263,11 @@ public class MainActivity extends AppCompatActivity
 //        super.onStart();
 //    }
 ////
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//    }
+    @Override
+    protected void onResume() {
+        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        Long savedStationDistanceRawBits = preferences.getLong(getString(R.string.settings_saved_station_distance), Double.doubleToLongBits(DEFAULT_DISTANCE));
+        savedStationDistance = Double.longBitsToDouble(savedStationDistanceRawBits);
+        super.onResume();
+    }
 }

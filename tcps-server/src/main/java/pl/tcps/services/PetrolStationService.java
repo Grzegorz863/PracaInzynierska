@@ -1,7 +1,10 @@
 package pl.tcps.services;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import pl.tcps.dbEntities.PetrolPricesEntity;
 import pl.tcps.dbEntities.PetrolStationEntity;
 import pl.tcps.dbEntities.RatingsEntity;
@@ -10,6 +13,7 @@ import pl.tcps.pojo.*;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 
 @Service
 public interface PetrolStationService {
@@ -55,4 +59,8 @@ public interface PetrolStationService {
     @PreAuthorize("hasAuthority('android_user')")
     Collection<PetrolStationMapMarker> findPetrolStationByDistanceForMap(Double latitude, Double longitude, Double distance)
             throws EntityNotFoundException;
+
+    @PreAuthorize("hasAuthority('android_user')")
+    Collection<PetrolStationReloadRecycleViewResponse> reloadSpecificPetrolStations(Double latitude, Double longitude,
+                                                                                    List<Long> stationsId) throws EntityNotFoundException;
 }

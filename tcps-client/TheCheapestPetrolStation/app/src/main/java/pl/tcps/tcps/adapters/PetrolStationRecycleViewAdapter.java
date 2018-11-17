@@ -1,4 +1,4 @@
-package pl.tcps.tcps.layouts;
+package pl.tcps.tcps.adapters;
 
 import android.content.Context;
 import android.content.Intent;

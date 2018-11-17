@@ -10,8 +10,8 @@
 
     <string name="menu_first_option">Petrol Stations</string>
     <string name="menu_second_option">Add Station</string>
-    <string name="menu_third_option">Settings</string>
-    <string name="menu_fourth_option">Map</string>
+    <string name="menu_third_option">Map</string>
+    <string name="menu_fourth_option">Settings</string>
 
     <string name="popup_menu_sort_by_distance_text">Sort by distance</string>
     <string name="popup_menu_sort_by_pb95_price_text">Sort by Pb95 price</string>

@@ -168,13 +168,13 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case R.id.nav_third_option:
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                intent.putExtra(getString(R.string.key_access_token_details), accessTokenDetails);
-                startActivity(intent);
+                startMapActivity();
                 break;
 
             case R.id.nav_fourth_option:
-                startMapActivity();
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                intent.putExtra(getString(R.string.key_access_token_details), accessTokenDetails);
+                startActivity(intent);
                 break;
 
             case R.id.nav_logout:

@@ -8,19 +8,22 @@
             android:id="@+id/nav_first_option"
             android:icon="@drawable/ic_local_gas_station_black"
             android:title="@string/menu_first_option" />
+
         <item
             android:id="@+id/nav_second_option"
             android:icon="@drawable/ic_add_box_black"
             android:title="@string/menu_second_option" />
+
         <item
             android:id="@+id/nav_third_option"
-            android:icon="@drawable/ic_settings_black"
+            android:icon="@drawable/ic_map_black_24dp"
             android:title="@string/menu_third_option" />
 
         <item
             android:id="@+id/nav_fourth_option"
-            android:icon="@drawable/ic_map_black_24dp"
+            android:icon="@drawable/ic_settings_black"
             android:title="@string/menu_fourth_option" />
+
     </group>
 
     <item android:title="@string/account">

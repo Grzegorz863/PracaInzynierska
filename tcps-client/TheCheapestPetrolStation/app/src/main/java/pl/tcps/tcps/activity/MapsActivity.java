@@ -28,7 +28,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -38,7 +37,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.net.HttpURLConnection;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -47,9 +45,7 @@ import java.util.Map;
 import pl.tcps.tcps.R;
 import pl.tcps.tcps.api_client.PetrolStationClient;
 import pl.tcps.tcps.api_client.retrofit.RetrofitBuilder;
-import pl.tcps.tcps.layouts.PetrolStationRecycleViewAdapter;
 import pl.tcps.tcps.other.LocationConfiguration;
-import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 import pl.tcps.tcps.pojo.responses.AddressResponse;
 import pl.tcps.tcps.pojo.responses.PetrolStationMapMarker;
@@ -176,6 +172,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void putMapMarkers(List<PetrolStationMapMarker> petrolStations) {
+        mMap.clear();
         Map<Marker, PetrolStationMapMarker> markersWithStationsId = new HashMap<>();
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
         for (PetrolStationMapMarker station : petrolStations) {

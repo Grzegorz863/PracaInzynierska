@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity {
     //ProgressBar progressBar;
     //RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(100,100);
 
+    private ProgressBar progressBar;
     private CardView loginButton;
     private CardView registrationButton;
     private TextView loginTextView;
@@ -69,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         bindViews();
-
+        startProgressBar();
         SharedPreferences sharedPreferences = getSharedPreferences("access_token", Context.MODE_PRIVATE);
         String accessToken = sharedPreferences.getString(getString(R.string.key_token), null);
         String tokenType = sharedPreferences.getString(getString(R.string.key_token_type), null);
@@ -79,27 +80,31 @@ public class LoginActivity extends AppCompatActivity {
             Retrofit retrofit = RetrofitBuilder.createRetrofit(this);
             LoginClient loginClient = retrofit.create(LoginClient.class);
             Call<CheckAccessToken> call = loginClient.checkAccessToken(accessToken);
+            Context context = this;
             call.enqueue(new Callback<CheckAccessToken>() {
                 @Override
                 public void onResponse(Call<CheckAccessToken> call, Response<CheckAccessToken> response) {
                     CheckAccessToken checkAccessToken = response.body();
-                    if (response.isSuccessful() && checkAccessToken != null){
+                    if (response.isSuccessful() && checkAccessToken != null) {
                         if (checkAccessToken.getActive()) {
                             AccessTokenDetails accessTokenDetails = new AccessTokenDetails(accessToken, tokenType, refreshToken,
                                     checkAccessToken.getExp(), checkAccessToken.getScope().toString());
                             sendAndGoToMainActivityFromNativeLogin(accessTokenDetails, sharedPreferences);
+
                         }
                     }
-
+                    stopProgressBar();
                 }
 
                 @Override
                 public void onFailure(Call<CheckAccessToken> call, Throwable t) {
-
+                    stopProgressBar();
+                    Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
                 }
             });
         }
 
+        stopProgressBar();
         setListenersForLoginButton(sharedPreferences);
         setListenersForRegistrationButton();
 
@@ -157,10 +162,21 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void bindViews() {
+        progressBar = findViewById(R.id.login_activity_progress_bar);
         loginButton = findViewById(R.id.login_activity_button_login);
         registrationButton = findViewById(R.id.login_activity_button_registration);
         loginTextView = findViewById(R.id.login_activity_et_login);
         passwordTextView = findViewById(R.id.login_activity_et_password);
+    }
+
+    private void stopProgressBar(){
+        progressBar.setVisibility(View.GONE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void startProgressBar(){
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     private void setListenersForRegistrationButton() {
@@ -214,11 +230,13 @@ public class LoginActivity extends AppCompatActivity {
                             sendAndGoToMainActivityFromNativeLogin(accessTokenDetails, sharedPreferences);
                         }else{
                             Toast.makeText(LoginActivity.this, "Wrong credentials", Toast.LENGTH_LONG).show();
+                            stopProgressBar();
                         }
                     }
 
                     @Override
                     public void onFailure(Call<AccessTokenDetails> call, Throwable t) {
+                        stopProgressBar();
                         Toast.makeText(LoginActivity.this, "Login error", Toast.LENGTH_LONG).show();
                     }
                 });
@@ -234,6 +252,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString(getString(R.string.key_refresh_token), accessTokenDetails.getRefreshToken());
         editor.apply();
         intent.putExtra("access_token_details", accessTokenDetails);
+        stopProgressBar();
         startActivity(intent);
         finish();
     }

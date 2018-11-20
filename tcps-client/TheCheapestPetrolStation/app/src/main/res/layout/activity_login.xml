@@ -13,11 +13,14 @@
     tools:context="pl.tcps.tcps.activity.LoginActivity">
 
 <ProgressBar
+    android:id="@+id/login_activity_progress_bar"
     android:layout_width="120dp"
     android:layout_height="120dp"
-    android:visibility="visible"
     android:layout_centerInParent="true"
-    />
+    style="?android:attr/progressBarStyleLargeInverse"
+    android:indeterminateTint="@color/progress_bar_color"
+    android:indeterminate="true"
+    android:visibility="invisible"/>
 
     
     <ImageView

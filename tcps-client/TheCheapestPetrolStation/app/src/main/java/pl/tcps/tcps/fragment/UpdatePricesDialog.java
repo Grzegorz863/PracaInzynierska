@@ -9,7 +9,9 @@ import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.net.HttpURLConnection;
@@ -35,6 +37,7 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
     private EditText etPb98Price;
     private EditText etOnPrice;
     private EditText etLpgPrice;
+    private ProgressBar progressBar;
 
     private Boolean stationHasPetrolPrice = false;
 
@@ -47,6 +50,7 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.update_prices_dialog_layout, null);
         bindViews(view);
+        startProgressBar();
 
         Long stationId = getArguments().getLong(getString(R.string.key_station_id));
         AccessTokenDetails accessTokenDetails = getArguments().getParcelable(getString(R.string.key_access_token_details));
@@ -59,18 +63,23 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
             @Override
             public void onResponse(Call<PetrolPricesResponse> call, Response<PetrolPricesResponse> response) {
                 PetrolPricesResponse petrolPricesResponse = response.body();
-                if(response.isSuccessful() && petrolPricesResponse!=null){
+                if (response.isSuccessful() && petrolPricesResponse != null) {
                     fillViews(petrolPricesResponse);
                     stationHasPetrolPrice = existPetrolPrices(petrolPricesResponse); //MEGA WAŻNE ŻEBY ZROBIC TU PROGRESS BAR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BO TEN TRUE MOZE NIE ZDAŻYĆ SIE USTAWIC
-                }else
-                if(response.code() == HttpURLConnection.HTTP_NOT_FOUND)
-                    fillViews(new PetrolPricesResponse(0f,0f,0f,0f));
-                else
-                    Toast.makeText(activity, "Error on server", Toast.LENGTH_SHORT).show();
+                    stopProgressBar();
+                } else {
+                    if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
+                        fillViews(new PetrolPricesResponse(0f, 0f, 0f, 0f));
+                    else
+                        Toast.makeText(activity, "Error on server", Toast.LENGTH_SHORT).show();
+
+                    stopProgressBar();
+                }
             }
 
             @Override
             public void onFailure(Call<PetrolPricesResponse> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -80,12 +89,13 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
                 .setCancelable(true)
                 .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) { }
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
                 })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if(stationHasPetrolPrice)
+                        if (stationHasPetrolPrice)
                             updatePetrolPrices(authHeader, petrolPricesClient, stationId);
                         else
                             createPetrolPrices(authHeader, petrolPricesClient, stationId);
@@ -96,7 +106,7 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
         return builder.create();
     }
 
-    private boolean existPetrolPrices(PetrolPricesResponse petrolPricesResponse){
+    private boolean existPetrolPrices(PetrolPricesResponse petrolPricesResponse) {
         return petrolPricesResponse.getPb95Price() != 0 || petrolPricesResponse.getPb98Price() != 0 ||
                 petrolPricesResponse.getOnPrice() != 0 || petrolPricesResponse.getLpgPrice() != 0;
     }
@@ -107,24 +117,25 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
         if (bodyData == null)
             return;
 
+        startProgressBar();
         Call<PetrolPricesResponse> call = petrolPricesClient.createPetrolPrice(authHeader, bodyData);
         call.enqueue(new Callback<PetrolPricesResponse>() {
             @Override
             public void onResponse(Call<PetrolPricesResponse> call, Response<PetrolPricesResponse> response) {
                 PetrolPricesResponse petrolPricesResponse = response.body();
-                if(response.isSuccessful() && petrolPricesResponse != null) {
+                stopProgressBar();
+                if (response.isSuccessful() && petrolPricesResponse != null) {
                     activity.refreshActivityContent();
                     Toast.makeText(activity, "Prices have been added!", Toast.LENGTH_SHORT).show();
-                }
+                } else if (response.code() == HttpURLConnection.HTTP_SEE_OTHER)
+                    Toast.makeText(activity, "Petrol at this station already has prices", Toast.LENGTH_SHORT).show();
                 else
-                    if(response.code() == HttpURLConnection.HTTP_SEE_OTHER)
-                        Toast.makeText(activity, "Petrol at this station already has prices", Toast.LENGTH_SHORT).show();
-                    else
-                        Toast.makeText(activity, "Error on server", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, "Error on server", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFailure(Call<PetrolPricesResponse> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -136,21 +147,23 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
         if (bodyData == null)
             return;
 
+        startProgressBar();
         Call<PetrolPricesResponse> call = petrolPricesClient.updatePetrolPrice(authHeader, bodyData);
         call.enqueue(new Callback<PetrolPricesResponse>() {
             @Override
             public void onResponse(Call<PetrolPricesResponse> call, Response<PetrolPricesResponse> response) {
-                if(response.isSuccessful()) {
+                stopProgressBar();
+                if (response.isSuccessful()) {
                     if (response.code() == HttpURLConnection.HTTP_NO_CONTENT) {
                         activity.refreshActivityContent();
                         Toast.makeText(activity, "Prices have been updated!", Toast.LENGTH_SHORT).show();
                     }
-                }else {
+                } else {
                     if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
                         Toast.makeText(activity, "This station did not have petrol prices yet!", Toast.LENGTH_SHORT).show();
                     else Toast.makeText(activity, "Error on server", Toast.LENGTH_SHORT).show();
 
-                    if(response.code() == 422) //UNPROCESSABLE_ENTITY
+                    if (response.code() == 422) //UNPROCESSABLE_ENTITY
                         Toast.makeText(activity, "Enter at least one price!", Toast.LENGTH_SHORT).show();
                     else Toast.makeText(activity, "Error on server", Toast.LENGTH_SHORT).show();
                 }
@@ -158,12 +171,13 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
 
             @Override
             public void onFailure(Call<PetrolPricesResponse> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private Map<String, Object> createBodyData(Long stationId){
+    private Map<String, Object> createBodyData(Long stationId) {
 
         Map<String, Object> bodyData = new HashMap<>();
         bodyData.put("station_id", stationId);
@@ -173,22 +187,32 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
         String onPrice = etOnPrice.getText().toString();
         String lpgPrice = etLpgPrice.getText().toString();
 
-        if(TextUtils.isEmpty(pb95Price) && TextUtils.isEmpty(pb98Price) && TextUtils.isEmpty(onPrice) && TextUtils.isEmpty(lpgPrice))
+        if (TextUtils.isEmpty(pb95Price) && TextUtils.isEmpty(pb98Price) && TextUtils.isEmpty(onPrice) && TextUtils.isEmpty(lpgPrice))
             return null;
 
-        if(!TextUtils.isEmpty(pb95Price))
+        if (!TextUtils.isEmpty(pb95Price))
             bodyData.put("pb95_price", pb95Price);
 
-        if(!TextUtils.isEmpty(pb98Price))
+        if (!TextUtils.isEmpty(pb98Price))
             bodyData.put("pb98_price", pb98Price);
 
-        if(!TextUtils.isEmpty(onPrice))
+        if (!TextUtils.isEmpty(onPrice))
             bodyData.put("on_price", onPrice);
 
-        if(!TextUtils.isEmpty(lpgPrice))
+        if (!TextUtils.isEmpty(lpgPrice))
             bodyData.put("lpg_price", lpgPrice);
 
         return bodyData;
+    }
+
+    private void stopProgressBar() {
+        progressBar.setVisibility(View.GONE);
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void startProgressBar() {
+        activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     private void fillViews(PetrolPricesResponse prices) {
@@ -200,15 +224,17 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
 
     private void bindViews(View view) {
         etPb95Price = view.findViewById(R.id.update_prices_dialog_pb95_price_value);
-        etPb95Price.setFilters(new InputFilter[] {new UpdatePriceInputFilter()});
+        etPb95Price.setFilters(new InputFilter[]{new UpdatePriceInputFilter()});
 
         etPb98Price = view.findViewById(R.id.update_prices_dialog_pb98_price_value);
-        etPb98Price.setFilters(new InputFilter[] {new UpdatePriceInputFilter()});
+        etPb98Price.setFilters(new InputFilter[]{new UpdatePriceInputFilter()});
 
         etOnPrice = view.findViewById(R.id.update_prices_dialog_on_price_value);
-        etOnPrice.setFilters(new InputFilter[] {new UpdatePriceInputFilter()});
+        etOnPrice.setFilters(new InputFilter[]{new UpdatePriceInputFilter()});
 
         etLpgPrice = view.findViewById(R.id.update_prices_dialog_lpg_price_value);
-        etLpgPrice.setFilters(new InputFilter[] {new UpdatePriceInputFilter()});
+        etLpgPrice.setFilters(new InputFilter[]{new UpdatePriceInputFilter()});
+
+        progressBar = view.findViewById(R.id.update_prices_dialog_progress_bar);
     }
 }

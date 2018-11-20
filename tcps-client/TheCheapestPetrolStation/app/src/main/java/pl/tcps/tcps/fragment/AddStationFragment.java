@@ -10,8 +10,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -41,7 +43,7 @@ import retrofit2.Retrofit;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AddStationFragment extends Fragment{
+public class AddStationFragment extends Fragment {
 
     private MainActivity mainActivity;
     private final List<String> consortiumsNames = new ArrayList<>();
@@ -56,6 +58,7 @@ public class AddStationFragment extends Fragment{
     private Switch switchHasFood;
     private TextView tvDescription;
     private Button addStationButton;
+    private ProgressBar progressBar;
 
     public AddStationFragment() {
         // Required empty public constructor
@@ -67,10 +70,11 @@ public class AddStationFragment extends Fragment{
                              Bundle savedInstanceState) {
 
         addStationFragment = inflater.inflate(R.layout.fragment_add_station, container, false);
-        mainActivity = (MainActivity)getActivity();
+        mainActivity = (MainActivity) getActivity();
         mainActivity.setActionBarTitle("Add Petrol Stations");
         bindViews();
         setHasOptionsMenu(true);
+        startProgressBar();
 
         Bundle args = getArguments();
         AccessTokenDetails accessTokenDetails = args.getParcelable(getString(R.string.key_access_token_details));
@@ -83,21 +87,23 @@ public class AddStationFragment extends Fragment{
         call.enqueue(new Callback<Collection<ConsortiumResponse>>() {
             @Override
             public void onResponse(Call<Collection<ConsortiumResponse>> call, final Response<Collection<ConsortiumResponse>> response) {
-                if(response.isSuccessful()){
-                    final Collection<ConsortiumResponse> consortiumResponses = response.body();
-                    consortiumResponses.forEach(consortiumResponse ->consortiumsNames.add(consortiumResponse.getConsortiumName()));
-
+                final Collection<ConsortiumResponse> consortiumResponses = response.body();
+                if (response.isSuccessful() && consortiumResponses != null) {
+                    consortiumResponses.forEach(consortiumResponse -> consortiumsNames.add(consortiumResponse.getConsortiumName()));
                     Spinner consortiumsSpinner = addStationFragment.findViewById(R.id.add_station_consortium_name_spinner);
                     ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(addStationFragment.getContext(), R.layout.support_simple_spinner_dropdown_item, consortiumsNames);
                     dataAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
                     consortiumsSpinner.setAdapter(dataAdapter);
-                    }else
-                        Toast.makeText(addStationFragment.getContext(),"Problem with consortium name on server", Toast.LENGTH_SHORT).show();
+                } else
+                    Toast.makeText(addStationFragment.getContext(), "Problem with consortium name on server", Toast.LENGTH_SHORT).show();
+
+                stopProgressBar();
             }
 
             @Override
             public void onFailure(Call<Collection<ConsortiumResponse>> call, Throwable t) {
-                Toast.makeText(addStationFragment.getContext(),"Connection error with server", Toast.LENGTH_SHORT).show();
+                stopProgressBar();
+                Toast.makeText(addStationFragment.getContext(), "Connection error with server", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -116,6 +122,7 @@ public class AddStationFragment extends Fragment{
         switchHasFood = addStationFragment.findViewById(R.id.add_station_has_food_switch);
         tvDescription = addStationFragment.findViewById(R.id.add_station_description);
         addStationButton = addStationFragment.findViewById(R.id.add_station_add_station_button);
+        progressBar = addStationFragment.findViewById(R.id.add_station_progress_bar);
     }
 
     @Override
@@ -125,7 +132,7 @@ public class AddStationFragment extends Fragment{
     }
 
     private void createNewStation(View addStationButton, View addStationFragment,
-                                  AccessTokenDetails accessTokenDetails){
+                                  AccessTokenDetails accessTokenDetails) {
 
         String stationName = tvStationName.getText().toString();
         if (TextUtils.isEmpty(stationName)) {
@@ -186,21 +193,23 @@ public class AddStationFragment extends Fragment{
         fieldMap.put("has_food", hasFood);
         fieldMap.put("description", description);
 
+        startProgressBar();
         Call<CreatePetrolStationResponse> call = petrolStationClient.createPetrolStation(authorizationHeader, fieldMap);
 
         call.enqueue(new Callback<CreatePetrolStationResponse>() {
             @Override
             public void onResponse(Call<CreatePetrolStationResponse> call, Response<CreatePetrolStationResponse> response) {
-                if(response.isSuccessful()){
+                stopProgressBar();
+                if (response.isSuccessful()) {
                     CreatePetrolStationResponse createPetrolStationResponse = response.body();
                     Toast.makeText(addStationFragment.getContext(), "Created station: "
                             + createPetrolStationResponse.getStationName(), Toast.LENGTH_SHORT).show();
-                }else{
-                    if(response.code() == HttpURLConnection.HTTP_NOT_FOUND)
+                } else {
+                    if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
                         Toast.makeText(addStationFragment.getContext(), "You entered wrong address!",
                                 Toast.LENGTH_SHORT).show();
                     else {
-                        if(response.code() == HttpURLConnection.HTTP_SEE_OTHER)
+                        if (response.code() == HttpURLConnection.HTTP_SEE_OTHER)
                             Toast.makeText(addStationFragment.getContext(),
                                     "There is already station with the same name or address!",
                                     Toast.LENGTH_LONG).show();
@@ -212,12 +221,23 @@ public class AddStationFragment extends Fragment{
 
             @Override
             public void onFailure(Call<CreatePetrolStationResponse> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(addStationFragment.getContext(), "Add station error!", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void cleanTextViews(){
+    private void stopProgressBar() {
+        progressBar.setVisibility(View.GONE);
+        mainActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void startProgressBar() {
+        mainActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void cleanTextViews() {
         tvStationName.setText(null);
         tvStreet.setText(null);
         tvApartmentNumber.setText(null);

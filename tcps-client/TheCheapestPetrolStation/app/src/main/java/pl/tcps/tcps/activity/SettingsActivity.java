@@ -107,7 +107,15 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void logoutAfterDeleteAccount() {
-        parentActivity.logoutUser();
+        SharedPreferences sharedPreferences = getSharedPreferences("access_token", Context.MODE_PRIVATE);
+        Intent intent = new Intent(SettingsActivity.this, LoginActivity.class);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(getString(R.string.key_token), null);
+        editor.putString(getString(R.string.key_token_type), null);
+        editor.putString(getString(R.string.key_refresh_token), null);
+        editor.commit();
+        startActivity(intent);
+        finish();
     }
 
     private void bindViews() {

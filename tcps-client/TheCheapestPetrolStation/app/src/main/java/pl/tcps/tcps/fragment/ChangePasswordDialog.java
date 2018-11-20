@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatDialogFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.net.HttpURLConnection;
@@ -32,6 +34,7 @@ public class ChangePasswordDialog extends AppCompatDialogFragment {
     private EditText etOldPassword;
     private EditText etNewPassword;
     private EditText etRepeatedNewPassword;
+    private ProgressBar progressBar;
 
     final Integer PASSWORD_LENGTH_MIN = 4;
 
@@ -73,6 +76,7 @@ public class ChangePasswordDialog extends AppCompatDialogFragment {
         if(headerMap == null)
             return;
 
+        startProgressBar();
         Call<Void> call = userClient.changeUserPassword(authHeader, headerMap);
         call.enqueue(new Callback<Void>() {
             @Override
@@ -90,10 +94,12 @@ public class ChangePasswordDialog extends AppCompatDialogFragment {
                             Toast.makeText(activity, "Error on server", Toast.LENGTH_LONG).show();
 
                 }
+                stopProgressBar();
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -131,9 +137,20 @@ public class ChangePasswordDialog extends AppCompatDialogFragment {
         return headerMap;
     }
 
+    private void stopProgressBar(){
+        progressBar.setVisibility(View.GONE);
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void startProgressBar(){
+        activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
     private void bindViews(View view) {
         etOldPassword = view.findViewById(R.id.change_pw_dialog_old_password_et);
         etNewPassword = view.findViewById(R.id.change_pw_dialog_new_password_et);
         etRepeatedNewPassword = view.findViewById(R.id.change_pw_dialog_repeat_new_password_et);
+        progressBar = view.findViewById(R.id.change_pw_dialog_progress_bar);
     }
 }

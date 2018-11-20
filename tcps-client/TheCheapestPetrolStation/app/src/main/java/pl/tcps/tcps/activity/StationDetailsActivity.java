@@ -12,8 +12,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,6 +70,7 @@ public class StationDetailsActivity extends AppCompatActivity {
     private Button bMakeRate;
     private Button bLeadMe;
     private Button bUpdatePrices;
+    private ProgressBar progressBar;
 
 
     @Override
@@ -79,7 +82,6 @@ public class StationDetailsActivity extends AppCompatActivity {
            actionBar.setDisplayHomeAsUpEnabled(true);
            actionBar.setTitle(R.string.action_bar_station_details);
         }
-
 
         bindViews();
         context = this;
@@ -98,7 +100,7 @@ public class StationDetailsActivity extends AppCompatActivity {
     }
 
     public void refreshActivityContent(){
-
+        startProgressBar();
         Retrofit retrofit = RetrofitBuilder.createRetrofit(this);
         PetrolStationClient petrolStationClient = retrofit.create(PetrolStationClient.class);
         String authHeader = accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken();
@@ -109,15 +111,19 @@ public class StationDetailsActivity extends AppCompatActivity {
                 PetrolStationSpecificInfoResponse specificInfo = response.body();
                 if (response.isSuccessful() && specificInfo != null) {
                     fillViews(specificInfo, distance);
-                } else
-                if(response.code() == HttpURLConnection.HTTP_NOT_FOUND)
-                    Toast.makeText(context, "No station was found!", Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(context, "Error on server", Toast.LENGTH_SHORT).show();
+                    stopProgressBar();
+                } else {
+                    if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
+                        Toast.makeText(context, "No station was found!", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(context, "Error on server", Toast.LENGTH_SHORT).show();
+                    stopProgressBar();
+                }
             }
 
             @Override
             public void onFailure(Call<PetrolStationSpecificInfoResponse> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -220,8 +226,18 @@ public class StationDetailsActivity extends AppCompatActivity {
         });
     }
 
+    private void stopProgressBar(){
+        progressBar.setVisibility(View.GONE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void startProgressBar(){
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
 
     private void findPetrolStationLocation(Boolean isNavigation) {
+        startProgressBar();
         Retrofit retrofit = RetrofitBuilder.createRetrofit(context);
         PetrolStationClient petrolStationClient = retrofit.create(PetrolStationClient.class);
         String authHeader = accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken();
@@ -230,6 +246,7 @@ public class StationDetailsActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<GeoLocationResponse> call, Response<GeoLocationResponse> response) {
                 GeoLocationResponse geoLocation = response.body();
+                stopProgressBar();
                 if(response.isSuccessful() && geoLocation != null){
                     if(isNavigation)
                         startGoogleMaps(String.format(Locale.ENGLISH, "google.navigation:q=%s,%s",
@@ -246,6 +263,7 @@ public class StationDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<GeoLocationResponse> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -340,6 +358,7 @@ public class StationDetailsActivity extends AppCompatActivity {
         bMakeRate = findViewById(R.id.station_details_rate_button);
         bLeadMe = findViewById(R.id.station_details_maps_button);
         bUpdatePrices = findViewById(R.id.station_details_update_prices_button);
+        progressBar = findViewById(R.id.station_details_progress_bar);
     }
 
     @Override

@@ -6,7 +6,9 @@ import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,12 +28,13 @@ import retrofit2.Retrofit;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    CardView registrationButton;
-    TextView etUsername;
-    TextView etPassword;
-    TextView etFirstName;
-    TextView etLastName;
-    TextView etEmail;
+    private CardView registrationButton;
+    private TextView etUsername;
+    private TextView etPassword;
+    private TextView etFirstName;
+    private TextView etLastName;
+    private TextView etEmail;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +47,7 @@ public class RegistrationActivity extends AppCompatActivity {
         etFirstName = findViewById(R.id.et_first_name);
         etLastName = findViewById(R.id.et_last_name);
         etEmail = findViewById(R.id.et_email);
-
+        progressBar = findViewById(R.id.registration_activity_progress_bar);
         setListenersForRegistrationButton();
     }
 
@@ -94,6 +97,8 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void generateAccessTokenAndRegisterUser(final String firstName, final String lastName, final String userName, final String password, final String email) {
+        startProgressBar();
+
         Map<String, Object> fieldMap = new HashMap<>();
         fieldMap.put("grant_type", "password");
         fieldMap.put("username", "registration");
@@ -134,31 +139,48 @@ public class RegistrationActivity extends AppCompatActivity {
                                 Toast.makeText(RegistrationActivity.this,
                                         "Created: " + registeredUser.getFirstName() + " " + registeredUser.getLastName(),
                                         Toast.LENGTH_SHORT).show();
+                                stopProgressBar();
                                 finish();
                             }else {
                                 if(response.code() == HttpURLConnection.HTTP_SEE_OTHER)
                                     Toast.makeText(RegistrationActivity.this, "User already exist!", Toast.LENGTH_SHORT).show();
                                 else
                                     Toast.makeText(RegistrationActivity.this, "Registration error!", Toast.LENGTH_SHORT).show();
+
+                                stopProgressBar();
                             }
                         }
 
                         @Override
                         public void onFailure(Call<RegisteredUser> call, Throwable t) {
+                            stopProgressBar();
                             Toast.makeText(RegistrationActivity.this, "Registration error!", Toast.LENGTH_SHORT).show();
                         }
                     });
 
                 } else {
+                    stopProgressBar();
                     Toast.makeText(RegistrationActivity.this, "Registration error!", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<AccessTokenDetails> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(RegistrationActivity.this, "Registration error!", Toast.LENGTH_SHORT).show();
             }
         });
 
     }
+
+    private void stopProgressBar(){
+        progressBar.setVisibility(View.GONE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void startProgressBar(){
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
 }

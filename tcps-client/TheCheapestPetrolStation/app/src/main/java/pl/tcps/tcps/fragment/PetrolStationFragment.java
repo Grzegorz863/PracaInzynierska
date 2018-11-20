@@ -4,6 +4,7 @@ package pl.tcps.tcps.fragment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,6 +27,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -67,8 +70,9 @@ public class PetrolStationFragment extends Fragment {
 
     private MainActivity mainActivity;
     private View petrolStationFragmentView;
-
     private PetrolStationFragment petrolStationFragment;
+
+    private ProgressBar progressBar;
 
     private final int PERMISSION_REQUEST_CODE = 1000;
     public final int STATION_DETAILS_REQUEST_CODE = 2000;
@@ -93,9 +97,11 @@ public class PetrolStationFragment extends Fragment {
 
         petrolStationFragmentView = inflater.inflate(R.layout.fragment_petrol_station, container, false);
         mainActivity = (MainActivity) getActivity();
+        bindViews();
         //mainActivity.setActionBarTitle("Petrol Stations");
+        startProgressBar();
         ActionBar actionBar = mainActivity.getSupportActionBar();
-        if(actionBar != null){
+        if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
             //actionBar.setNavigationMode();
         }
@@ -110,7 +116,6 @@ public class PetrolStationFragment extends Fragment {
 
         sortingWay = setSortingWay();
 
-        recyclerView = petrolStationFragmentView.findViewById(R.id.petrol_stations);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(petrolStationFragmentView.getContext()));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -125,6 +130,11 @@ public class PetrolStationFragment extends Fragment {
         }
 
         return petrolStationFragmentView;
+    }
+
+    private void bindViews() {
+        recyclerView = petrolStationFragmentView.findViewById(R.id.petrol_stations);
+        progressBar = petrolStationFragmentView.findViewById(R.id.petrol_station_fragment_progress_bar);
     }
 
 
@@ -168,11 +178,14 @@ public class PetrolStationFragment extends Fragment {
                     recyclerView.setAdapter(new PetrolStationRecycleViewAdapter(petrolStations, accessTokenDetails, recyclerView, petrolStationFragment));
                 } else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
                     Toast.makeText(petrolStationFragmentView.getContext(), "No station was found!", Toast.LENGTH_SHORT).show();
+
+                stopProgressBar();
             }
 
             @Override
             public void onFailure(Call<List<PetrolStationRecycleViewItem>> call, Throwable t) {
                 Toast.makeText(petrolStationFragmentView.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                stopProgressBar();
             }
         });
     }
@@ -194,12 +207,12 @@ public class PetrolStationFragment extends Fragment {
             @Override
             public void onResponse(Call<List<PetrolStationReloadRecycleViewResponse>> call, Response<List<PetrolStationReloadRecycleViewResponse>> response) {
                 List<PetrolStationReloadRecycleViewResponse> stationsToReload = response.body();
-                if(response.isSuccessful() && stationsToReload != null){
+                if (response.isSuccessful() && stationsToReload != null) {
                     updateRecycleView(stationsToReload);
-                }else
-                    if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
-                        Toast.makeText(petrolStationFragmentView.getContext(), "No station was found!", Toast.LENGTH_SHORT).show();
-                    else Toast.makeText(petrolStationFragmentView.getContext(), "Error on server", Toast.LENGTH_SHORT).show();
+                } else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
+                    Toast.makeText(petrolStationFragmentView.getContext(), "No station was found!", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(petrolStationFragmentView.getContext(), "Error on server", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -210,7 +223,7 @@ public class PetrolStationFragment extends Fragment {
     }
 
     private void updateRecycleView(List<PetrolStationReloadRecycleViewResponse> stationsToReload) {
-        for (PetrolStationRecycleViewItem station : petrolStations){
+        for (PetrolStationRecycleViewItem station : petrolStations) {
             PetrolStationReloadRecycleViewResponse stationToReload = stationsToReload.stream()
                     .filter(item -> item.getStationId().equals(station.getStationId())).collect(Collectors.toList()).get(0);
             station.setPriceRecycleViewItem(new PetrolPriceRecycleViewItem(stationToReload.getPetrolPricesResponse()));
@@ -227,6 +240,17 @@ public class PetrolStationFragment extends Fragment {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(mainActivity);
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
     }
+
+    public void stopProgressBar() {
+        progressBar.setVisibility(View.GONE);
+        mainActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    public void startProgressBar() {
+        mainActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
@@ -264,11 +288,12 @@ public class PetrolStationFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if(requestCode == STATION_DETAILS_REQUEST_CODE && resultCode == Activity.RESULT_OK){
+        if (requestCode == STATION_DETAILS_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            startProgressBar();
             Integer recycleViewStationIndex = data.getIntExtra(getString(R.string.key_recycleview_station_index), -1);
-            if(recycleViewStationIndex == -1)
+            if (recycleViewStationIndex == -1)
                 return;
-            if(petrolStations == null)
+            if (petrolStations == null)
                 return;
 
             PetrolStationRecycleViewItem oldStation = petrolStations.get(recycleViewStationIndex);
@@ -286,18 +311,21 @@ public class PetrolStationFragment extends Fragment {
             @Override
             public void onResponse(Call<PetrolPricesResponse> call, Response<PetrolPricesResponse> response) {
                 PetrolPricesResponse petrolPricesResponse = response.body();
-                if(response.isSuccessful() && petrolPricesResponse!=null){
+                if (response.isSuccessful() && petrolPricesResponse != null) {
                     loadStationRating(oldStation, authHeader, retrofit, petrolPricesResponse, recycleViewStationIndex);
                     //MEGA WAŻNE ŻEBY ZROBIC TU PROGRESS BAR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BO TEN TRUE MOZE NIE ZDAŻYĆ SIE USTAWIC
-                }else
-                if(response.code() == HttpURLConnection.HTTP_NOT_FOUND)
+                } else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND) {
                     Toast.makeText(petrolStationFragmentView.getContext(), "Petrol station outside the area!", Toast.LENGTH_SHORT).show();
-                else
+                    stopProgressBar();
+                } else {
                     Toast.makeText(petrolStationFragmentView.getContext(), "Error on server", Toast.LENGTH_SHORT).show();
+                    stopProgressBar();
+                }
             }
 
             @Override
             public void onFailure(Call<PetrolPricesResponse> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(petrolStationFragmentView.getContext(), "Error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -312,16 +340,18 @@ public class PetrolStationFragment extends Fragment {
             @Override
             public void onResponse(Call<Double> call, Response<Double> response) {
                 Double rate = response.body();
-                if(response.isSuccessful() && rate!=null){
+                if (response.isSuccessful() && rate != null) {
                     updateRecycleViewItem(oldStation, petrolPricesResponse, rate, recycleViewStationIndex);
-                     //MEGA WAŻNE ŻEBY ZROBIC TU PROGRESS BAR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BO TEN TRUE MOZE NIE ZDAŻYĆ SIE USTAWIC
-                }else
-                if(response.code() != HttpURLConnection.HTTP_NOT_FOUND)
+                    //MEGA WAŻNE ŻEBY ZROBIC TU PROGRESS BAR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BO TEN TRUE MOZE NIE ZDAŻYĆ SIE USTAWIC
+                } else if (response.code() != HttpURLConnection.HTTP_NOT_FOUND) {
+                    stopProgressBar();
                     Toast.makeText(petrolStationFragmentView.getContext(), "Error on server", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onFailure(Call<Double> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(petrolStationFragmentView.getContext(), "Error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -337,6 +367,7 @@ public class PetrolStationFragment extends Fragment {
         petrolStations.set(recycleViewStationIndex, newStation);
 
         recyclerView.getAdapter().notifyItemChanged(recycleViewStationIndex);
+        stopProgressBar();
     }
 
     @SuppressLint("MissingPermission")
@@ -368,7 +399,7 @@ public class PetrolStationFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
+        //stopProgressBar();
         if (fusedLocationProviderClient != null)
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
 
@@ -612,13 +643,14 @@ public class PetrolStationFragment extends Fragment {
     private void refreshRecycleView() {
         createLocationRequest();
         LocationConfiguration.displayLocationSettingsRequest(petrolStationFragmentView.getContext(), mainActivity, locationRequest);
+        startProgressBar();
         if (fusedLocationProviderClient != null)
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(mainActivity, new OnSuccessListener<Location>() {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null) {
                         getAllPetrolStationFittingInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
-                    }else {
+                    } else {
                         isFirstLocationResult = true;
                         createLocationCallback(distance, accessTokenDetails);
 

@@ -8,6 +8,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
@@ -32,6 +34,8 @@ public class RatingDialog extends AppCompatDialogFragment {
     private Boolean userRatedStation = false;
     private StationDetailsActivity activity;
 
+    private ProgressBar progressBar;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -40,6 +44,8 @@ public class RatingDialog extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = activity.getLayoutInflater();
         View view = inflater.inflate(R.layout.rating_dialog_layout, null);
+        progressBar = view.findViewById(R.id.add_rate_progress_bar);
+        startProgressBar();
         RatingBar stationRate = view.findViewById(R.id.add_rate_rating_bar);
 
         Long stationId = getArguments().getLong(getString(R.string.key_station_id));
@@ -55,14 +61,17 @@ public class RatingDialog extends AppCompatDialogFragment {
                 Double rate = response.body();
                 if(response.isSuccessful() && rate!=null){
                     stationRate.setRating(rate.floatValue());
-                    userRatedStation = true; //MEGA WAŻNE ŻEBY ZROBIC TU PROGRESS BAR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BO TEN TRUE MOZE NIE ZDAŻYĆ SIE USTAWIC
+                    userRatedStation = true;
                 }else
                     if(response.code() != HttpURLConnection.HTTP_NOT_FOUND)
                         Toast.makeText(activity, "Error on server", Toast.LENGTH_SHORT).show();
+
+                stopProgressBar();
             }
 
             @Override
             public void onFailure(Call<Double> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -85,6 +94,7 @@ public class RatingDialog extends AppCompatDialogFragment {
                 .setPositiveButton("OK", new DialogInterface.OnClickListener(){
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        startProgressBar();
                         if(userRatedStation)
                             updateRate(authHeader, ratingClient, stationId, stationRate.getRating());
                         else
@@ -104,6 +114,7 @@ public class RatingDialog extends AppCompatDialogFragment {
             @Override
             public void onResponse(Call<StationRatingResponse> call, Response<StationRatingResponse> response) {
                 StationRatingResponse stationRatingResponse = response.body();
+                stopProgressBar();
                 if(response.isSuccessful() && stationRatingResponse != null){
                     activity.refreshActivityContent();
                     Toast.makeText(activity, "You rated station first time on: " + stationRatingResponse.getRate(), Toast.LENGTH_SHORT).show();
@@ -116,6 +127,7 @@ public class RatingDialog extends AppCompatDialogFragment {
 
             @Override
             public void onFailure(Call<StationRatingResponse> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show();
             }
         });
@@ -129,6 +141,7 @@ public class RatingDialog extends AppCompatDialogFragment {
         call.enqueue(new Callback<StationRatingResponse>() {
             @Override
             public void onResponse(Call<StationRatingResponse> call, Response<StationRatingResponse> response) {
+                stopProgressBar();
                 if(response.isSuccessful()) {
                     if (response.code() == HttpURLConnection.HTTP_NO_CONTENT) {
                         activity.refreshActivityContent();
@@ -143,8 +156,19 @@ public class RatingDialog extends AppCompatDialogFragment {
 
             @Override
             public void onFailure(Call<StationRatingResponse> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void stopProgressBar(){
+        progressBar.setVisibility(View.GONE);
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void startProgressBar(){
+        activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 }

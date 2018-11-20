@@ -16,6 +16,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -62,6 +65,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Boolean mLocationPermissionGranted;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
+    private ProgressBar progressBar;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Boolean isFirstLocationResult = true;
     private Double distance;
@@ -73,7 +77,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        //markersWithStationsId = new HashMap<>();
+        progressBar = findViewById(R.id.maps_activity_progress_bar);
+        startProgressBar();
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         Intent intent = getIntent();
         distance = intent.getDoubleExtra(getString(R.string.key_distance), 20);
@@ -209,6 +214,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 context.startActivity(intent);
             }
         });
+
+        stopProgressBar();
+    }
+
+    private void stopProgressBar(){
+        progressBar.setVisibility(View.GONE);
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void startProgressBar(){
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     private void updateMapsUI() {
@@ -269,6 +286,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @SuppressLint("MissingPermission")
     private void refreshMap() {
         createLocationRequest();
+        startProgressBar();
         LocationConfiguration.displayLocationSettingsRequest(this, this, locationRequest);
         if (mFusedLocationProviderClient != null)
             mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {

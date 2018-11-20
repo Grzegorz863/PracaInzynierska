@@ -67,6 +67,7 @@ public class PetrolStationRecycleViewAdapter extends RecyclerView.Adapter<Petrol
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                parentFragment.startProgressBar();
                 Integer recycleViewStationIndex = recyclerView.getChildAdapterPosition(v);
                 Long stationId = petrolStationList.get(recycleViewStationIndex).getStationId();
                 Double distance = petrolStationList.get(recycleViewStationIndex).getDistance();

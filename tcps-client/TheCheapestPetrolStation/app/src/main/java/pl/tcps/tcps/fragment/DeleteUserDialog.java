@@ -8,7 +8,9 @@ import android.support.v7.app.AppCompatDialogFragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.net.HttpURLConnection;
@@ -27,6 +29,7 @@ public class DeleteUserDialog extends AppCompatDialogFragment {
 
     private SettingsActivity activity;
     private EditText etPassword;
+    private ProgressBar progressBar;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -67,10 +70,12 @@ public class DeleteUserDialog extends AppCompatDialogFragment {
         if(TextUtils.isEmpty(password))
             return;
 
+        startProgressBar();
         Call<Void> call = userClient.deleteUser(authHeader, password);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
+                stopProgressBar();
                 if (response.isSuccessful()){
                     if(response.code() == HttpURLConnection.HTTP_NO_CONTENT) {
                         Toast.makeText(activity, "You deleted you account", Toast.LENGTH_LONG).show();
@@ -91,12 +96,24 @@ public class DeleteUserDialog extends AppCompatDialogFragment {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                stopProgressBar();
                 Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void stopProgressBar(){
+        progressBar.setVisibility(View.GONE);
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+    private void startProgressBar(){
+        activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
     private void bindViews(View view) {
         etPassword = view.findViewById(R.id.delete_user_dialog_password);
+        progressBar = view.findViewById(R.id.delete_user_dialog_progress_bar);
     }
 }

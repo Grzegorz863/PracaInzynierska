@@ -4,6 +4,17 @@
     android:layout_height="match_parent"
     android:paddingTop="30dp">
 
+    <ProgressBar
+        android:id="@+id/change_pw_dialog_progress_bar"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_centerInParent="true"
+        style="?android:attr/progressBarStyleLargeInverse"
+        android:indeterminateTint="@color/progress_bar_color"
+        android:indeterminate="true"
+        android:visibility="invisible"/>
+
+
     <TextView
         android:id="@+id/change_pw_dialog_old_password_tv"
         android:layout_width="wrap_content"

@@ -242,11 +242,13 @@ public class PetrolStationFragment extends Fragment {
     }
 
     public void stopProgressBar() {
+        recyclerView.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         mainActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     public void startProgressBar() {
+        recyclerView.setVisibility(View.GONE);
         mainActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         progressBar.setVisibility(View.VISIBLE);
     }

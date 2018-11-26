@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -82,7 +81,6 @@ public class StationDetailsActivity extends AppCompatActivity {
            actionBar.setDisplayHomeAsUpEnabled(true);
            actionBar.setTitle(R.string.action_bar_station_details);
         }
-
         bindViews();
         context = this;
         Intent intent = getIntent();
@@ -171,6 +169,9 @@ public class StationDetailsActivity extends AppCompatActivity {
         rbRating.setRating(specificInfo.getRating().floatValue());
 
         tvDescription.setText(specificInfo.getDescription());
+
+        View view = findViewById(R.id.station_details_root);
+        view.setVisibility(View.VISIBLE);
     }
 
     private void setOnClickListenerForAddressTextViewAndImageView(Long chosenStationId){
@@ -227,11 +228,15 @@ public class StationDetailsActivity extends AppCompatActivity {
     }
 
     private void stopProgressBar(){
+        View view = findViewById(R.id.station_details_root);
+        view.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     private void startProgressBar(){
+        View view = findViewById(R.id.station_details_root);
+        view.setVisibility(View.INVISIBLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         progressBar.setVisibility(View.VISIBLE);
     }

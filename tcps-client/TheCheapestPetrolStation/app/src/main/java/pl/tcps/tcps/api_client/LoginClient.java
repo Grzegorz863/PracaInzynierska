@@ -27,4 +27,9 @@ public interface LoginClient {
     @FormUrlEncoded
     @POST("oauth/check_token")
     Call<CheckAccessToken> checkAccessToken(@Field("token") String accessToken);
+
+    @FormUrlEncoded
+    @Headers({"Authorization: Basic YW5kcm9pZF9hcHA6dGhlX2NoZWFwZXN0X3BldHJvbF9zdGF0aW9u"})
+    @POST("oauth/token")
+    Call<AccessTokenDetails> refreshAccessToken(@Field("grant_type") String grandType, @Field("refresh_token") String refreshToken);
 }

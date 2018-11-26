@@ -72,39 +72,33 @@ public class LoginActivity extends AppCompatActivity {
         bindViews();
         startProgressBar();
         SharedPreferences sharedPreferences = getSharedPreferences("access_token", Context.MODE_PRIVATE);
-        String accessToken = sharedPreferences.getString(getString(R.string.key_token), null);
-        String tokenType = sharedPreferences.getString(getString(R.string.key_token_type), null);
         String refreshToken = sharedPreferences.getString(getString(R.string.key_refresh_token), null);
 
-        if(accessToken != null && tokenType != null && refreshToken != null){
+        if (refreshToken != null) {
             Retrofit retrofit = RetrofitBuilder.createRetrofit(this);
             LoginClient loginClient = retrofit.create(LoginClient.class);
-            Call<CheckAccessToken> call = loginClient.checkAccessToken(accessToken);
-            Context context = this;
-            call.enqueue(new Callback<CheckAccessToken>() {
+            Call<AccessTokenDetails> call2 = loginClient.refreshAccessToken("refresh_token", refreshToken);
+            call2.enqueue(new Callback<AccessTokenDetails>() {
                 @Override
-                public void onResponse(Call<CheckAccessToken> call, Response<CheckAccessToken> response) {
-                    CheckAccessToken checkAccessToken = response.body();
-                    if (response.isSuccessful() && checkAccessToken != null) {
-                        if (checkAccessToken.getActive()) {
-                            AccessTokenDetails accessTokenDetails = new AccessTokenDetails(accessToken, tokenType, refreshToken,
-                                    checkAccessToken.getExp(), checkAccessToken.getScope().toString());
-                            sendAndGoToMainActivityFromNativeLogin(accessTokenDetails, sharedPreferences);
+                public void onResponse(Call<AccessTokenDetails> call, Response<AccessTokenDetails> response) {
+                    AccessTokenDetails accessTokenDetails = response.body();
+                    if (response.isSuccessful() && accessTokenDetails != null) {
+                        sendAndGoToMainActivityFromNativeLogin(accessTokenDetails, sharedPreferences);
+                    }else
+                        stopProgressBar();
 
-                        }
-                    }
-                    stopProgressBar();
                 }
 
                 @Override
-                public void onFailure(Call<CheckAccessToken> call, Throwable t) {
+                public void onFailure(Call<AccessTokenDetails> call, Throwable t) {
                     stopProgressBar();
-                    Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
                 }
             });
-        }
 
-        stopProgressBar();
+        } else
+            stopProgressBar();
+
+
         setListenersForLoginButton(sharedPreferences);
         setListenersForRegistrationButton();
 
@@ -169,12 +163,12 @@ public class LoginActivity extends AppCompatActivity {
         passwordTextView = findViewById(R.id.login_activity_et_password);
     }
 
-    private void stopProgressBar(){
+    private void stopProgressBar() {
         progressBar.setVisibility(View.GONE);
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
-    private void startProgressBar(){
+    private void startProgressBar() {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         progressBar.setVisibility(View.VISIBLE);
     }
@@ -189,18 +183,18 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void setListenersForLoginButton(SharedPreferences sharedPreferences){
+    private void setListenersForLoginButton(SharedPreferences sharedPreferences) {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 String userName = loginTextView.getText().toString();
                 String password = passwordTextView.getText().toString();
-                if(TextUtils.isEmpty(userName)) {
+                if (TextUtils.isEmpty(userName)) {
                     Toast.makeText(LoginActivity.this, "Enter username!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if(TextUtils.isEmpty(password)) {
+                if (TextUtils.isEmpty(password)) {
                     Toast.makeText(LoginActivity.this, "Enter password!", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -226,9 +220,9 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<AccessTokenDetails> call, Response<AccessTokenDetails> response) {
                         AccessTokenDetails accessTokenDetails = response.body();
-                        if(response.isSuccessful() && accessTokenDetails != null){
+                        if (response.isSuccessful() && accessTokenDetails != null) {
                             sendAndGoToMainActivityFromNativeLogin(accessTokenDetails, sharedPreferences);
-                        }else{
+                        } else {
                             Toast.makeText(LoginActivity.this, "Wrong credentials", Toast.LENGTH_LONG).show();
                             stopProgressBar();
                         }
@@ -244,11 +238,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void sendAndGoToMainActivityFromNativeLogin(AccessTokenDetails accessTokenDetails, SharedPreferences sharedPreferences){
+    private void sendAndGoToMainActivityFromNativeLogin(AccessTokenDetails accessTokenDetails, SharedPreferences sharedPreferences) {
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(getString(R.string.key_token), accessTokenDetails.getAccessToken());
-        editor.putString(getString(R.string.key_token_type), accessTokenDetails.getTokenType());
+        //editor.putString(getString(R.string.key_token), accessTokenDetails.getAccessToken());
+        //editor.putString(getString(R.string.key_token_type), accessTokenDetails.getTokenType());
         editor.putString(getString(R.string.key_refresh_token), accessTokenDetails.getRefreshToken());
         editor.apply();
         intent.putExtra("access_token_details", accessTokenDetails);

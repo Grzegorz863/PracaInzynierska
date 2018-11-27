@@ -31,6 +31,7 @@ import pl.tcps.tcps.activity.MainActivity;
 import pl.tcps.tcps.api_client.ConsortiumClient;
 import pl.tcps.tcps.api_client.PetrolStationClient;
 import pl.tcps.tcps.api_client.retrofit.RetrofitBuilder;
+import pl.tcps.tcps.enums.PETROL_STATION_FIELD_LIMITATIONS;
 import pl.tcps.tcps.pojo.responses.ConsortiumResponse;
 import pl.tcps.tcps.pojo.responses.CreatePetrolStationResponse;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
@@ -139,10 +140,18 @@ public class AddStationFragment extends Fragment {
             Toast.makeText(addStationFragment.getContext(), "Enter station name!", Toast.LENGTH_SHORT).show();
             return;
         }
+        if(stationName.length() > PETROL_STATION_FIELD_LIMITATIONS.STATION_NAME_MAX_LENGTH.getValue()){
+            Toast.makeText(addStationFragment.getContext(), "Entered station name is too long!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         String street = tvStreet.getText().toString();
         if (TextUtils.isEmpty(street)) {
             Toast.makeText(addStationFragment.getContext(), "Enter street name!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(street.length() > PETROL_STATION_FIELD_LIMITATIONS.STREET_NAME_MAX_LENGTH.getValue()){
+            Toast.makeText(addStationFragment.getContext(), "Entered street name is too long!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -151,16 +160,28 @@ public class AddStationFragment extends Fragment {
             Toast.makeText(addStationFragment.getContext(), "Enter apartment number!", Toast.LENGTH_SHORT).show();
             return;
         }
+        if(apartmentNumber.length() > PETROL_STATION_FIELD_LIMITATIONS.APARTMENT_NUMBER_MAX_LENGTH.getValue()){
+            Toast.makeText(addStationFragment.getContext(), "Entered apartment number is too long!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         String city = tvCity.getText().toString();
         if (TextUtils.isEmpty(city)) {
             Toast.makeText(addStationFragment.getContext(), "Enter city name!", Toast.LENGTH_SHORT).show();
             return;
         }
+        if(city.length() > PETROL_STATION_FIELD_LIMITATIONS.CITY_NAME_MAX_LENGTH.getValue()){
+            Toast.makeText(addStationFragment.getContext(), "Entered city name is too long!", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         String postalCode = tvPostalCode.getText().toString();
         if (TextUtils.isEmpty(postalCode)) {
             Toast.makeText(addStationFragment.getContext(), "Enter postal code!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(postalCode.length() > 6){
+            Toast.makeText(addStationFragment.getContext(), "Entered postal code is too long!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -175,6 +196,10 @@ public class AddStationFragment extends Fragment {
         String description = tvDescription.getText().toString();
         if (TextUtils.isEmpty(description)) {
             Toast.makeText(addStationFragment.getContext(), "Enter description!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(description.length() > PETROL_STATION_FIELD_LIMITATIONS.DESCRIPTION_MAX_LENGTH.getValue()){
+            Toast.makeText(addStationFragment.getContext(), "Entered description is too long!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -228,11 +253,15 @@ public class AddStationFragment extends Fragment {
     }
 
     private void stopProgressBar() {
+        View view = addStationFragment.findViewById(R.id.add_station_root);
+        view.setVisibility(View.VISIBLE);
         progressBar.setVisibility(View.GONE);
         mainActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
 
     private void startProgressBar() {
+        View view = addStationFragment.findViewById(R.id.add_station_root);
+        view.setVisibility(View.INVISIBLE);
         mainActivity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         progressBar.setVisibility(View.VISIBLE);
     }

@@ -2,7 +2,6 @@ package pl.tcps.tcps.fragment;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatDialogFragment;
@@ -14,7 +13,6 @@ import android.widget.RatingBar;
 import android.widget.Toast;
 
 import java.net.HttpURLConnection;
-import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +29,7 @@ import retrofit2.Retrofit;
 
 public class RatingDialog extends AppCompatDialogFragment {
 
+    private View ratingDialog;
     private Boolean userRatedStation = false;
     private StationDetailsActivity activity;
 
@@ -43,10 +42,10 @@ public class RatingDialog extends AppCompatDialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate(R.layout.rating_dialog_layout, null);
-        progressBar = view.findViewById(R.id.add_rate_progress_bar);
+        ratingDialog = inflater.inflate(R.layout.rating_dialog_layout, null);
+        progressBar = ratingDialog.findViewById(R.id.add_rate_progress_bar);
         startProgressBar();
-        RatingBar stationRate = view.findViewById(R.id.add_rate_rating_bar);
+        RatingBar stationRate = ratingDialog.findViewById(R.id.add_rate_rating_bar);
 
         Long stationId = getArguments().getLong(getString(R.string.key_station_id));
         AccessTokenDetails accessTokenDetails = getArguments().getParcelable(getString(R.string.key_access_token_details));
@@ -84,7 +83,7 @@ public class RatingDialog extends AppCompatDialogFragment {
             }
         });
 
-        builder.setView(view)
+        builder.setView(ratingDialog)
                 .setTitle("Rate Station")
                 .setCancelable(true)
                 .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {

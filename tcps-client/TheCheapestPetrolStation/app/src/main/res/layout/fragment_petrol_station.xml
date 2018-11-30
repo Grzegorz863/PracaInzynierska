@@ -15,6 +15,8 @@
         android:indeterminate="true"
         android:visibility="invisible"/>
 
+
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/petrol_stations"
         android:layout_width="match_parent"

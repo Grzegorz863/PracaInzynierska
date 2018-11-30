@@ -3,6 +3,7 @@ package pl.tcps.tcps.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -72,7 +73,11 @@ public class AddStationFragment extends Fragment {
 
         addStationFragment = inflater.inflate(R.layout.fragment_add_station, container, false);
         mainActivity = (MainActivity) getActivity();
-        mainActivity.setActionBarTitle("Add Petrol Stations");
+        ActionBar actionBar = mainActivity.getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(true);
+            actionBar.setTitle("Add Petrol Stations");
+        }
         bindViews();
         setHasOptionsMenu(true);
         startProgressBar();

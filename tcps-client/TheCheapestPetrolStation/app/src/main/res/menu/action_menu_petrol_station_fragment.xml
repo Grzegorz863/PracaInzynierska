@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:style="http://schemas.android.com/tools">
 
     <!--<item-->
         <!--android:id="@+id/action_settings"-->
@@ -8,16 +9,35 @@
         <!--android:title="@string/action_settings"-->
         <!--app:showAsAction="never" />-->
 
+    <!--<item-->
+        <!--android:id="@+id/menu_consortium_spinner"-->
+        <!--android:title="Consortiums"-->
+        <!--android:orderInCategory="1"-->
+        <!--android:layout_gravity="left"-->
+        <!--app:actionViewClass="android.widget.Spinner"-->
+        <!--app:popupTheme="@style/ThemeOverlay.AppCompat.Light"-->
+        <!--app:showAsAction="always"/>-->
+
+    <item
+        android:id="@+id/menu_consortium_spinner"
+        android:title="Consortiums"
+        android:orderInCategory="1"
+        app:actionViewClass="android.widget.Spinner"
+        app:showAsAction="always"/>
+
+
     <item
         android:id="@+id/petrol_station_activity_refresh"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:title="Refresh"
+        android:orderInCategory="2"
         app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/petrol_station_activity_sort"
         android:icon="@drawable/ic_sort_black_24dp"
         android:title="Sort"
+        android:orderInCategory="3"
         app:showAsAction="ifRoom" >
 
         <menu>

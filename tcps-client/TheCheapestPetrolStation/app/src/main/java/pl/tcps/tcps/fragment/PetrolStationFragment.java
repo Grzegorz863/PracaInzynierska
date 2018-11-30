@@ -4,7 +4,6 @@ package pl.tcps.tcps.fragment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,6 +14,7 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
@@ -28,7 +28,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -39,12 +42,15 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import pl.tcps.tcps.R;
 import pl.tcps.tcps.activity.MainActivity;
+import pl.tcps.tcps.api_client.ConsortiumClient;
 import pl.tcps.tcps.api_client.PetrolPricesClient;
 import pl.tcps.tcps.api_client.PetrolStationClient;
 import pl.tcps.tcps.api_client.RatingClient;
@@ -54,6 +60,7 @@ import pl.tcps.tcps.enums.SORTING_WAYS;
 import pl.tcps.tcps.other.LocationConfiguration;
 import pl.tcps.tcps.pojo.login.AccessTokenDetails;
 import pl.tcps.tcps.pojo.PetrolStationRecycleViewItem;
+import pl.tcps.tcps.pojo.responses.ConsortiumResponse;
 import pl.tcps.tcps.pojo.responses.PetrolPriceRecycleViewItem;
 import pl.tcps.tcps.pojo.responses.PetrolPricesResponse;
 import pl.tcps.tcps.pojo.responses.PetrolStationReloadRecycleViewResponse;
@@ -84,8 +91,11 @@ public class PetrolStationFragment extends Fragment {
     private AccessTokenDetails accessTokenDetails;
     private RecyclerView recyclerView;
     private Boolean isFirstLocationResult = true;
+    private Boolean isFirstConsortiumSelection = true;
     private List<PetrolStationRecycleViewItem> petrolStations;
     private SORTING_WAYS sortingWay;
+    private List<String> consortiumsNames = new ArrayList<>();
+    private Spinner consortiumSpinner;
 
     public PetrolStationFragment() {
         // Required empty public constructor
@@ -103,7 +113,6 @@ public class PetrolStationFragment extends Fragment {
         ActionBar actionBar = mainActivity.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayShowTitleEnabled(false);
-            //actionBar.setNavigationMode();
         }
         setHasOptionsMenu(true);
 
@@ -115,6 +124,8 @@ public class PetrolStationFragment extends Fragment {
         distance = args.getDouble(getString(R.string.key_distance));
 
         sortingWay = setSortingWay();
+
+        CoordinatorLayout appBarMain = (CoordinatorLayout) inflater.inflate(R.layout.app_bar_main, null);
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(petrolStationFragmentView.getContext()));
@@ -174,8 +185,7 @@ public class PetrolStationFragment extends Fragment {
                 if (response.isSuccessful()) {
                     petrolStations = response.body();
                     sortPetrolStations();
-
-                    recyclerView.setAdapter(new PetrolStationRecycleViewAdapter(petrolStations, accessTokenDetails, recyclerView, petrolStationFragment));
+                    recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
                 } else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)
                     Toast.makeText(petrolStationFragmentView.getContext(), "No station was found!", Toast.LENGTH_SHORT).show();
 
@@ -428,6 +438,9 @@ public class PetrolStationFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.action_menu_petrol_station_fragment, menu);
         MenuItem item;
+        item = menu.findItem(R.id.menu_consortium_spinner);
+        consortiumSpinner = (Spinner) item.getActionView();
+        loadDataForConsortiumSpinner(consortiumSpinner);
 
         switch (sortingWay) {
             case SORT_BY_DISTANCE:
@@ -564,12 +577,69 @@ public class PetrolStationFragment extends Fragment {
         }
     }
 
+    private void loadDataForConsortiumSpinner(Spinner consortiumSpinner) {
+        Retrofit retrofit = RetrofitBuilder.createRetrofit(petrolStationFragmentView.getContext());
+        ConsortiumClient consortiumClient = retrofit.create(ConsortiumClient.class);
+        String authHeader = accessTokenDetails.getTokenType() + " " + accessTokenDetails.getAccessToken();
+        Call<Collection<ConsortiumResponse>> call = consortiumClient.getAllConsortiums(authHeader);
+
+        call.enqueue(new Callback<Collection<ConsortiumResponse>>() {
+            @Override
+            public void onResponse(Call<Collection<ConsortiumResponse>> call, final Response<Collection<ConsortiumResponse>> response) {
+                final Collection<ConsortiumResponse> consortiumResponses = response.body();
+                if (response.isSuccessful() && consortiumResponses != null) {
+                    consortiumsNames = consortiumResponses.stream().map(ConsortiumResponse::getConsortiumName).collect(Collectors.toList());
+                    consortiumsNames.add(0, "Select consortium");
+                    ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(mainActivity.getSupportActionBar().getThemedContext(), R.layout.consortium_spinner_item, consortiumsNames);
+                    dataAdapter.setDropDownViewResource(R.layout.consortium_spinner_item);
+                    consortiumSpinner.setAdapter(dataAdapter);
+                    setOnClickCallbackForConsortiumSpinner(consortiumSpinner);
+                }
+                else
+                    Toast.makeText(petrolStationFragmentView.getContext(), "Problem with consortium name on server", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailure(Call<Collection<ConsortiumResponse>> call, Throwable t) {
+                 Toast.makeText(petrolStationFragmentView.getContext(), "Connection error with server", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setOnClickCallbackForConsortiumSpinner(Spinner consortiumSpinner) {
+        consortiumSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (!isFirstConsortiumSelection) {
+                    //String selectedConsortiumName = parent.getItemAtPosition(position).toString();
+                    recyclerView.setAdapter(filterRecycleViewByConsortiumName(position));
+                }
+                isFirstConsortiumSelection = false;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+    }
+
+    private PetrolStationRecycleViewAdapter filterRecycleViewByConsortiumName(Integer consortiumIndex){
+        if(consortiumIndex == 0 || consortiumIndex == Spinner.INVALID_POSITION){
+            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
+                    accessTokenDetails, recyclerView, petrolStationFragment);
+            return adapter;
+        }
+        String consortiumName = consortiumsNames.get(consortiumIndex);
+        List<PetrolStationRecycleViewItem> oneConsortiumStation = petrolStations.stream()
+                .filter(item -> item.getConsortiumName().equals(consortiumName)).collect(Collectors.toList());
+        PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(oneConsortiumStation,
+                accessTokenDetails, recyclerView, petrolStationFragment);
+        return adapter;
+    }
+
     private void sortPetrolStationsByDistances() {
         if (petrolStations != null && petrolStations.size() != 0) {
             petrolStations.sort(Comparator.comparing(PetrolStationRecycleViewItem::getDistance));
-            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
-                    accessTokenDetails, recyclerView, petrolStationFragment);
-            recyclerView.setAdapter(adapter);
+            recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
         }
     }
 
@@ -584,9 +654,7 @@ public class PetrolStationFragment extends Fragment {
                     return -1;
                 return prices1.getPb95Price() > prices2.getPb95Price() ? 1 : (prices1.getPb95Price() < prices2.getPb95Price()) ? -1 : 0;
             });
-            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
-                    accessTokenDetails, recyclerView, petrolStationFragment);
-            recyclerView.setAdapter(adapter);
+            recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
         }
     }
 
@@ -601,9 +669,7 @@ public class PetrolStationFragment extends Fragment {
                     return -1;
                 return prices1.getPb98Price() > prices2.getPb98Price() ? 1 : (prices1.getPb98Price() < prices2.getPb98Price()) ? -1 : 0;
             });
-            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
-                    accessTokenDetails, recyclerView, petrolStationFragment);
-            recyclerView.setAdapter(adapter);
+            recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
         }
     }
 
@@ -618,9 +684,7 @@ public class PetrolStationFragment extends Fragment {
                     return -1;
                 return prices1.getOnPrice() > prices2.getOnPrice() ? 1 : (prices1.getOnPrice() < prices2.getOnPrice()) ? -1 : 0;
             });
-            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
-                    accessTokenDetails, recyclerView, petrolStationFragment);
-            recyclerView.setAdapter(adapter);
+            recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
         }
     }
 
@@ -635,9 +699,7 @@ public class PetrolStationFragment extends Fragment {
                     return -1;
                 return prices1.getLpgPrice() > prices2.getLpgPrice() ? 1 : (prices1.getLpgPrice() < prices2.getLpgPrice()) ? -1 : 0;
             });
-            PetrolStationRecycleViewAdapter adapter = new PetrolStationRecycleViewAdapter(petrolStations,
-                    accessTokenDetails, recyclerView, petrolStationFragment);
-            recyclerView.setAdapter(adapter);
+            recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
         }
     }
 
@@ -655,7 +717,6 @@ public class PetrolStationFragment extends Fragment {
                     } else {
                         isFirstLocationResult = true;
                         createLocationCallback(distance, accessTokenDetails);
-
                     }
                 }
             });

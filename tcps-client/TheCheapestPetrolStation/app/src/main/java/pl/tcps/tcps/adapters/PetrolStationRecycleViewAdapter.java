@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.willy.ratingbar.BaseRatingBar;
+import com.willy.ratingbar.ScaleRatingBar;
+
 import java.util.List;
 import java.util.Locale;
 
@@ -35,7 +38,7 @@ public class PetrolStationRecycleViewAdapter extends RecyclerView.Adapter<Petrol
         TextView tvLpgPrice;
         TextView tvConsortiumName;
         TextView tvDistance;
-        RatingBar rbRating;
+        BaseRatingBar rbRating;
 
         PetrolStationItemViewHolder(View view) {
             super(view);

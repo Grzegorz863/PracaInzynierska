@@ -23,6 +23,7 @@
         android:title="Consortiums"
         android:orderInCategory="1"
         app:actionViewClass="android.widget.Spinner"
+        android:popupTheme="@style/DropDownMenu"
         app:showAsAction="always"/>
 
 

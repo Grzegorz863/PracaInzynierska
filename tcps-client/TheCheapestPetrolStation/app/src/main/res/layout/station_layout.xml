@@ -131,17 +131,6 @@
 
         </RelativeLayout>
 
-        <RatingBar
-            android:id="@+id/recycleview_rating_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?android:attr/ratingBarStyleIndicator"
-            android:layout_alignParentEnd="true"
-            android:layout_alignBottom="@+id/recycleview_relative_layout_prices"
-            android:numStars="5"
-            android:stepSize="0.1"
-            android:isIndicator="true"/>
-
         <TextView
             android:id="@+id/recycleview_consortium_name"
             android:layout_width="wrap_content"
@@ -162,7 +151,20 @@
             android:text="@string/recycleview_distance"
             android:textSize="18sp" />
 
-    </RelativeLayout>
+        <com.willy.ratingbar.BaseRatingBar
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/recycleview_rating_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignBottom="@+id/recycleview_relative_layout_prices"
+            app:srb_starPadding="5dp"
+            app:srb_numStars="5"
+            app:srb_minimumStars="1"
+            app:srb_stepSize="0.5"
+            app:srb_isIndicator="true"
+            app:srb_scrollable="true"/>
 
+    </RelativeLayout>
 
 </android.support.v7.widget.CardView>

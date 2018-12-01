@@ -19,6 +19,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.willy.ratingbar.BaseRatingBar;
+
 import java.net.HttpURLConnection;
 import java.time.Duration;
 import java.time.Instant;
@@ -64,7 +66,7 @@ public class StationDetailsActivity extends AppCompatActivity {
     private TextView tvHistoricOnPrice;
     private TextView tvHistoricLpgPrice;
     private ImageView ivHasFood;
-    private RatingBar rbRating;
+    private BaseRatingBar rbRating;
     private TextView tvDescription;
     private Button bMakeRate;
     private Button bLeadMe;

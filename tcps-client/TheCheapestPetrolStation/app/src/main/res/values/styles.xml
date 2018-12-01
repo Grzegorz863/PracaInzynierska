@@ -22,6 +22,7 @@
         <item name="overlapAnchor">false</item>
         <item name="android:dropDownVerticalOffset">35dp</item>
         <item name="background">@color/progress_bar_color</item>
+        <item name="android:popupBackground">@color/progress_bar_color</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

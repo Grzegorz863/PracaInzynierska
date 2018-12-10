@@ -127,10 +127,10 @@ public class PetrolStationServiceImpl implements PetrolStationService {
     private PetrolStationResponseRecycleViewItem preparePetrolStationToDeserialize(PetrolStationEntity petrolStationEntity,
                                                                                    Double distanceInMeters) {
 
-        String consortiuName = consortiumService.getConsortiumName(petrolStationEntity.getConsortiumId());
+        String consortiumName = consortiumService.getConsortiumName(petrolStationEntity.getConsortiumId());
         PetrolPricesAndDateResponse petrolPrices = petrolPricesService.getPetrolPricesWithInsertDate(petrolStationEntity);
         Double rating = ratingService.countAverageRatingForPetrolStation(petrolStationEntity);
-        return new PetrolStationResponseRecycleViewItem(petrolStationEntity, consortiuName,petrolPrices,
+        return new PetrolStationResponseRecycleViewItem(petrolStationEntity, consortiumName,petrolPrices,
                 rating, distanceInMeters);
     }
 

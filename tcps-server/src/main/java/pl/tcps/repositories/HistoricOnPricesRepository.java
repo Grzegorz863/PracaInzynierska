@@ -11,4 +11,6 @@ import java.util.List;
 public interface HistoricOnPricesRepository extends JpaRepository<HistoricOnPricesEntity, Long> {
 
     List<HistoricOnPricesEntity> findByStationIdAndInsertDateAfter(Long stationId, Timestamp insertDate);
+
+    HistoricOnPricesEntity findFirstByStationIdOrderByInsertDateDesc(Long stationId);
 }

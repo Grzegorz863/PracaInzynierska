@@ -197,12 +197,6 @@ public class LoginActivity extends AppCompatActivity {
                 fieldMap.put("password", password); // <== DO ZMIANY NA PASSWORD
                 fieldMap.put("scope", "read write trust");
 
-//                Map<String, Object> fieldMap = new HashMap<>();
-//                fieldMap.put("grant_type", "refresh_token");
-//                fieldMap.put("client_id", "android_app");
-//                fieldMap.put("refresh_token", "65244e60-a2c9-4a02-8bb7-dc8f6a6b7bd7"); // <== DO ZMIANY NA USERNAME
-//                //fieldMap.put("scope", "read write trust");
-
                 Retrofit retrofit = RetrofitBuilder.createRetrofit(LoginActivity.this);
 
                 LoginClient loginClient = retrofit.create(LoginClient.class);

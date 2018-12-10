@@ -165,7 +165,7 @@ public class PetrolStationFragment extends Fragment {
                 List<Location> locations = locationResult.getLocations();
                 Location location = locations.get(locations.size() - 1);
                 if (isFirstLocationResult)
-                    getAllPetrolStationFittingInRange(location.getLatitude(), location.getLongitude(), distance, accessTokenDetails);
+                    getAllPetrolStationFittingInRange(location.getLatitude(),location.getLongitude(), distance, accessTokenDetails);
                 else
                     getNewDataAndUpdateRecycleView(location.getLatitude(), location.getLongitude(), accessTokenDetails);
                 isFirstLocationResult = false;
@@ -589,7 +589,7 @@ public class PetrolStationFragment extends Fragment {
                 final Collection<ConsortiumResponse> consortiumResponses = response.body();
                 if (response.isSuccessful() && consortiumResponses != null) {
                     consortiumsNames = consortiumResponses.stream().map(ConsortiumResponse::getConsortiumName).collect(Collectors.toList());
-                    consortiumsNames.add(0, "Select consortium");
+                    consortiumsNames.add(0, "All consortiums");
                     ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(mainActivity.getSupportActionBar().getThemedContext(), R.layout.consortium_spinner_item, consortiumsNames);
                     dataAdapter.setDropDownViewResource(R.layout.consortium_spinner_item);
                     consortiumSpinner.setAdapter(dataAdapter);

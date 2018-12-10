@@ -11,4 +11,6 @@ import java.util.List;
 public interface HistoricPb98PricesRepository extends JpaRepository<HistoricPb98PricesEntity, Long> {
 
     List<HistoricPb98PricesEntity> findByStationIdAndInsertDateAfter(Long stationId, Timestamp insertDate);
+
+    HistoricPb98PricesEntity findFirstByStationIdOrderByInsertDateDesc(Long stationId);
 }

@@ -97,7 +97,8 @@ public class PetrolStationController {
                                              @RequestParam(value = "pb98_price", required = false) Float pb98Price,
                                              @RequestParam(value = "on_price", required = false) Float onPrice,
                                              @RequestParam(value = "lpg_price", required = false) Float lpgPrice,
-                                             Authentication authentication) throws PetrolPricesNotExistsException, WrongRequestParametersException {
+                                             Authentication authentication)
+            throws PetrolPricesNotExistsException, WrongRequestParametersException {
 
         if(pb95Price == null && pb98Price == null && onPrice == null && lpgPrice == null)
             throw new WrongRequestParametersException("Not entered not even one petrol price!");

@@ -160,7 +160,7 @@
             android:layout_alignBottom="@+id/recycleview_relative_layout_prices"
             app:srb_starPadding="5dp"
             app:srb_numStars="5"
-            app:srb_minimumStars="1"
+            app:srb_minimumStars="0"
             app:srb_stepSize="0.5"
             app:srb_isIndicator="true"
             app:srb_scrollable="true"/>

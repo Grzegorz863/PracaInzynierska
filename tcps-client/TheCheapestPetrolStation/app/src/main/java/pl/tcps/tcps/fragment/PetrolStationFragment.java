@@ -292,6 +292,7 @@ public class PetrolStationFragment extends Fragment {
                     createLocationClient();
                 } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                     LocationConfiguration.show(mainActivity);
+                    stopProgressBar();
                 }
             }
         }

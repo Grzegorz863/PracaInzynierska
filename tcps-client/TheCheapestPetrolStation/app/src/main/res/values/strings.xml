@@ -82,11 +82,12 @@
     <string name="button_login_label">Login</string>
     <string name="button_registration_label">Registration</string>
 
-    <string name="base_url">https://192.168.0.10:8443</string>
+    <string name="base_url">https://tcps.ddns.net:33333</string>
     <string name="title_activity_settings2">Settings</string>
     <string name="permission_denied_message">The app can not display any stations without access to device location!</string>
     <string name="permission_denied_ok">OK</string>
     <string name="permission_denied_close_app">CLOSE APP</string>
     <string name="title_activity_maps">Petrol Stations Map</string>
+    <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyDwKGwZZQdhb3_pzexvUyTX4oZy2MGrypg</string>
 
 </resources>

@@ -15,7 +15,6 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -180,14 +179,14 @@ public class StationDetailsActivity extends AppCompatActivity {
         tvStationAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                findPetrolStationLocation(false);
+                findPetrolStationCoordinates(false);
             }
         });
 
         ivAddressSymbol.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                findPetrolStationLocation(false);
+                findPetrolStationCoordinates(false);
             }
         });
     }
@@ -210,7 +209,7 @@ public class StationDetailsActivity extends AppCompatActivity {
         bLeadMe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                findPetrolStationLocation(true);
+                findPetrolStationCoordinates(true);
             }
         });
     }
@@ -243,7 +242,7 @@ public class StationDetailsActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
     }
 
-    private void findPetrolStationLocation(Boolean isNavigation) {
+    private void findPetrolStationCoordinates(Boolean isNavigation) {
         startProgressBar();
         Retrofit retrofit = RetrofitBuilder.createRetrofit(context);
         PetrolStationClient petrolStationClient = retrofit.create(PetrolStationClient.class);

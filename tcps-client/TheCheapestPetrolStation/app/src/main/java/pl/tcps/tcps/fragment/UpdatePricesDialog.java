@@ -163,7 +163,7 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
                         Toast.makeText(activity, "This station did not have petrol prices yet!", Toast.LENGTH_SHORT).show();
                     else Toast.makeText(activity, "Error on server", Toast.LENGTH_SHORT).show();
 
-                    if (response.code() == 422) //UNPROCESSABLE_ENTITY
+                    if (response.code() == 422) //UNPROCESSABLE_ENTIcTY
                         Toast.makeText(activity, "Enter at least one price!", Toast.LENGTH_SHORT).show();
                     else Toast.makeText(activity, "Error on server", Toast.LENGTH_SHORT).show();
                 }

@@ -41,6 +41,6 @@ public class PetrolStationLocationDeserializer extends StdDeserializer<PetrolSta
             return coordinates;
         }
         else
-            throw new JsonProcessingException("Address not found in Google API"){}; //dziwne
+            throw new JsonProcessingException("Address not found in Google API"){};
     }
 }

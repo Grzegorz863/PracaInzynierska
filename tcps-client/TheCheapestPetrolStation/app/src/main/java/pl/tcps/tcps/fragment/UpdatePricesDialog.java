@@ -65,7 +65,7 @@ public class UpdatePricesDialog extends AppCompatDialogFragment {
                 PetrolPricesResponse petrolPricesResponse = response.body();
                 if (response.isSuccessful() && petrolPricesResponse != null) {
                     fillViews(petrolPricesResponse);
-                    stationHasPetrolPrice = existPetrolPrices(petrolPricesResponse); //MEGA WAŻNE ŻEBY ZROBIC TU PROGRESS BAR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BO TEN TRUE MOZE NIE ZDAŻYĆ SIE USTAWIC
+                    stationHasPetrolPrice = existPetrolPrices(petrolPricesResponse);
                     stopProgressBar();
                 } else {
                     if (response.code() == HttpURLConnection.HTTP_NOT_FOUND)

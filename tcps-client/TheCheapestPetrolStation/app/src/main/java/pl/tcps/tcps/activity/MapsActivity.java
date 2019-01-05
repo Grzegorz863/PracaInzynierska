@@ -110,7 +110,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     public void onComplete(@NonNull Task task) {
                         if (task.isSuccessful()) {
                             Location location = (Location) task.getResult();
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
+                            if(location != null)
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), DEFAULT_ZOOM));
+                            //else
+
+
                         } else {
                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(50.15, 19.01), DEFAULT_ZOOM)); //Katowice
                             mMap.getUiSettings().setMyLocationButtonEnabled(false);
@@ -256,8 +260,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (ActivityCompat.checkSelfPermission(this.getApplicationContext(),
                 android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
             mLocationPermissionGranted = true;
-        else
+        else {
+            mLocationPermissionGranted = false;
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+            stopProgressBar();
+        }
     }
 
     @Override
@@ -286,6 +293,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @SuppressLint("MissingPermission")
     private void refreshMap() {
         createLocationRequest();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+            return;
         startProgressBar();
         LocationConfiguration.displayLocationSettingsRequest(this, this, locationRequest);
         if (mFusedLocationProviderClient != null)
@@ -309,7 +318,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         if (requestCode == REQUEST_CODE) {
             if (grantResults.length > 0) {
-                if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    createLocationRequest();
+                    LocationConfiguration.displayLocationSettingsRequest(this, this, locationRequest);
+                    createLocationCallback(distance, accessTokenDetails);
+                    createLocationClient();
+                } else if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                     mLocationPermissionGranted = false;
                     LocationConfiguration.show(this);
                 }

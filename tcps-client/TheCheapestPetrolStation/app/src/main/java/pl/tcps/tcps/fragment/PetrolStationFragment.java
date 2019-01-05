@@ -326,8 +326,7 @@ public class PetrolStationFragment extends Fragment {
                 PetrolPricesResponse petrolPricesResponse = response.body();
                 if (response.isSuccessful() && petrolPricesResponse != null) {
                     loadStationRating(oldStation, authHeader, retrofit, petrolPricesResponse, recycleViewStationIndex);
-                    //MEGA WAŻNE ŻEBY ZROBIC TU PROGRESS BAR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BO TEN TRUE MOZE NIE ZDAŻYĆ SIE USTAWIC
-                } else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND) {
+                    } else if (response.code() == HttpURLConnection.HTTP_NOT_FOUND) {
                     Toast.makeText(petrolStationFragmentView.getContext(), "Petrol station outside the area!", Toast.LENGTH_SHORT).show();
                     stopProgressBar();
                 } else {
@@ -355,8 +354,7 @@ public class PetrolStationFragment extends Fragment {
                 Double rate = response.body();
                 if (response.isSuccessful() && rate != null) {
                     updateRecycleViewItem(oldStation, petrolPricesResponse, rate, recycleViewStationIndex);
-                    //MEGA WAŻNE ŻEBY ZROBIC TU PROGRESS BAR !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! BO TEN TRUE MOZE NIE ZDAŻYĆ SIE USTAWIC
-                } else if (response.code() != HttpURLConnection.HTTP_NOT_FOUND) {
+                    } else if (response.code() != HttpURLConnection.HTTP_NOT_FOUND) {
                     stopProgressBar();
                     Toast.makeText(petrolStationFragmentView.getContext(), "Error on server", Toast.LENGTH_SHORT).show();
                 }

@@ -294,7 +294,6 @@ public class StationDetailsActivity extends AppCompatActivity {
         if (insertDate.toInstant().equals(Instant.EPOCH))
             return "Updated: never";
 
-
         if(periodFromLastUp.getYears() != 0)
             return getString(R.string.station_details_last_update, String.valueOf(periodFromLastUp.getYears()), "years");
 
@@ -314,6 +313,9 @@ public class StationDetailsActivity extends AppCompatActivity {
         Long minutesFromLastUp = secondsFromLastUp/60;
         if (minutesFromLastUp != 0)
             return getString(R.string.station_details_last_update, minutesFromLastUp.toString(), "minutes");
+
+        if(secondsFromLastUp < 0)
+            return getString(R.string.station_details_last_update, String.valueOf(0), "seconds");
 
         if(secondsFromLastUp != 0)
             return getString(R.string.station_details_last_update, secondsFromLastUp.toString(), "seconds");

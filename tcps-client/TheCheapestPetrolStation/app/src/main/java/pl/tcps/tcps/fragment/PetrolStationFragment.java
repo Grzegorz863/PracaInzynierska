@@ -44,6 +44,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -644,60 +645,65 @@ public class PetrolStationFragment extends Fragment {
 
     private void sortPetrolStationsByPb95Price() {
         if (petrolStations != null && petrolStations.size() != 0) {
-            petrolStations.sort((o1, o2) -> {
+            Collections.sort(petrolStations, ( PetrolStationRecycleViewItem o1, PetrolStationRecycleViewItem o2) ->{
                 PetrolPriceRecycleViewItem prices1 = o1.getPriceRecycleViewItem();
                 PetrolPriceRecycleViewItem prices2 = o2.getPriceRecycleViewItem();
-                if (prices1.getPb95Price() == 0f)
-                    return 1;
-                if (prices2.getPb95Price() == 0f)
-                    return -1;
-                return prices1.getPb95Price() > prices2.getPb95Price() ? 1 : (prices1.getPb95Price() < prices2.getPb95Price()) ? -1 : 0;
+                return prices1.getPb95Price().compareTo(prices2.getPb95Price());
             });
+            for(int i = 0; i<petrolStations.size(); i++){
+                if(petrolStations.get(0).getPriceRecycleViewItem().getPb95Price() != 0f)
+                    break;
+                petrolStations.add(petrolStations.remove(0));
+            }
             recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
         }
     }
 
     private void sortPetrolStationsByPb98Price() {
         if (petrolStations != null && petrolStations.size() != 0) {
-            petrolStations.sort((o1, o2) -> {
+            Collections.sort(petrolStations, ( PetrolStationRecycleViewItem o1, PetrolStationRecycleViewItem o2) ->{
                 PetrolPriceRecycleViewItem prices1 = o1.getPriceRecycleViewItem();
                 PetrolPriceRecycleViewItem prices2 = o2.getPriceRecycleViewItem();
-                if (prices1.getPb98Price() == 0f)
-                    return 1;
-                if (prices2.getPb98Price() == 0f)
-                    return -1;
-                return prices1.getPb98Price() > prices2.getPb98Price() ? 1 : (prices1.getPb98Price() < prices2.getPb98Price()) ? -1 : 0;
+                return prices1.getPb98Price().compareTo(prices2.getPb98Price());
             });
+            for(int i = 0; i<petrolStations.size(); i++){
+                if(petrolStations.get(0).getPriceRecycleViewItem().getPb98Price() != 0f)
+                    break;
+                petrolStations.add(petrolStations.remove(0));
+            }
+            recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
             recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
         }
     }
 
     private void sortPetrolStationsByOnPrice() {
         if (petrolStations != null && petrolStations.size() != 0) {
-            petrolStations.sort((o1, o2) -> {
+            Collections.sort(petrolStations, ( PetrolStationRecycleViewItem o1, PetrolStationRecycleViewItem o2) ->{
                 PetrolPriceRecycleViewItem prices1 = o1.getPriceRecycleViewItem();
                 PetrolPriceRecycleViewItem prices2 = o2.getPriceRecycleViewItem();
-                if (prices1.getOnPrice() == 0f)
-                    return 1;
-                if (prices2.getOnPrice() == 0f)
-                    return -1;
-                return prices1.getOnPrice() > prices2.getOnPrice() ? 1 : (prices1.getOnPrice() < prices2.getOnPrice()) ? -1 : 0;
+                return prices1.getOnPrice().compareTo(prices2.getOnPrice());
             });
+            for(int i = 0; i<petrolStations.size(); i++){
+                if(petrolStations.get(0).getPriceRecycleViewItem().getOnPrice() != 0f)
+                    break;
+                petrolStations.add(petrolStations.remove(0));
+            }
             recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
         }
     }
 
     private void sortPetrolStationsByLpgPrice() {
         if (petrolStations != null && petrolStations.size() != 0) {
-            petrolStations.sort((o1, o2) -> {
+            Collections.sort(petrolStations, ( PetrolStationRecycleViewItem o1, PetrolStationRecycleViewItem o2) ->{
                 PetrolPriceRecycleViewItem prices1 = o1.getPriceRecycleViewItem();
                 PetrolPriceRecycleViewItem prices2 = o2.getPriceRecycleViewItem();
-                if (prices1.getLpgPrice() == 0f)
-                    return 1;
-                if (prices2.getLpgPrice() == 0f)
-                    return -1;
-                return prices1.getLpgPrice() > prices2.getLpgPrice() ? 1 : (prices1.getLpgPrice() < prices2.getLpgPrice()) ? -1 : 0;
+                return prices1.getLpgPrice().compareTo(prices2.getLpgPrice());
             });
+            for(int i = 0; i<petrolStations.size(); i++){
+                if(petrolStations.get(0).getPriceRecycleViewItem().getLpgPrice() != 0f)
+                    break;
+                petrolStations.add(petrolStations.remove(0));
+            }
             recyclerView.setAdapter(filterRecycleViewByConsortiumName(consortiumSpinner.getSelectedItemPosition()));
         }
     }
